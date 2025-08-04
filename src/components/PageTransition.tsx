@@ -6,14 +6,12 @@ interface PageTransitionProps {
   children: React.ReactNode;
   type?: 'slide' | 'fade' | 'scale' | 'rotate';
   direction?: 'left' | 'right' | 'up' | 'down';
-  duration?: number;
 }
 
 const PageTransition: React.FC<PageTransitionProps> = ({ 
   children, 
   type = 'slide', 
   direction = 'right', 
-  duration = 0.4 
 }) => {
   const location = useLocation();
 
@@ -60,24 +58,23 @@ const PageTransition: React.FC<PageTransitionProps> = ({
     }
   };
 
-  const pageTransition = {
-    type: 'tween',
-    ease: 'anticipate',
-    duration: duration,
-  };
-
   return (
     <motion.div
-      key={location.pathname}
-      initial="initial"
-      animate="in"
-      exit="out"
-      variants={getVariants()}
-      transition={pageTransition}
-      className="w-full h-full"
-    >
-      {children}
-    </motion.div>
+    key={location.pathname}
+    initial="initial"
+    animate="in"
+    exit="out"
+    variants={getVariants()}
+    transition={{
+      type: "tween",
+      ease: "easeInOut",
+      duration: 0.5,
+    }}
+    className="w-full h-full"
+  >
+    {children}
+  </motion.div>
+  
   );
 };
 
