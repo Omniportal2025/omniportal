@@ -23,13 +23,11 @@ const DashboardContent: React.FC = () => {
   const [activeAccounts, setActiveAccounts] = useState<number>(0);
   const [livingWaterStats, setLivingWaterStats] = useState<{ available: number, sold: number, total: number }>({ available: 0, sold: 0, total: 0 });
   const [havahillsStats, setHavahillsStats] = useState<{ available: number, sold: number, total: number }>({ available: 0, sold: 0, total: 0 });
-  const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
 
   useEffect(() => {
     fetchLotData();
     fetchActiveAccounts();
-    fetchRecentTransactions();
     fetchNotifications();
   }, []);
 
@@ -126,22 +124,6 @@ const DashboardContent: React.FC = () => {
     }
   };
 
-  const fetchRecentTransactions = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('Transactions')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (error) throw error;
-      setRecentTransactions(data || []);
-    } catch (error: any) {
-      console.error('Error fetching transactions:', error?.message);
-      setRecentTransactions([]);
-    }
-  };
-
   const fetchNotifications = async () => {
     try {
       const { data, error } = await supabase
@@ -218,14 +200,6 @@ const DashboardContent: React.FC = () => {
 
   // Format recent activities from transactions and notifications
   const recentActivities = [
-    ...recentTransactions.slice(0, 3).map((transaction, index) => ({
-      id: `trans-${index}`,
-      type: 'Transaction',
-      description: `₱${transaction.amount?.toLocaleString()} - ${transaction.description || 'Payment received'}`,
-      time: new Date(transaction.created_at).toLocaleDateString(),
-      status: 'success',
-      avatar: '₱'
-    })),
     ...notifications.slice(0, 2).map((notification, index) => ({
       id: `notif-${index}`,
       type: notification.title || 'Notification',
