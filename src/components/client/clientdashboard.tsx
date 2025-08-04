@@ -1484,7 +1484,35 @@ interface ViewReceiptModalProps {
 }
 
 // View Receipt Modal Component
+// View Receipt Modal Component
 const ViewReceiptModal: React.FC<ViewReceiptModalProps> = ({ isOpen, onClose, receiptUrl, isLoading }) => {
+  // Function to download the image/file
+  const handleDownload = async () => {
+    if (!receiptUrl) return;
+    
+    try {
+      const response = await fetch(receiptUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Extract filename from URL or use default
+      const urlParts = receiptUrl.split('/');
+      const filename = urlParts[urlParts.length - 1] || 'receipt';
+      link.download = filename.includes('.') ? filename : `${filename}.jpg`;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Fallback to opening in new tab
+      window.open(receiptUrl, '_blank');
+    }
+  };
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
@@ -1514,12 +1542,25 @@ const ViewReceiptModal: React.FC<ViewReceiptModalProps> = ({ isOpen, onClose, re
               <Dialog.Panel className="w-full max-w-6xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900 mb-4 flex justify-between items-center">
                   Payment Receipt
-                  <button
-                    onClick={onClose}
-                    className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                  >
-                    <X className="h-6 w-6" />
-                  </button>
+                  <div className="flex items-center space-x-2">
+                    {receiptUrl && !isLoading && (
+                      <button
+                        onClick={handleDownload}
+                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                      >
+                        <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Download
+                      </button>
+                    )}
+                    <button
+                      onClick={onClose}
+                      className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-1"
+                    >
+                      <X className="h-6 w-6" />
+                    </button>
+                  </div>
                 </Dialog.Title>
 
                 {isLoading ? (
@@ -1527,11 +1568,31 @@ const ViewReceiptModal: React.FC<ViewReceiptModalProps> = ({ isOpen, onClose, re
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                   </div>
                 ) : receiptUrl ? (
-                  <div className="relative" style={{ height: '70vh' }}>
-                    <iframe
+                  <div className="flex justify-center items-center bg-gray-50 rounded-lg p-4" style={{ height: '70vh' }}>
+                    <img
                       src={receiptUrl}
-                      className="w-full h-full rounded-lg border border-gray-200"
-                      title="Payment Receipt"
+                      alt="Payment Receipt"
+                      className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
+                      style={{ 
+                        maxWidth: '100%', 
+                        maxHeight: '100%',
+                        width: 'auto',
+                        height: 'auto'
+                      }}
+                      onError={(e) => {
+                        console.error('Failed to load image:', receiptUrl);
+                        // Fallback to iframe if image fails
+                        const container = e.currentTarget.parentElement;
+                        if (container) {
+                          container.innerHTML = `
+                            <iframe
+                              src="${receiptUrl}"
+                              class="w-full h-full rounded-lg border border-gray-200"
+                              title="Payment Receipt"
+                            ></iframe>
+                          `;
+                        }
+                      }}
                     />
                   </div>
                 ) : (

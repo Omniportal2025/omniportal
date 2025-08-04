@@ -146,184 +146,181 @@ const CreateAccountModal: React.FC<CreateAccountModalProps> = ({ isOpen, closeMo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-10 overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={closeModal}
+    >
       <div 
-        className="fixed inset-0 bg-black bg-opacity-25 transition-opacity"
-        onClick={closeModal}
-        aria-hidden="true"
-      />
-      
-      <div className="flex min-h-full items-center justify-center p-4 text-center">
-        <div 
-          className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-8 text-left align-middle shadow-xl transition-all modal-scrollbar"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="absolute top-0 right-0 pt-6 pr-6">
-            <button
-              onClick={closeModal}
-              className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              <span className="sr-only">Close</span>
-              <X className="h-6 w-6" />
-            </button>
-          </div>
-          
-          <h3 className="text-xl font-semibold leading-6 text-gray-900">
-            Create Account
-          </h3>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    Setting up an account for <span className="font-medium text-gray-900">{clientName}</span>
+        className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Modal content */}
+        <div className="p-6">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-xl font-semibold leading-6 text-gray-900 mb-2">
+                  Create Account
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Setting up an account for <span className="font-medium text-gray-900">{clientName}</span>
+                </p>
+              </div>
+              <button
+                onClick={closeModal}
+                className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                <span className="sr-only">Close</span>
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+  
+            {success ? (
+              <div className="mt-6">
+                <div className="rounded-lg bg-green-50 p-6 text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                    <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <p className="mt-4 text-lg font-semibold text-green-800">Account created successfully!</p>
+                  <p className="mt-2 text-sm text-green-700">An email has been sent with login credentials and instructions.</p>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Email field */}
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                    Email address
+                  </label>
+                  <div className="relative mt-2 rounded-md shadow-sm">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
+                        <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="block w-full rounded-md border-0 py-2.5 pl-11 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 hover:ring-gray-400 transition-all duration-200 sm:text-sm"
+                      placeholder="Enter client's email address"
+                      required
+                    />
+                  </div>
+                </div>
+  
+                {/* Password field */}
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                    Password
+                  </label>
+                  <div className="relative mt-2 rounded-md shadow-sm">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <input
+                      type="password"
+                      id="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="block w-full rounded-md border-0 py-2.5 pl-11 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 hover:ring-gray-400 transition-all duration-200 sm:text-sm"
+                      placeholder="Enter a secure password"
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  <p className="mt-2 text-sm text-gray-500 flex items-center">
+                    <svg className="mr-1.5 h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
+                    </svg>
+                    Password must be at least 6 characters
+                  </p>
+                  <p className="mt-2 text-sm text-gray-500 flex items-center">
+                    <svg className="mr-1.5 h-4 w-4 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
+                    </svg>
+                    These credentials will be sent to the client's email
                   </p>
                 </div>
-
-                {success ? (
-                  <div className="mt-6">
-                    <div className="rounded-lg bg-green-50 p-6 text-center">
-                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                        <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+  
+                {/* Error messages */}
+                {error && (
+                  <div className="rounded-md bg-red-50 p-4">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
                         </svg>
                       </div>
-                      <p className="mt-4 text-lg font-semibold text-green-800">Account created successfully!</p>
-                      <p className="mt-2 text-sm text-green-700">An email has been sent with login credentials and instructions.</p>
+                      <div className="ml-3">
+                        <p className="text-sm text-red-700">{error}</p>
+                      </div>
                     </div>
                   </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-                    <div className="space-y-6 bg-white">
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                          Email address
-                        </label>
-                        <div className="relative mt-2 rounded-md shadow-sm">
-                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
-                              <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
-                            </svg>
-                          </div>
-                          <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="block w-full rounded-md border-0 py-2.5 pl-11 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 hover:ring-gray-400 transition-all duration-200 sm:text-sm"
-                            placeholder="Enter client's email address"
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                          Password
-                        </label>
-                        <div className="relative mt-2 rounded-md shadow-sm">
-                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="block w-full rounded-md border-0 py-2.5 pl-11 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 hover:ring-gray-400 transition-all duration-200 sm:text-sm"
-                            placeholder="Enter a secure password"
-                            required
-                            minLength={6}
-                          />
-                        </div>
-                        <p className="mt-2 text-sm text-gray-500 flex items-center">
-                          <svg className="mr-1.5 h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
-                          </svg>
-                          Password must be at least 6 characters
-                        </p>
-                        <p className="mt-2 text-sm text-gray-500 flex items-center">
-                          <svg className="mr-1.5 h-4 w-4 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
-                          </svg>
-                          These credentials will be sent to the client's email
-                        </p>
-                      </div>
-                    </div>
-
-                    {error && (
-                      <div className="rounded-md bg-red-50 p-4">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <div className="ml-3">
-                            <p className="text-sm text-red-700">{error}</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {clientHasAccount && (
-                      <div className="rounded-md bg-red-50 p-4">
-                        <div className="flex">
-                          <div className="flex-shrink-0">
-                            <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <div className="ml-3">
-                            <p className="text-sm text-red-700">This client already has an account. Please use a different client.</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mt-6">
-                      <button
-                        type="submit"
-                        disabled={loading || clientHasAccount}
-                        className={`w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-                          clientHasAccount 
-                            ? 'text-gray-500 bg-gray-50 cursor-not-allowed' 
-                            : 'text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
-                        }`}
-                      >
-                        {loading ? (
-                          <>
-                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Creating account...
-                          </>
-                        ) : (
-                          <span className="flex items-center gap-1.5">
-                            {clientHasAccount ? (
-                              <svg className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10 2a4 4 0 100 8 4 4 0 000-8zM5.293 9.707a1 1 0 011.414 0L10 13l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                              </svg>
-                            ) : (
-                              <svg className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm-9 7a9 9 0 1118 0 9 9 0 01-18 0zm10-4a1 1 0 00-2 0v3H6a1 1 0 100 2h3v3a1 1 0 102 0v-3h3a1 1 0 100-2h-3V6z" clipRule="evenodd" />
-                              </svg>
-                            )}
-                            {clientHasAccount ? 'Account Exists' : 'Create Account'}
-                          </span>
-                        )}
-                      </button>
-                    </div>
-                  </form>
                 )}
-                
-                {/* Success message removed to avoid duplication */}
-              </div>
-            </div>
+  
+                {clientHasAccount && (
+                  <div className="rounded-md bg-red-50 p-4">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-red-700">This client already has an account. Please use a different client.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+  
+                {/* Submit button */}
+                <div>
+                  <button
+                    type="submit"
+                    disabled={loading || clientHasAccount}
+                    className={`w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      clientHasAccount 
+                        ? 'text-gray-500 bg-gray-50 cursor-not-allowed' 
+                        : 'text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                    }`}
+                  >
+                    {loading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Creating account...
+                      </>
+                    ) : (
+                      <span className="flex items-center gap-1.5">
+                        {clientHasAccount ? (
+                          <svg className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 2a4 4 0 100 8 4 4 0 000-8zM5.293 9.707a1 1 0 011.414 0L10 13l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        ) : (
+                          <svg className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm-9 7a9 9 0 1118 0 9 9 0 01-18 0zm10-4a1 1 0 00-2 0v3H6a1 1 0 100 2h3v3a1 1 0 102 0v-3h3a1 1 0 100-2h-3V6z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        {clientHasAccount ? 'Account Exists' : 'Create Account'}
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
-  );
-};
+        </div>
+      </div>
+    );
+  };
 
 const ClientsPage: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([]);
