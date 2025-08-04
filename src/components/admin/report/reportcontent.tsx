@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { supabase } from '../../../supabase/supabaseClient';
 import PageTransition from '../../../components/PageTransition';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
 import { 
   Search, 
   BarChart,
@@ -67,13 +65,11 @@ const ReportPage = (): ReactNode => {
   const [loading, setLoading] = useState(true);
 
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
-  const [selectedPrintDate, setSelectedPrintDate] = useState<Date | null>(null);
   const [selectedPrintProject, setSelectedPrintProject] = useState(projects.find(p => p !== 'all') || '');
   const [filteredRecords, setFilteredRecords] = useState<PaymentRecord[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPaymentType, setSelectedPaymentType] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<string>('all');
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [editingRecord, setEditingRecord] = useState<PaymentRecord | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -85,12 +81,11 @@ const ReportPage = (): ReactNode => {
 
   useEffect(() => {
     filterRecords();
-  }, [paymentRecords, searchTerm, selectedPaymentType, selectedProject, selectedDate]);
+  }, [paymentRecords, searchTerm, selectedPaymentType, selectedProject]);
 
   const filterRecords = () => {
     let filtered = [...paymentRecords];
     
-
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(record =>
@@ -107,15 +102,6 @@ const ReportPage = (): ReactNode => {
 
     if (selectedProject !== 'all') {
       filtered = filtered.filter(record => record.Project === selectedProject);
-    }
-
-    if (selectedDate) {
-      filtered = filtered.filter(record => {
-        const recordDate = new Date(record.created_at);
-        return recordDate.getDate() === selectedDate.getDate() &&
-               recordDate.getMonth() === selectedDate.getMonth() &&
-               recordDate.getFullYear() === selectedDate.getFullYear();
-      });
     }
 
     setFilteredRecords(filtered);
@@ -215,28 +201,9 @@ const ReportPage = (): ReactNode => {
 
   const totals = calculateTotals(filteredRecords);
 
-  const getMonthlyTotal = (date: Date | null, project: string) => {
-    if (!date) return 0;
+  const getMonthlyTotal = (project: string) => {
     return paymentRecords
-      .filter(record => {
-        const recordDate = new Date(record.created_at);
-        return recordDate.getMonth() === date.getMonth() &&
-               recordDate.getFullYear() === date.getFullYear() &&
-               (project === 'all' || record.Project === project);
-      })
-      .reduce((sum, record) => sum + (Number(record.Amount) + (Number(record.Penalty) || 0)), 0);
-  };
-
-  const getDailyTotal = (date: Date | null, project: string) => {
-    if (!date) return 0;
-    return paymentRecords
-      .filter(record => {
-        const recordDate = new Date(record.created_at);
-        const isMatchingDate = recordDate.getDate() === date.getDate() &&
-                              recordDate.getMonth() === date.getMonth() &&
-                              recordDate.getFullYear() === date.getFullYear();
-        return isMatchingDate && (project === 'all' || record.Project === project);
-      })
+      .filter(record => record.Project === project)
       .reduce((sum, record) => sum + (Number(record.Amount) + (Number(record.Penalty) || 0)), 0);
   };
 
@@ -258,19 +225,7 @@ const ReportPage = (): ReactNode => {
   };
 
   const handlePrint = async () => {
-    if (!selectedPrintDate || !selectedPrintProject) {
-      alert('Please select both a date and project before printing');
-      return;
-    }
-
-    const printRecords = paymentRecords.filter(record => {
-      const recordDate = new Date(record.created_at);
-      const isMatchingDate = recordDate.getDate() === selectedPrintDate.getDate() &&
-                            recordDate.getMonth() === selectedPrintDate.getMonth() &&
-                            recordDate.getFullYear() === selectedPrintDate.getFullYear();
-      return isMatchingDate && record.Project === selectedPrintProject;
-    });
-
+    const printRecords = paymentRecords.filter(record => record.Project === selectedPrintProject);
     const printTotals = calculateTotals(printRecords);
     const printTotalsByType = calculateTotalsByPaymentType(printRecords);
     const printWindow = window.open('', '_blank');
@@ -571,10 +526,6 @@ const ReportPage = (): ReactNode => {
                       <span class="detail-value">${selectedPrintProject}</span>
                     </div>
                     <div class="detail-item">
-                      <span class="detail-label">Report Date:</span>
-                      <span class="detail-value">${selectedPrintDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                    </div>
-                    <div class="detail-item">
                       <span class="detail-label">Generated on:</span>
                       <span class="detail-value">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                     </div>
@@ -590,7 +541,6 @@ const ReportPage = (): ReactNode => {
               <div class="report-info">
                 <p>Generated on: ${currentDate}</p>
                 <p>Project: ${selectedPrintProject}</p>
-                <p>Date: ${selectedPrintDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
               </div>
             </div>
             <table>
@@ -633,7 +583,6 @@ const ReportPage = (): ReactNode => {
                   </div>
                   <div class="page-header-right">
                     <div>Generated on: ${currentDate}</div>
-                    <div>Date: ${selectedPrintDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                   </div>
                 </div>
                 <div class="total-section">
@@ -641,8 +590,7 @@ const ReportPage = (): ReactNode => {
                   <p><span>Total Amount:</span> <span class="total-amount">${new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(printTotals.amount)}</span></p>
                   <p><span>Total Penalty:</span> <span class="total-amount">${new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(printTotals.penalty)}</span></p>
                   <p><span>Grand Total:</span> <span class="total-amount">${new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(printTotals.amount + printTotals.penalty)}</span></p>
-                  <p><span>Monthly Total (${selectedPrintDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}):</span> <span class="total-amount">${new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(getMonthlyTotal(selectedPrintDate, selectedPrintProject))}</span></p>
-                  <p><span>Daily Total (${selectedPrintDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}):</span> <span class="total-amount">${new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(getDailyTotal(selectedPrintDate, selectedPrintProject))}</span></p>
+                  <p><span>Monthly Total:</span> <span class="total-amount">${new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(getMonthlyTotal(selectedPrintProject))}</span></p>
                 </div>
                 <div class="breakdown-section">
                   <p class="breakdown-title">Payment Type Breakdown:</p>
@@ -749,32 +697,6 @@ const ReportPage = (): ReactNode => {
                         className="w-full h-9 pl-3 pr-9 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 placeholder-slate-500 text-white"
                       />
                       <Search className="absolute right-2.5 top-2 h-4 w-4 text-slate-400" />
-                    </div>
-                  </div>
-
-                  {/* Date Filter */}
-                  <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1">Filter by Date</label>
-                    <div className="relative">
-                      <div className="react-datepicker-wrapper z-100">
-                        <DatePicker
-                          selected={selectedDate}
-                          onChange={(date: Date | null) => setSelectedDate(date)}
-                          placeholderText="Select date"
-                          dateFormat="MMM d, yyyy"
-                          className="w-full h-9 px-3 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 placeholder-slate-500 text-white"
-                          isClearable
-                          popperClassName="z-1000"
-                        />
-                      </div>
-                      {selectedDate && (
-                        <button
-                          onClick={() => setSelectedDate(null)}
-                          className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-300 transition-colors"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      )}
                     </div>
                   </div>
 
@@ -1044,37 +966,12 @@ const ReportPage = (): ReactNode => {
               </div>
             </div>
 
-            <div className="space-y-3 w-full">
-              <label className="block text-sm font-semibold text-slate-700">Select Date</label>
-              <div className="relative w-full">
-                <DatePicker
-                  selected={selectedPrintDate}
-                  onChange={(date) => setSelectedPrintDate(date)}
-                  dateFormat="MMMM d, yyyy"
-                  className="block w-full pl-4 pr-10 py-4 text-base border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-xl shadow-sm transition-all duration-200 hover:border-slate-300 bg-slate-50"
-                  placeholderText="Select a date"
-                  wrapperClassName="w-full"
-                />
-                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                  <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
             <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-5 space-y-4 border border-slate-200">
               <h4 className="text-sm font-semibold text-slate-700 mb-3">Summary</h4>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-600 font-medium">Monthly Total:</span>
                 <span className="text-lg text-slate-900 font-bold">
-                  ₱{selectedPrintDate && selectedPrintProject ? getMonthlyTotal(selectedPrintDate, selectedPrintProject).toLocaleString() : '0'}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600 font-medium">Daily Total:</span>
-                <span className="text-lg text-slate-900 font-bold">
-                  ₱{selectedPrintDate && selectedPrintProject ? getDailyTotal(selectedPrintDate, selectedPrintProject).toLocaleString() : '0'}
+                  ₱{getMonthlyTotal(selectedPrintProject).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -1089,9 +986,9 @@ const ReportPage = (): ReactNode => {
             </button>
             <button
               onClick={handlePrint}
-              disabled={!selectedPrintDate || !selectedPrintProject}
+              disabled={!selectedPrintProject}
               className={`px-6 py-3 text-sm font-medium text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ${
-                !selectedPrintDate || !selectedPrintProject 
+                !selectedPrintProject 
                 ? 'bg-slate-300 cursor-not-allowed opacity-60' 
                 : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-sm hover:shadow-lg'
               }`}
