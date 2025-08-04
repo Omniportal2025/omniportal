@@ -1,0 +1,30 @@
+.skeleton {
+    background-color: #e0e0e0; /* Light gray background */
+    border-radius: 4px; /* Rounded corners */
+    animation: pulse 1.5s infinite; /* Pulse animation */
+  }
+  
+  @keyframes pulse {
+    0% {
+      background-color: #e0e0e0;
+    }
+    50% {
+      background-color: #c0c0c0; /* Darker gray */
+    }
+    100% {
+      background-color: #e0e0e0;
+    }
+  }
+  
+  .skeleton-text {
+    height: 1.2em; /* Height for text */
+    margin-bottom: 0.5em; /* Space between lines */
+  }
+
+  .skeleton-name {
+    width: 60%; /* Adjust width to match the name's expected width */
+  }
+
+  .skeleton-email {
+    width: 40%; /* Adjust width to match the email's expected width */
+  }

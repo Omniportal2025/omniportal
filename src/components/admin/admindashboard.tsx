@@ -1,0 +1,365 @@
+import React, { useEffect, useState } from 'react';
+import {
+  LogOut,
+  Home,
+  Users,
+  Building,
+  File,
+  DollarSign,
+  BarChart2,
+  FileText,
+  Ticket
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../supabase/supabaseClient';
+import './admindashboard.css';
+
+import DashboardContent from './dashboard/dashboardcontent';
+import InventoryPage from './inventory/inventorycontent';
+import ClientsPage from './clients/clientscontent';
+import BalancePage from './balance/balancecontent';
+import ReportPage from './report/reportcontent';
+import TicketPage from './ticket/ticketcontent';
+import PaymentPage from './payment/paymentcontent';
+import AgentPage from './agent/agentcontent';
+import DocumentsPage from './document/documentscontent';
+
+const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
+  const [userFullName, setUserFullName] = useState<string>('');
+  const [userEmail, setUserEmail] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [activeItem, setActiveItem] = useState<string>('Dashboard');
+  
+  // Notification states
+  const [notifications, setNotifications] = useState<{[key: string]: number}>({
+    Ticket: 0,
+    Payment: 0,
+    // Add more notification counters as needed
+  });
+
+  const handleLogout = () => {
+    // Clear custom user data
+    localStorage.removeItem("adminName");
+    localStorage.removeItem("userEmail");
+  
+    // Clear Supabase auth token (you can clear all Supabase keys like this)
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith("sb-")) {
+        localStorage.removeItem(key);
+      }
+    });
+  
+    // (Optional) Clear sessionStorage and cookies
+    sessionStorage.clear();
+    document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  
+    console.log("✅ LocalStorage after logout:", { ...localStorage });
+  
+    // Navigate to login or home
+    navigate('/');
+  };
+
+  useEffect(() => {
+    const adminName = localStorage.getItem("adminName");
+    const tokenKey = Object.keys(localStorage).find(key => key.startsWith("sb-"));
+  
+    if (!adminName || !tokenKey) {
+      alert("Access denied. Please login first.");
+      navigate('/');
+    }
+  }, []);
+
+  // Function to fetch notification counts
+  const fetchNotificationCounts = async () => {
+    try {
+      // Fetch new and in_progress ticket count
+      const { data: ticketData, error: ticketError } = await supabase
+        .from('Tickets') // Replace with your actual tickets table name
+        .select('id', { count: 'exact' })
+        .in('Status', ['new', 'in_progress']); // Using your actual status values
+
+      if (ticketError) {
+        console.error('Error fetching ticket notifications:', ticketError);
+      } else {
+        setNotifications(prev => ({
+          ...prev,
+          Ticket: ticketData?.length || 0
+        }));
+      }
+
+      // Fetch pending payment count
+      const { data: paymentData, error: paymentError } = await supabase
+        .from('Payment') // Replace with your actual payments table name
+        .select('id', { count: 'exact' })
+        .eq('Status', 'Pending'); // Using your actual status value
+
+      if (paymentError) {
+        console.error('Error fetching payment notifications:', paymentError);
+      } else {
+        setNotifications(prev => ({
+          ...prev,
+          Payment: paymentData?.length || 0
+        }));
+      }
+
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
+
+  // Set up real-time subscription for notifications
+  useEffect(() => {
+    // Initial fetch
+    fetchNotificationCounts();
+
+    // Set up real-time subscription for tickets
+    const ticketSubscription = supabase
+      .channel('ticket-notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'Tickets' // Replace with your actual table name
+        },
+        (payload) => {
+          console.log('Ticket change detected:', payload);
+          fetchNotificationCounts(); // Refetch counts when changes occur
+        }
+      )
+      .subscribe();
+
+    // Set up real-time subscription for payments
+    const paymentSubscription = supabase
+      .channel('payment-notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'Payments' // Replace with your actual table name
+        },
+        (payload) => {
+          console.log('Payment change detected:', payload);
+          fetchNotificationCounts(); // Refetch counts when changes occur
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription on component unmount
+    return () => {
+      supabase.removeChannel(ticketSubscription);
+      supabase.removeChannel(paymentSubscription);
+    };
+  }, []);
+
+  const fetchUserData = async () => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError) {
+        console.error('Error fetching user:', userError);
+        setLoading(false);
+        return;
+    }
+
+    if (!user) {
+        console.error('No user is logged in');
+        setLoading(false);
+        return;
+    }
+
+    const { data, error } = await supabase
+        .from('Admin')
+        .select('Name, Email')
+        .eq('Email', user.email)
+        .single();
+
+    if (error) {
+        console.error('Error fetching user data:', error);
+        setLoading(false);
+        return;
+    }
+
+    if (data) {
+        setUserFullName(data.Name);
+        setUserEmail(data.Email);
+    }
+
+    setLoading(false);
+  };
+
+  const handleNavItemClick = (itemName: string) => {
+    setActiveItem(itemName);
+    console.log(`Navigating to: ${itemName}`);
+  };
+
+  const allMainNavItems = [
+    { name: 'Dashboard', icon: Home },
+    { name: 'Inventory', icon: Building },
+    { name: 'Clients', icon: Users },
+    { name: 'Documents', icon: File },
+    { name: 'Payment', icon: DollarSign },
+    { name: 'Balance', icon: BarChart2 },
+    { name: 'Report', icon: FileText },
+    { name: 'Ticket', icon: Ticket },
+    { name: 'Agent', icon: Users },
+  ];
+
+  const getFilteredNavItems = (items: { name: string; icon: any }[]) => {
+    if (userEmail === 'hdc.ellainegarcia@gmail.com') {
+      const allowedItems = ['Ticket', 'Clients', 'Documents'];
+      return items.filter(item => allowedItems.includes(item.name));
+    }
+    return items;
+  };
+
+  const mainNavItems = getFilteredNavItems(allMainNavItems);
+
+  const renderActiveContent = () => {
+    switch (activeItem) {
+      case 'Dashboard':
+        return <DashboardContent />;
+      case 'Inventory':
+        return<InventoryPage/>;
+      case 'Clients':
+       return<ClientsPage/>;
+      case 'Payment':
+        return<PaymentPage/>;
+      case 'Balance':
+        return<BalancePage/>;
+      case 'Report':
+        return<ReportPage/>;
+      case 'Ticket':
+        return<TicketPage/>;
+      case 'Agent':
+        return<AgentPage/>;
+      case 'Documents':
+        return<DocumentsPage/>;
+      default:
+        return <DashboardContent />;
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  return (
+    <div className="flex max-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
+      {/* Sidebar Container with Padding */}
+      <div className="w-80 p-4 flex flex-col h-screen">
+        {/* Floating Sidebar Card */}
+        <aside className="flex-1 bg-white text-gray-800 shadow-2xl rounded-2xl flex flex-col backdrop-blur-sm overflow-hidden">
+          {/* Enhanced Header */}
+          <div className="bg-gradient-to-r from-white to-blue-50/30 border-b border-gray-100/50">
+            <div className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-blue-100">
+                  <span className="text-white font-bold text-lg">O</span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 tracking-wide">Omni Portal</h2>
+                  <p className="text-gray-600 text-sm font-medium">Admin Dashboard</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Navigation */}
+          <nav className="flex-1 px-6 py-6 space-y-2">
+            {mainNavItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeItem === item.name;
+              const notificationCount = notifications[item.name] || 0;
+              
+              return (
+                <div key={item.name}>
+                  <button
+                    onClick={() => handleNavItemClick(item.name)}
+                    className={`w-full flex items-center space-x-4 px-4 py-3.5 text-sm font-medium transition-all duration-300 transform relative group ${
+                      isActive
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl shadow-lg shadow-blue-200/50 scale-105'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-xl hover:translate-x-1 hover:shadow-md'
+                    }`}
+                  >
+                    <Icon className={`h-5 w-5 transition-all duration-300 ${
+                      isActive ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'
+                    }`} />
+                    <span className="truncate font-medium flex-1 text-left">{item.name}</span>
+                    
+                    {/* Notification Badge */}
+                    {notificationCount > 0 && (
+                      <div className={`relative flex items-center justify-center min-w-[24px] h-6 rounded-full text-xs font-bold shadow-lg ring-2 transition-all duration-300 transform ${
+                        isActive 
+                          ? 'bg-gradient-to-r from-white to-gray-50 text-blue-700 ring-blue-200 shadow-blue-200/50' 
+                          : 'bg-gradient-to-r from-red-500 to-red-600 text-white ring-red-200 group-hover:from-red-600 group-hover:to-red-700 group-hover:scale-110 shadow-red-300/50'
+                      }`}>
+                        <span className="relative z-10">
+                          {notificationCount > 99 ? '99+' : notificationCount}
+                        </span>
+                        {/* Pulse animation for new notifications */}
+                        <div className={`absolute inset-0 rounded-full animate-ping ${
+                          isActive ? 'bg-blue-400/30' : 'bg-red-400/30'
+                        }`}></div>
+                      </div>
+                    )}
+                    
+                    {isActive && !notificationCount && (
+                      <div className="absolute right-3 w-2 h-2 bg-white rounded-full opacity-80"></div>
+                    )}
+                  </button>
+                  {/* Divider */}
+                  <hr className="my-2 border-gray-200" />
+                </div>
+              );
+            })}
+          </nav>
+
+          {/* Bottom Section */}
+          <div className="px-6 py-4 border-t border-gray-100/50 bg-gradient-to-r from-gray-50/30 to-blue-50/20">
+
+            {/* Enhanced Profile Section */}
+            <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-4 border border-gray-200/50 shadow-sm backdrop-blur-sm">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center relative group transition-all duration-300 ease-in-out">
+                  <span className="text-white font-bold text-lg">{userFullName.charAt(0)}</span>
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  {loading ? (
+                    <div className="space-y-2">
+                      <div className="h-4 bg-gray-200 rounded-lg w-3/4 animate-pulse"></div>
+                      <div className="h-3 bg-gray-200 rounded-lg w-1/2 animate-pulse"></div>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{userFullName}</p>
+                      <p className="text-xs text-gray-600 truncate bg-white/80 px-2 py-1 rounded-md shadow-sm">{userEmail}</p>
+                    </div>
+                  )}
+                </div>
+                
+                <button 
+                  onClick={handleLogout} 
+                  className="p-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200/50 focus:outline-none transform transition-all duration-200 hover:scale-110 hover:shadow-md group"
+                  title="Logout"
+                >
+                  <LogOut className="h-5 w-5 text-red-500 transition-all duration-200 group-hover:text-red-600 group-hover:scale-110" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <main className="flex-1 overflow-auto">
+        <div className="p-8">
+          {renderActiveContent()}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default AdminDashboard;
