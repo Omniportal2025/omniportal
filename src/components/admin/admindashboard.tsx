@@ -8,7 +8,9 @@ import {
   DollarSign,
   BarChart2,
   FileText,
-  Ticket
+  Ticket,
+  Menu,
+  X
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabase/supabaseClient';
@@ -30,6 +32,7 @@ const AdminDashboard: React.FC = () => {
   const [userEmail, setUserEmail] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [activeItem, setActiveItem] = useState<string>('Dashboard');
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
   
   // Notification states
   const [notifications, setNotifications] = useState<{[key: string]: number}>({
@@ -194,6 +197,10 @@ const AdminDashboard: React.FC = () => {
     console.log(`Navigating to: ${itemName}`);
   };
 
+  const toggleSidebar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   const allMainNavItems = [
     { name: 'Dashboard', icon: Home },
     { name: 'Inventory', icon: Building },
@@ -248,20 +255,46 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="flex max-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
       {/* Sidebar Container with Padding */}
-      <div className="w-80 p-4 flex flex-col h-screen">
+      <div className={`${isCollapsed ? 'w-32' : 'w-80'} p-4 flex flex-col h-screen transition-all duration-300 ease-in-out`}>
         {/* Floating Sidebar Card */}
         <aside className="flex-1 bg-white text-gray-800 shadow-2xl rounded-2xl flex flex-col backdrop-blur-sm overflow-hidden">
           {/* Enhanced Header */}
           <div className="bg-gradient-to-r from-white to-blue-50/30 border-b border-gray-100/50">
             <div className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-blue-100">
-                  <span className="text-white font-bold text-lg">O</span>
+              <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+                <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-4'}`}>
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-blue-100">
+                    <span className="text-white font-bold text-lg">O</span>
+                  </div>
+                  {!isCollapsed && (
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900 tracking-wide">Omni Portal</h2>
+                      <p className="text-gray-600 text-sm font-medium">Admin Dashboard</p>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 tracking-wide">Omni Portal</h2>
-                  <p className="text-gray-600 text-sm font-medium">Admin Dashboard</p>
-                </div>
+                
+                {/* Toggle Button - only show when expanded */}
+                {!isCollapsed && (
+                  <button
+                    onClick={toggleSidebar}
+                    className="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200/50 focus:outline-none transform transition-all duration-200 hover:scale-110 hover:shadow-md group"
+                    title="Collapse Sidebar"
+                  >
+                    <X className="h-5 w-5 text-gray-600 transition-all duration-200 group-hover:text-gray-800" />
+                  </button>
+                )}
+                
+                {/* Toggle Button for collapsed state - positioned as overlay, half outside */}
+                {isCollapsed && (
+                  <button
+                    onClick={toggleSidebar}
+                    className="absolute top-6 -right-4 p-2 rounded-full bg-white hover:bg-gray-50 border border-gray-200 focus:outline-none transform transition-all duration-200 hover:scale-110 hover:shadow-lg group z-20 shadow-lg"
+                    title="Expand Sidebar"
+                  >
+                    <Menu className="h-4 w-4 text-gray-600 transition-all duration-200 group-hover:text-gray-800" />
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -277,78 +310,107 @@ const AdminDashboard: React.FC = () => {
                 <div key={item.name}>
                   <button
                     onClick={() => handleNavItemClick(item.name)}
-                    className={`w-full flex items-center space-x-4 px-4 py-3.5 text-sm font-medium transition-all duration-300 transform relative group ${
+                    className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'space-x-4 px-4'} py-3.5 text-sm font-medium transition-all duration-300 transform relative group ${
                       isActive
                         ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl shadow-lg shadow-blue-200/50 scale-105'
                         : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-xl hover:translate-x-1 hover:shadow-md'
                     }`}
+                    title={isCollapsed ? item.name : undefined}
                   >
-                    <Icon className={`h-5 w-5 transition-all duration-300 ${
-                      isActive ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'
-                    }`} />
-                    <span className="truncate font-medium flex-1 text-left">{item.name}</span>
+                    <div className="relative">
+                      <Icon className={`h-5 w-5 transition-all duration-300 ${
+                        isActive ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'
+                      }`} />
+                      
+                      {/* Notification Badge for collapsed state */}
+                      {isCollapsed && notificationCount > 0 && (
+                        <div className="absolute -top-2 -right-2 flex items-center justify-center min-w-[18px] h-4 rounded-full text-xs font-bold shadow-lg ring-2 bg-gradient-to-r from-red-500 to-red-600 text-white ring-red-200">
+                          <span className="relative z-10">
+                            {notificationCount > 9 ? '9+' : notificationCount}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                     
-                    {/* Notification Badge */}
-                    {notificationCount > 0 && (
-                      <div className={`relative flex items-center justify-center min-w-[24px] h-6 rounded-full text-xs font-bold shadow-lg ring-2 transition-all duration-300 transform ${
-                        isActive 
-                          ? 'bg-gradient-to-r from-white to-gray-50 text-blue-700 ring-blue-200 shadow-blue-200/50' 
-                          : 'bg-gradient-to-r from-red-500 to-red-600 text-white ring-red-200 group-hover:from-red-600 group-hover:to-red-700 group-hover:scale-110 shadow-red-300/50'
-                      }`}>
-                        <span className="relative z-10">
-                          {notificationCount > 99 ? '99+' : notificationCount}
-                        </span>
-                        {/* Pulse animation for new notifications */}
-                        <div className={`absolute inset-0 rounded-full animate-ping ${
-                          isActive ? 'bg-blue-400/30' : 'bg-red-400/30'
-                        }`}></div>
-                      </div>
-                    )}
-                    
-                    {isActive && !notificationCount && (
-                      <div className="absolute right-3 w-2 h-2 bg-white rounded-full opacity-80"></div>
+                    {!isCollapsed && (
+                      <>
+                        <span className="truncate font-medium flex-1 text-left">{item.name}</span>
+                        
+                        {/* Notification Badge for expanded state */}
+                        {notificationCount > 0 && (
+                          <div className={`relative flex items-center justify-center min-w-[24px] h-6 rounded-full text-xs font-bold shadow-lg ring-2 transition-all duration-300 transform ${
+                            isActive 
+                              ? 'bg-gradient-to-r from-white to-gray-50 text-blue-700 ring-blue-200 shadow-blue-200/50' 
+                              : 'bg-gradient-to-r from-red-500 to-red-600 text-white ring-red-200 group-hover:from-red-600 group-hover:to-red-700 group-hover:scale-110 shadow-red-300/50'
+                          }`}>
+                            <span className="relative z-10">
+                              {notificationCount > 99 ? '99+' : notificationCount}
+                            </span>
+                            {/* Pulse animation for new notifications */}
+                            <div className={`absolute inset-0 rounded-full animate-ping ${
+                              isActive ? 'bg-blue-400/30' : 'bg-red-400/30'
+                            }`}></div>
+                          </div>
+                        )}
+                        
+                        {isActive && !notificationCount && (
+                          <div className="absolute right-3 w-2 h-2 bg-white rounded-full opacity-80"></div>
+                        )}
+                      </>
                     )}
                   </button>
                   {/* Divider */}
-                  <hr className="my-2 border-gray-200" />
+                  {!isCollapsed && <hr className="my-2 border-gray-200" />}
                 </div>
               );
             })}
           </nav>
 
           {/* Bottom Section */}
-          <div className="px-6 py-4 border-t border-gray-100/50 bg-gradient-to-r from-gray-50/30 to-blue-50/20">
-
-            {/* Enhanced Profile Section */}
-            <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-4 border border-gray-200/50 shadow-sm backdrop-blur-sm">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center relative group transition-all duration-300 ease-in-out">
-                  <span className="text-white font-bold text-lg">{userFullName.charAt(0)}</span>
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  {loading ? (
-                    <div className="space-y-2">
-                      <div className="h-4 bg-gray-200 rounded-lg w-3/4 animate-pulse"></div>
-                      <div className="h-3 bg-gray-200 rounded-lg w-1/2 animate-pulse"></div>
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold text-gray-900 truncate">{userFullName}</p>
-                      <p className="text-xs text-gray-600 truncate bg-white/80 px-2 py-1 rounded-md shadow-sm">{userEmail}</p>
-                    </div>
-                  )}
-                </div>
-                
+          <div className={`border-t border-gray-100/50 bg-gradient-to-r from-gray-50/30 to-blue-50/20 ${isCollapsed ? 'px-2 py-6' : 'px-6 py-4'}`}>
+            {isCollapsed ? (
+              /* Collapsed state - only logout button with extra spacing */
+              <div className="flex justify-center">
                 <button 
                   onClick={handleLogout} 
-                  className="p-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200/50 focus:outline-none transform transition-all duration-200 hover:scale-110 hover:shadow-md group"
+                  className="p-3 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200/50 focus:outline-none transform transition-all duration-200 hover:scale-110 hover:shadow-md group"
                   title="Logout"
                 >
-                  <LogOut className="h-5 w-5 text-red-500 transition-all duration-200 group-hover:text-red-600 group-hover:scale-110" />
+                  <LogOut className="h-6 w-6 text-red-500 transition-all duration-200 group-hover:text-red-600" />
                 </button>
               </div>
-            </div>
+            ) : (
+              /* Expanded state - full profile section */
+              <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-4 border border-gray-200/50 shadow-sm backdrop-blur-sm">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center relative group transition-all duration-300 ease-in-out">
+                    <span className="text-white font-bold text-lg">{userFullName.charAt(0)}</span>
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    {loading ? (
+                      <div className="space-y-2">
+                        <div className="h-4 bg-gray-200 rounded-lg w-3/4 animate-pulse"></div>
+                        <div className="h-3 bg-gray-200 rounded-lg w-1/2 animate-pulse"></div>
+                      </div>
+                    ) : (
+                      <div className="space-y-1">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{userFullName}</p>
+                        <p className="text-xs text-gray-600 truncate bg-white/80 px-2 py-1 rounded-md shadow-sm">{userEmail}</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <button 
+                    onClick={handleLogout} 
+                    className="p-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200/50 focus:outline-none transform transition-all duration-200 hover:scale-110 hover:shadow-md group"
+                    title="Logout"
+                  >
+                    <LogOut className="h-5 w-5 text-red-500 transition-all duration-200 group-hover:text-red-600 group-hover:scale-110" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </aside>
       </div>
