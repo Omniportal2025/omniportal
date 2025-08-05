@@ -69,6 +69,7 @@ const ReportPage = (): ReactNode => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPaymentType, setSelectedPaymentType] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<string>('all');
+  const [selectedDate, setSelectedDate] = useState<string>('');
   const [reportStartDate, setReportStartDate] = useState<string>('');
   const [editingRecord, setEditingRecord] = useState<PaymentRecord | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -81,7 +82,7 @@ const ReportPage = (): ReactNode => {
 
   useEffect(() => {
     filterRecords();
-  }, [paymentRecords, searchTerm, selectedPaymentType, selectedProject]);
+  }, [paymentRecords, searchTerm, selectedPaymentType, selectedProject, selectedDate]);
 
   const filterRecords = () => {
     let filtered = [...paymentRecords];
@@ -102,6 +103,18 @@ const ReportPage = (): ReactNode => {
 
     if (selectedProject !== 'all') {
       filtered = filtered.filter(record => record.Project === selectedProject);
+    }
+
+    // Apply date filter if a date is selected
+    if (selectedDate) {
+      const selected = new Date(selectedDate);
+      const nextDay = new Date(selected);
+      nextDay.setDate(selected.getDate() + 1);
+      
+      filtered = filtered.filter(record => {
+        const recordDate = new Date(record.created_at);
+        return recordDate >= selected && recordDate < nextDay;
+      });
     }
 
 
@@ -698,6 +711,17 @@ const ReportPage = (): ReactNode => {
 
               {/* Filters Section */}
               <div className="flex flex-col lg:flex-row lg:items-end gap-3">
+                {/* Date Filter */}
+                <div className="w-full sm:w-auto">
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Filter by Date</label>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="w-full h-9 px-3 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 text-white"
+                  />
+                </div>
+
                 {/* Search Bar */}
                 <div className="flex-1 min-w-0">
                   <label className="block text-xs font-medium text-slate-400 mb-1">Search Documents</label>
