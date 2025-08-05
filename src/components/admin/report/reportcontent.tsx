@@ -63,13 +63,13 @@ const ReportPage = (): ReactNode => {
 
   const [paymentRecords, setPaymentRecords] = useState<PaymentRecord[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [selectedPrintProject, setSelectedPrintProject] = useState(projects.find(p => p !== 'all') || '');
   const [filteredRecords, setFilteredRecords] = useState<PaymentRecord[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPaymentType, setSelectedPaymentType] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<string>('all');
+  const [reportStartDate, setReportStartDate] = useState<string>('');
   const [editingRecord, setEditingRecord] = useState<PaymentRecord | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -103,6 +103,8 @@ const ReportPage = (): ReactNode => {
     if (selectedProject !== 'all') {
       filtered = filtered.filter(record => record.Project === selectedProject);
     }
+
+
 
     setFilteredRecords(filtered);
   };
@@ -225,7 +227,19 @@ const ReportPage = (): ReactNode => {
   };
 
   const handlePrint = async () => {
-    const printRecords = paymentRecords.filter(record => record.Project === selectedPrintProject);
+    let printRecords = paymentRecords.filter(record => record.Project === selectedPrintProject);
+    
+    // Filter by selected date if provided
+    if (reportStartDate) {
+      const selectedDate = new Date(reportStartDate);
+      const nextDay = new Date(selectedDate);
+      nextDay.setDate(selectedDate.getDate() + 1);
+      
+      printRecords = printRecords.filter(record => {
+        const recordDate = new Date(record.created_at);
+        return recordDate >= selectedDate && recordDate < nextDay;
+      });
+    }
     const printTotals = calculateTotals(printRecords);
     const printTotalsByType = calculateTotalsByPaymentType(printRecords);
     const printWindow = window.open('', '_blank');
@@ -547,15 +561,15 @@ const ReportPage = (): ReactNode => {
               <thead>
               <tr>
                 <th>Date</th>
-<th>Payment for the Month of</th>
-<th>Name</th>
-<th>Project</th>
-<th>Block & Lot</th>
-<th>Amount</th>
-<th>Penalty</th>
-<th>Payment Type</th>
-<th>Due Date</th>
-<th>VAT</th>
+                <th>Payment for the Month of</th>
+                <th>Name</th>
+                <th>Project</th>
+                <th>Block & Lot</th>
+                <th>Amount</th>
+                <th>Penalty</th>
+                <th>Payment Type</th>
+                <th>Due Date</th>
+                <th>VAT</th>
               </tr>
             </thead>
             <tbody>
@@ -570,7 +584,7 @@ const ReportPage = (): ReactNode => {
                   <td>${record.Penalty ? `₱${record.Penalty.toLocaleString()}` : 'N/A'}</td>
                   <td>${record["Payment Type"]}</td>
                   <td>${record["Due Date"] || 'N/A'}</td>
-<td>${record.Vat || 'N/A'}</td>
+                  <td>${record.Vat || 'N/A'}</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -683,78 +697,80 @@ const ReportPage = (): ReactNode => {
               </div>
 
               {/* Filters Section */}
-              <div className="flex flex-col lg:flex-row lg:items-end gap-4">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 items-end flex-1">
-                  {/* Search Bar */}
-                  <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1">Search Documents</label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Type to search..."
-                        className="w-full h-9 pl-3 pr-9 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 placeholder-slate-500 text-white"
-                      />
-                      <Search className="absolute right-2.5 top-2 h-4 w-4 text-slate-400" />
+              <div className="flex flex-col lg:flex-row lg:items-end gap-3">
+                {/* Search Bar */}
+                <div className="flex-1 min-w-0">
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Search Documents</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Type to search..."
+                      className="w-full h-9 pl-3 pr-9 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 placeholder-slate-500 text-white"
+                    />
+                    <Search className="absolute right-2.5 top-2 h-4 w-4 text-slate-400" />
+                  </div>
+                </div>
+
+                {/* Payment Type Filter */}
+                <div className="w-full lg:w-48">
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Payment Type</label>
+                  <div className="relative">
+                    <select
+                      value={selectedPaymentType}
+                      onChange={(e) => setSelectedPaymentType(e.target.value)}
+                      className="w-full h-9 pl-3 pr-7 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
+                    >
+                      {paymentTypes.map((type) => (
+                        <option key={type} value={type}>
+                          {type === 'all' ? 'All Types' : type.toUpperCase()}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                      <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </div>
                   </div>
+                </div>
 
-                  {/* Payment Type Filter */}
-                  <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1">Payment Type</label>
-                    <div className="relative">
-                      <select
-                        value={selectedPaymentType}
-                        onChange={(e) => setSelectedPaymentType(e.target.value)}
-                        className="w-full h-9 pl-3 pr-7 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
-                      >
-                        {paymentTypes.map((type) => (
-                          <option key={type} value={type}>
-                            {type === 'all' ? 'All Types' : type.toUpperCase()}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                        <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Project Filter */}
-                  <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1">Project</label>
-                    <div className="relative">
-                      <select
-                        value={selectedProject}
-                        onChange={(e) => setSelectedProject(e.target.value)}
-                        className="w-full h-9 pl-3 pr-7 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
-                      >
-                        {projects.map((project) => (
-                          <option key={project} value={project}>
-                            {project === 'all' ? 'All Projects' : project}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                        <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
+                {/* Project Filter */}
+                <div className="w-full lg:w-56">
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Project</label>
+                  <div className="relative">
+                    <select
+                      value={selectedProject}
+                      onChange={(e) => setSelectedProject(e.target.value)}
+                      className="w-full h-9 pl-3 pr-7 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
+                    >
+                      {projects.map((project) => (
+                        <option key={project} value={project}>
+                          {project === 'all' ? 'All Projects' : project}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                      <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </div>
                   </div>
                 </div>
 
                 {/* Generate Report Button */}
-                <button
-                  onClick={() => setIsPrintModalOpen(true)}
-                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-900 bg-white rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 transition-all duration-200 shadow-sm hover:shadow-lg"
-                >
-                  <Printer className="h-4 w-4" />
-                  Generate Report
-                </button>
+                <div className="w-full lg:w-auto mt-1">
+                  <button
+                    onClick={() => setIsPrintModalOpen(true)}
+                    className="w-full group relative flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform-gpu overflow-hidden">
+                    <span className="relative z-10 gap-2 flex items-center">
+                      <Printer className="h-4 w-4 text-white/90 group-hover:scale-110 transition-transform duration-200" />
+                      <span>Generate Report</span>
+                    </span>
+                    <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -925,81 +941,97 @@ const ReportPage = (): ReactNode => {
       </div>
     </div>
 
-    {/* Print Modal */}
-    {isPrintModalOpen && (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg transform transition-all">
-          <div className="border-b border-slate-200 px-6 py-5 flex items-center justify-between bg-gradient-to-r from-slate-900 to-slate-800 rounded-t-2xl">
-            <div className="flex items-center space-x-3">
-              <div className="bg-white/10 p-2 rounded-lg">
-                <Printer className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-white">Generate Report</h3>
-            </div>
-            <button
-              onClick={() => setIsPrintModalOpen(false)}
-              className="text-white/70 hover:text-white focus:outline-none transition-colors duration-200 p-1 rounded-lg hover:bg-white/10"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-          
-          <div className="px-6 py-6 space-y-6">
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold text-slate-700">Select Project</label>
-              <div className="relative">
-                <select
-                  value={selectedPrintProject}
-                  onChange={(e) => setSelectedPrintProject(e.target.value)}
-                  className="block w-full pl-4 pr-10 py-4 text-base border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-xl shadow-sm transition-all duration-200 hover:border-slate-300 bg-slate-50"
+      {/* Print Modal */}
+      {isPrintModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all overflow-hidden">
+            {/* Header */}
+            <div className="px-6 py-5 bg-[#162035]">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <Printer className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white">Generate Report</h3>
+                </div>
+                <button
+                  onClick={() => setIsPrintModalOpen(false)}
+                  className="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
                 >
-                  <option value="">Choose a project</option>
-                  {projects.filter(p => p !== 'all').map((project) => (
-                    <option key={project} value={project}>{project}</option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                  <svg className="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              {/* Project Selector */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-slate-700">Select Project</label>
+                <div className="relative">
+                  <select
+                    value={selectedPrintProject}
+                    onChange={(e) => setSelectedPrintProject(e.target.value)}
+                    className="w-full pl-4 pr-10 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none bg-white/50 backdrop-blur-sm"
+                  >
+                    <option value="">Choose a project</option>
+                    {projects.filter(p => p !== 'all').map((project) => (
+                      <option key={project} value={project}>{project}</option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg className="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl p-5 space-y-4 border border-slate-200">
-              <h4 className="text-sm font-semibold text-slate-700 mb-3">Summary</h4>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600 font-medium">Monthly Total:</span>
-                <span className="text-lg text-slate-900 font-bold">
-                  ₱{getMonthlyTotal(selectedPrintProject).toLocaleString()}
-                </span>
+              {/* Date Picker */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-slate-700">Select Date</label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={reportStartDate}
+                    onChange={(e) => setReportStartDate(e.target.value)}
+                    max={new Date().toISOString().split('T')[0]}
+                    className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-500 mt-1.5">Leave empty to include all records</p>
               </div>
             </div>
-          </div>
 
-          <div className="bg-slate-50 px-6 py-4 rounded-b-2xl flex justify-end space-x-3 border-t border-slate-200">
-            <button
-              onClick={() => setIsPrintModalOpen(false)}
-              className="px-6 py-3 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handlePrint}
-              disabled={!selectedPrintProject}
-              className={`px-6 py-3 text-sm font-medium text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ${
-                !selectedPrintProject 
-                ? 'bg-slate-300 cursor-not-allowed opacity-60' 
-                : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-sm hover:shadow-lg'
-              }`}
-            >
-              Generate Report
-            </button>
+            {/* Footer */}
+            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end space-x-3">
+              <button
+                onClick={() => setIsPrintModalOpen(false)}
+                className="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handlePrint}
+                disabled={!selectedPrintProject}
+                className={`px-5 py-2.5 text-sm font-medium text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ${
+                  !selectedPrintProject 
+                  ? 'bg-slate-300 cursor-not-allowed' 
+                  : 'bg-[#162035] hover:bg-[#1a2742] shadow-sm hover:shadow-md transform hover:-translate-y-0.5'
+                }`}
+              >
+                Generate Report
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
-  </div>
+      )}
+    </div>
 
         {/* Delete Confirmation Modal */}
         {isDeleteModalOpen && recordToDelete && (
