@@ -154,7 +154,10 @@ const ReportPage = (): ReactNode => {
 
   const handleUpdateRecord = async (updatedRecord: PaymentRecord) => {
     try {
-      const { error } = await supabase
+      console.log('Updating record with data:', updatedRecord);
+      
+      // Use double quotes around the table name with space
+      const { data, error } = await supabase
         .from('Payment Record')
         .update({
           Name: updatedRecord.Name,
@@ -165,17 +168,29 @@ const ReportPage = (): ReactNode => {
           Lot: updatedRecord.Lot,
           "Payment Type": updatedRecord["Payment Type"],
           "Due Date": updatedRecord["Due Date"],
-          Vat: updatedRecord.Vat // Save VAT value
+          "Payment for the Month of": updatedRecord["Payment for the Month of"], // Add this line
+          Vat: updatedRecord.Vat
         })
-        .eq('id', updatedRecord.id);
-
-      if (error) throw error;
-
+        .eq('id', updatedRecord.id)
+        .select();
+  
+      if (error) {
+        console.error('Supabase update error:', error);
+        throw error;
+      }
+      
+      console.log('Update successful, response:', data);
+      
+      // Instead of manually updating state, refresh the entire dataset
+      await fetchPaymentRecords();
+      
+      // Close modal
       setIsEditModalOpen(false);
       setEditingRecord(null);
-      await fetchPaymentRecords();
+      
     } catch (error) {
-      console.error('Error updating record:', error);
+      console.error('Error in handleUpdateRecord:', error);
+      // You might want to show an error toast/notification to the user here
     }
   };
 
@@ -645,32 +660,26 @@ const ReportPage = (): ReactNode => {
 
   return (
     <PageTransition>
-    <div className="w-full max-w-none mx-auto">
-      {/* Single Unified Card */}
-      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden h-[calc(100vh-3rem)]">
-        {/* Hero Header Section with Integrated Content */}
-        <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full transform translate-x-16 -translate-y-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full transform -translate-x-12 translate-y-12"></div>
-          
-          <div className="relative z-10">
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold text-white mb-2">Payment Reports</h1>
-                <p className="text-slate-300 text-lg mb-6">Comprehensive overview of all payment transactions and reports</p>
-              </div>
-            </div>
-
-            {/* Combined Summary Stats and Filters Section */}
-            <div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-6">
-              {/* Summary Stats */}
+  <div className="w-full max-w-none mx-auto">
+    {/* Single Unified Card */}
+    <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden h-[calc(100vh-4rem)]">
+      {/* Hero Header Section with Integrated Content */}
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full transform translate-x-16 -translate-y-16"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full transform -translate-x-12 translate-y-12"></div>
+        
+        <div className="relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-white mb-2">Payment Reports</h1>
+              <p className="text-slate-300 mb-4">Comprehensive overview of all payment transactions and reports</p>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mr-2">
-                      <File className="w-5 h-5 text-blue-300" />
-                    </div>
+                  <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                    <File className="w-5 h-5 text-blue-300" />
+                  </div>
+                  <div>
                     <span className="font-bold text-xl text-white">{filteredRecords.length}</span>
                     <span className="ml-2 text-slate-300 text-sm">Total Records</span>
                   </div>
@@ -708,263 +717,252 @@ const ReportPage = (): ReactNode => {
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Filters Section */}
-              <div className="flex flex-col lg:flex-row lg:items-end gap-3">
-                {/* Date Filter */}
-                <div className="w-full sm:w-auto">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Filter by Date</label>
+            {/* Search and Filters - Integrated into Header */}
+            <div className="flex flex-col lg:flex-row gap-4 lg:items-end">
+              {/* Date Filter */}
+              <div className="w-full lg:w-48">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Filter by Date</label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="w-full h-10 px-4 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 text-white"
+                />
+              </div>
+
+              {/* Search Bar */}
+              <div className="w-full lg:w-64">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Search Records</label>
+                <div className="relative">
                   <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full h-9 px-3 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 text-white"
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search by name..."
+                    className="w-full h-10 pl-4 pr-10 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 placeholder-slate-400 text-white"
                   />
-                </div>
-
-                {/* Search Bar */}
-                <div className="flex-1 min-w-0">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Search Documents</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="Type to search..."
-                      className="w-full h-9 pl-3 pr-9 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 placeholder-slate-500 text-white"
-                    />
-                    <Search className="absolute right-2.5 top-2 h-4 w-4 text-slate-400" />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <Search className="w-4 h-4 text-slate-400" />
                   </div>
-                </div>
-
-                {/* Payment Type Filter */}
-                <div className="w-full lg:w-48">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Payment Type</label>
-                  <div className="relative">
-                    <select
-                      value={selectedPaymentType}
-                      onChange={(e) => setSelectedPaymentType(e.target.value)}
-                      className="w-full h-9 pl-3 pr-7 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
-                    >
-                      {paymentTypes.map((type) => (
-                        <option key={type} value={type}>
-                          {type === 'all' ? 'All Types' : type.toUpperCase()}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                      <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Project Filter */}
-                <div className="w-full lg:w-56">
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Project</label>
-                  <div className="relative">
-                    <select
-                      value={selectedProject}
-                      onChange={(e) => setSelectedProject(e.target.value)}
-                      className="w-full h-9 pl-3 pr-7 text-sm bg-slate-700/80 border border-slate-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
-                    >
-                      {projects.map((project) => (
-                        <option key={project} value={project}>
-                          {project === 'all' ? 'All Projects' : project}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                      <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Generate Report Button */}
-                <div className="w-full lg:w-auto mt-1">
-                  <button
-                    onClick={() => setIsPrintModalOpen(true)}
-                    className="w-full group relative flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform-gpu overflow-hidden">
-                    <span className="relative z-10 gap-2 flex items-center">
-                      <Printer className="h-4 w-4 text-white/90 group-hover:scale-110 transition-transform duration-200" />
-                      <span>Generate Report</span>
-                    </span>
-                    <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                  </button>
                 </div>
               </div>
-            </div>
-          </div>
 
-          
-        {/* Data Table Section */}
-        <div className="flex-1 flex flex-col min-h-0 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2v0a2 2 0 012-2h6.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V7" />
-              </svg>
-              Payment Records
-            </h3>
-            <span className="text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
-              <span className="font-semibold text-slate-900">{filteredRecords.length}</span> records
-            </span>
-          </div>
-          
-          {/* Table Container with Fixed Height and Scroll */}
-          <div className="border border-slate-200 rounded-xl overflow-hidden flex-1 flex flex-col bg-white z-1">
-            <div className="overflow-y-auto flex-1" style={{ maxHeight: 'calc(100vh - 300px)' }}>
-              <table className="min-w-full table-fixed">
-                <thead className="sticky top-0 bg-gradient-to-r from-slate-800 to-slate-900 z-10">
-                  <tr>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[180px]">
-                      Date
-                    </th>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[180px]">
-                      Payment Month
-                    </th>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[200px]">
-                      Project
-                    </th>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[180px]">
-                      Name
-                    </th>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[100px]">
-                      Block
-                    </th>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[100px]">
-                      Lot
-                    </th>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[120px]">
-                      Amount
-                    </th>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[120px]">
-                      Penalty
-                    </th>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[120px]">
-                      Payment Type
-                    </th>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[120px]">
-                      Due Date
-                    </th>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[100px]">
-                      VAT
-                    </th>
-                    <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider w-[140px]">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-slate-100">
-                  {loading ? (
-                    <tr>
-                      <td colSpan={12} className="px-6 py-12 text-center">
-                        <div className="flex flex-col items-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                          <p className="text-sm text-slate-500">Loading payment records...</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : filteredRecords.length === 0 ? (
-                    <tr>
-                      <td colSpan={12} className="px-6 py-16 text-center">
-                        <div className="flex flex-col items-center justify-center">
-                          <div className="bg-slate-100 rounded-full p-4 mb-4">
-                            <svg className="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                          </div>
-                          <h3 className="text-lg font-medium text-slate-900 mb-2">No payment records found</h3>
-                          <p className="text-sm text-slate-500">
-                            {searchTerm ? 'Try adjusting your search criteria or filters' : 'No records available at the moment'}
-                          </p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredRecords.map((record, index) => (
-                      <tr key={record.id} className={`hover:bg-slate-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-25'}`}>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-900 font-medium">
-                          {new Date(record.created_at).toLocaleDateString('en-PH', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600">
-                          {record["Payment for the Month of"] || '—'}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
-                          {record.Project}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-900">
-                          {record.Name}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600 text-center">
-                          {record.Block}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600 text-center">
-                          {record.Lot}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">
-                          {new Intl.NumberFormat('en-PH', {
-                            style: 'currency',
-                            currency: 'PHP'
-                          }).format(record.Amount)}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-red-600">
-                          {record.Penalty ? new Intl.NumberFormat('en-PH', {
-                            style: 'currency',
-                            currency: 'PHP'
-                          }).format(record.Penalty) : '₱0.00'}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {record["Payment Type"] || 'GCASH'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600">
-                          {record["Due Date"] || '—'}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600">
-                          {record.Vat || '—'}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleEdit(record)}
-                              className="text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-1.5 text-xs font-medium"
-                            >
-                              <Edit className="h-3.5 w-3.5" />
-                              <span>Edit</span>
-                            </button>
-                            <button
-                              onClick={() => handleDelete(record)}
-                              className="text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-1.5 text-xs font-medium"
-                            >
-                              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                              <span>Delete</span>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+              {/* Payment Type Filter */}
+              <div className="w-full lg:w-48">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Payment Type</label>
+                <div className="relative">
+                  <select
+                    value={selectedPaymentType}
+                    onChange={(e) => setSelectedPaymentType(e.target.value)}
+                    className="w-full h-10 pl-4 pr-8 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
+                  >
+                    {paymentTypes.map((type) => (
+                      <option key={type} value={type}>
+                        {type === 'all' ? 'All Types' : type.toUpperCase()}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Project Filter */}
+              <div className="w-full lg:w-48">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Project</label>
+                <div className="relative">
+                  <select
+                    value={selectedProject}
+                    onChange={(e) => setSelectedProject(e.target.value)}
+                    className="w-full h-10 pl-4 pr-8 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
+                  >
+                    {projects.map((project) => (
+                      <option key={project} value={project}>
+                        {project === 'all' ? 'All Projects' : project}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Generate Report Button */}
+              <div className="w-full lg:w-auto">
+                <button
+                  onClick={() => setIsPrintModalOpen(true)}
+                  className="w-full h-10 group relative flex items-center gap-2 justify-center px-5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform-gpu overflow-hidden"
+                >
+                  <span className="relative z-10 gap-2 flex items-center">
+                    <Printer className="h-4 w-4 text-white/90 group-hover:scale-110 transition-transform duration-200" />
+                    <span>Generate Report</span>
+                  </span>
+                  <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
+      {/* Table Section */}
+      <div className="flex-1 flex flex-col" style={{ height: 'calc(100vh - 12rem)' }}>
+        {/* Table Container */}
+        <div className="flex-1 overflow-auto">
+          <table className="w-full divide-y divide-slate-200">
+            <thead className="sticky top-0 bg-gradient-to-r from-slate-700 to-slate-800 z-10">
+              <tr>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
+                  Date
+                </th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
+                  Payment Month
+                </th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
+                  Project
+                </th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
+                  Name
+                </th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
+                  Block
+                </th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
+                  Lot
+                </th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
+                  Amount
+                </th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
+                  Penalty
+                </th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
+                  Payment Type
+                </th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
+                  Due Date
+                </th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
+                  VAT
+                </th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-slate-200">
+              {loading ? (
+                <tr>
+                  <td colSpan={12} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                      <p className="text-sm text-slate-500">Loading payment records...</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredRecords.length === 0 ? (
+                <tr>
+                  <td colSpan={12} className="px-6 py-16 text-center">
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="bg-slate-100 rounded-full p-4 mb-4">
+                        <svg className="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">No payment records found</h3>
+                      <p className="text-sm text-slate-500">
+                        {searchTerm ? 'Try adjusting your search criteria or filters' : 'No records available at the moment'}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                filteredRecords.map((record, index) => (
+                  <tr key={record.id} className={`hover:bg-slate-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-25'}`}>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-900 font-medium">
+                      {new Date(record.created_at).toLocaleDateString('en-PH', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600">
+                      {record["Payment for the Month of"] || '—'}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
+                      {record.Project}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-900">
+                      {record.Name}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600 text-center">
+                      {record.Block}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600 text-center">
+                      {record.Lot}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">
+                      {new Intl.NumberFormat('en-PH', {
+                        style: 'currency',
+                        currency: 'PHP'
+                      }).format(record.Amount)}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-red-600">
+                      {record.Penalty ? new Intl.NumberFormat('en-PH', {
+                        style: 'currency',
+                        currency: 'PHP'
+                      }).format(record.Penalty) : '₱0.00'}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {record["Payment Type"] || 'GCASH'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600">
+                      {record["Due Date"] || '—'}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600">
+                      {record.Vat || '—'}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEdit(record)}
+                          className="text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-1.5 text-xs font-medium"
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(record)}
+                          className="text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-1.5 text-xs font-medium"
+                        >
+                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          <span>Delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
       {/* Print Modal */}
       {isPrintModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -1107,139 +1105,165 @@ const ReportPage = (): ReactNode => {
           </div>
         )}
 
-        {/* Edit Modal */}
+       {/* Edit Modal */}
         {isEditModalOpen && editingRecord && (
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-lg w-full transform transition-all">
-              <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Edit className="h-5 w-5 text-[#0A0D50]" />
-                  <h3 className="text-lg font-medium text-gray-900">Edit Payment Record</h3>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all scale-100 opacity-100 max-h-[90vh] overflow-y-auto">
+              {/* Modal Header */}
+              <div className="px-6 py-4 border-b border-gray-200 sticky top-0 bg-white rounded-t-2xl">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">Edit Payment Record</h3>
+                  <button
+                    onClick={() => setIsEditModalOpen(false)}
+                    className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  >
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
-                <button
-                  onClick={() => setIsEditModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                >
-                  <X className="h-5 w-5" />
-                </button>
               </div>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                if (editingRecord) handleUpdateRecord(editingRecord);
-              }} className="px-6 py-4">
+
+              {/* Form Content */}
+              <div className="px-6 py-6">
+                <p className="text-gray-600 mb-6">
+                  Update payment record information.
+                </p>
+                
+                <form 
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (editingRecord) {
+                      await handleUpdateRecord(editingRecord);
+                    }
+                  }} 
+                  id="editPaymentForm" 
+                  className="space-y-4"
+                >
                 <div className="space-y-4">
+                  {/* Name Field */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                     <input
                       type="text"
                       value={editingRecord.Name}
                       onChange={(e) => setEditingRecord({ ...editingRecord, Name: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0A0D50] focus:ring-[#0A0D50] sm:text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                      placeholder="Enter full name"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Payment for the Month of</label>
-                      <select
-                        value={editingRecord["Payment for the Month of"] || ''}
-                        onChange={(e) => setEditingRecord({ ...editingRecord, "Payment for the Month of": e.target.value })}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0A0D50] focus:ring-[#0A0D50] sm:text-sm"
-                      >
-                        <option value="">Select month</option>
-                        {months.map((month) => (
-                          <option key={month} value={month}>{month}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Amount</label>
-                      <div className="mt-1 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <span className="text-gray-500 sm:text-sm">₱</span>
-                        </div>
-                        <input
-                          type="number"
-                          value={editingRecord.Amount}
-                          onChange={(e) => setEditingRecord({ ...editingRecord, Amount: parseFloat(e.target.value) })}
-                          className="block w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-[#0A0D50] focus:ring-[#0A0D50] sm:text-sm"
-                          placeholder="0.00"
-                          step="0.01"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Penalty</label>
-                      <div className="mt-1 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <span className="text-gray-500 sm:text-sm">₱</span>
-                        </div>
-                        <input
-                          type="number"
-                          value={editingRecord.Penalty}
-                          onChange={(e) => setEditingRecord({ ...editingRecord, Penalty: parseFloat(e.target.value) })}
-                          className="block w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-[#0A0D50] focus:ring-[#0A0D50] sm:text-sm"
-                          placeholder="0.00"
-                          step="0.01"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Payment Type</label>
-                      <select
-                        value={editingRecord["Payment Type"] || ''}
-                        onChange={(e) => setEditingRecord({ ...editingRecord, "Payment Type": e.target.value })}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0A0D50] focus:ring-[#0A0D50] sm:text-sm"
-                      >
-                        {paymentTypes.filter(type => type !== 'all').map((type) => (
-                          <option key={type} value={type}>
-                            {type.toUpperCase()}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  {/* VAT Dropdown */}
+
+                  {/* Payment Month */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">VAT</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Month</label>
+                    <select
+                      value={editingRecord["Payment for the Month of"] || ''}
+                      onChange={(e) => setEditingRecord({ ...editingRecord, "Payment for the Month of": e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                    >
+                      <option value="">Select month</option>
+                      {months.map((month) => (
+                        <option key={month} value={month}>{month}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Amount */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span className="text-gray-500 text-sm">₱</span>
+                      </div>
+                      <input
+                        type="number"
+                        value={editingRecord.Amount}
+                        onChange={(e) => setEditingRecord({ ...editingRecord, Amount: parseFloat(e.target.value) })}
+                        className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                        placeholder="0.00"
+                        step="0.01"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Penalty */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Penalty</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span className="text-gray-500 text-sm">₱</span>
+                      </div>
+                      <input
+                        type="number"
+                        value={editingRecord.Penalty}
+                        onChange={(e) => setEditingRecord({ ...editingRecord, Penalty: parseFloat(e.target.value) })}
+                        className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                        placeholder="0.00"
+                        step="0.01"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Payment Type */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Type</label>
+                    <select
+                      value={editingRecord["Payment Type"] || ''}
+                      onChange={(e) => setEditingRecord({ ...editingRecord, "Payment Type": e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                    >
+                      {paymentTypes.filter(type => type !== 'all').map((type) => (
+                        <option key={type} value={type}>
+                          {type.toUpperCase()}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* VAT Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">VAT Status</label>
                     <select
                       value={editingRecord.Vat || ''}
                       onChange={e => setEditingRecord({ ...editingRecord, Vat: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0A0D50] focus:ring-[#0A0D50] sm:text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                     >
-                      <option value="Non Vat">Non Vat</option>
+                      <option value="Non Vat">Non VAT</option>
                       <option value="Vatable">Vatable</option>
                     </select>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Block</label>
-                      <input
-                        type="text"
-                        value={editingRecord.Block}
-                        onChange={(e) => setEditingRecord({ ...editingRecord, Block: e.target.value })}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0A0D50] focus:ring-[#0A0D50] sm:text-sm"
-                        placeholder="Enter block number"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Lot</label>
-                      <input
-                        type="text"
-                        value={editingRecord.Lot}
-                        onChange={(e) => setEditingRecord({ ...editingRecord, Lot: e.target.value })}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0A0D50] focus:ring-[#0A0D50] sm:text-sm"
-                        placeholder="Enter lot number"
-                      />
-                    </div>
-                  </div>
+
+                  {/* Block */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Project</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Block</label>
+                    <input
+                      type="text"
+                      value={editingRecord.Block}
+                      onChange={(e) => setEditingRecord({ ...editingRecord, Block: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                      placeholder="Block number"
+                    />
+                  </div>
+
+                  {/* Lot */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Lot</label>
+                    <input
+                      type="text"
+                      value={editingRecord.Lot}
+                      onChange={(e) => setEditingRecord({ ...editingRecord, Lot: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                      placeholder="Lot number"
+                    />
+                  </div>
+
+                  {/* Project Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Project</label>
                     <select
                       value={editingRecord.Project}
                       onChange={(e) => setEditingRecord({ ...editingRecord, Project: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0A0D50] focus:ring-[#0A0D50] sm:text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                     >
                       {projects.filter(project => project !== 'all').map((project) => (
                         <option key={project} value={project}>
@@ -1249,22 +1273,27 @@ const ReportPage = (): ReactNode => {
                     </select>
                   </div>
                 </div>
-                <div className="mt-6 flex items-center justify-end space-x-3">
-                  <button
-                    type="button"
-                    onClick={() => setIsEditModalOpen(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A0D50]"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-[#0A0D50] rounded-md hover:bg-[#141B7A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A0D50]"
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </form>
+
+                </form>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3 sticky bottom-0 bg-white rounded-b-2xl">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  form="editPaymentForm"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+                >
+                  Save Changes
+                </button>
+              </div>
             </div>
           </div>
         )}
