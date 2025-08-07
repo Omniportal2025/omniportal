@@ -632,11 +632,11 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         </Transition.Child>
   
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
+          <div className="flex min-h-full items-center justify-center p-4">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -646,74 +646,72 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-3xl bg-white shadow-2xl transition-all">
+              <Dialog.Panel className="w-full max-w-2xl bg-white rounded-lg shadow-lg">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
-                  <Dialog.Title as="h3" className="text-2xl font-bold text-white">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <Dialog.Title as="h3" className="text-lg font-medium text-gray-900">
                     Upload Payment
                   </Dialog.Title>
-                  <p className="text-blue-100 mt-1">Fill in the payment details below</p>
+                  <p className="text-sm text-gray-500 mt-1">Fill in the payment details below</p>
                 </div>
   
                 {/* Content */}
-                <div className="p-8">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="px-6 py-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Client Name - Full Width */}
-                    <div className="lg:col-span-2">
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Client Name <span className="text-red-500">*</span>
                       </label>
-                      <div className="relative">
-                        <Combobox
-                          value={selectedName}
-                          onChange={(value: string) => {
-                            setSelectedName(value);
-                            setSelectedProject('');
-                            setSelectedBlockLot('');
-                          }}
-                        >
-                          <div className="relative">
-                            <div className="flex">
-                              <Combobox.Input
-                                className="w-full rounded-l-xl bg-gray-100 py-3 px-4 text-sm text-gray-800 placeholder-gray-500 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
-                                onChange={(event) => setQuery(event.target.value)}
-                                displayValue={(item: string) => item}
-                                placeholder="Search for client name..."
-                              />
-                              <Combobox.Button className="inline-flex items-center rounded-r-xl bg-gray-100 px-3 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200">
-                                <ChevronsDownUp className="h-5 w-5 text-gray-600" aria-hidden="true" />
-                              </Combobox.Button>
-                            </div>
-                            <Combobox.Options className="absolute z-20 mt-2 max-h-60 w-full overflow-auto rounded-xl bg-white shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none">
-                              {filteredNames.length === 0 ? (
-                                <div className="relative cursor-default select-none py-4 px-4 text-gray-500">
-                                  Nothing found.
-                                </div>
-                              ) : (
-                                filteredNames.map((name) => (
-                                  <Combobox.Option
-                                    key={name}
-                                    value={name}
-                                    className={({ active }) =>
-                                      `relative cursor-pointer select-none py-3 px-4 transition-colors ${
-                                        active ? 'bg-blue-50 text-blue-900' : 'text-gray-900 hover:bg-gray-50'
-                                      }`
-                                    }
-                                  >
-                                    {({ selected }) => (
-                                      <span className={`block truncate ${selected ? 'font-semibold' : 'font-normal'}`}>
-                                        {name}
-                                      </span>
-                                    )}
-                                  </Combobox.Option>
-                                ))
-                              )}
-                            </Combobox.Options>
+                      <Combobox
+                        value={selectedName}
+                        onChange={(value: string) => {
+                          setSelectedName(value);
+                          setSelectedProject('');
+                          setSelectedBlockLot('');
+                        }}
+                      >
+                        <div className="relative">
+                          <div className="flex">
+                            <Combobox.Input
+                              className="w-full border border-gray-300 rounded-l-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                              onChange={(event) => setQuery(event.target.value)}
+                              displayValue={(item: string) => item}
+                              placeholder="Search for client name..."
+                            />
+                            <Combobox.Button className="border border-l-0 border-gray-300 rounded-r-md px-2 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                              <ChevronsDownUp className="h-4 w-4 text-gray-400" />
+                            </Combobox.Button>
                           </div>
-                        </Combobox>
-                      </div>
+                          <Combobox.Options className="absolute z-20 mt-1 max-h-60 w-full overflow-auto bg-white border border-gray-300 rounded-md shadow-lg">
+                            {filteredNames.length === 0 ? (
+                              <div className="py-2 px-3 text-sm text-gray-500">
+                                Nothing found.
+                              </div>
+                            ) : (
+                              filteredNames.map((name) => (
+                                <Combobox.Option
+                                  key={name}
+                                  value={name}
+                                  className={({ active }) =>
+                                    `cursor-pointer select-none py-2 px-3 text-sm ${
+                                      active ? 'bg-blue-50 text-blue-900' : 'text-gray-900'
+                                    }`
+                                  }
+                                >
+                                  {({ selected }) => (
+                                    <span className={selected ? 'font-medium' : 'font-normal'}>
+                                      {name}
+                                    </span>
+                                  )}
+                                </Combobox.Option>
+                              ))
+                            )}
+                          </Combobox.Options>
+                        </div>
+                      </Combobox>
                       {isLoading && (
-                        <p className="text-sm text-blue-600 mt-2 flex items-center">
+                        <p className="text-sm text-blue-600 mt-1 flex items-center">
                           <svg className="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -725,7 +723,7 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
   
                     {/* Project */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Project <span className="text-red-500">*</span>
                       </label>
                       <select
@@ -735,7 +733,7 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
                           setSelectedBlockLot('');
                         }}
                         disabled={!selectedName || isLoading}
-                        className="w-full px-4 py-3 text-sm bg-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-all duration-200"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-400"
                       >
                         <option value="">Select Project</option>
                         {availableProjects.map((project) => (
@@ -748,14 +746,14 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
   
                     {/* Block & Lot */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Block & Lot <span className="text-red-500">*</span>
                       </label>
                       <select
                         value={selectedBlockLot}
                         onChange={(e) => setSelectedBlockLot(e.target.value)}
                         disabled={!selectedProject || isLoading}
-                        className="w-full px-4 py-3 text-sm bg-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-all duration-200"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-400"
                       >
                         <option value="">Select Block & Lot</option>
                         {availableBlockLots.map((blockLot) => (
@@ -768,14 +766,14 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
   
                     {/* Payment Amount */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Payment Amount <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full px-4 py-3 text-sm bg-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="0.00"
                         min="0"
                         step="0.01"
@@ -784,27 +782,27 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
   
                     {/* Reference Number */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Reference Number <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={referenceNumber}
                         onChange={(e) => setReferenceNumber(e.target.value)}
-                        className="w-full px-4 py-3 text-sm bg-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Enter reference number"
                       />
                     </div>
   
                     {/* VAT */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         VAT <span className="text-red-500">*</span>
                       </label>
                       <select
                         value={vat}
                         onChange={e => setVat(e.target.value)}
-                        className="w-full px-4 py-3 text-sm bg-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                         required
                       >
                         <option value="Non Vat">Non Vat</option>
@@ -814,14 +812,14 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
   
                     {/* Penalty */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Penalty <span className="text-gray-400">(if applicable)</span>
                       </label>
                       <input
                         type="number"
                         value={penalty}
                         onChange={(e) => setPenalty(e.target.value)}
-                        className="w-full px-4 py-3 text-sm bg-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="0.00"
                         min="0"
                         step="0.01"
@@ -830,20 +828,20 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
   
                     {/* Date of Payment */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Date of Payment <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="date"
                         value={paymentDate}
                         onChange={(e) => setPaymentDate(e.target.value)}
-                        className="w-full px-4 py-3 text-sm bg-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                       />
                     </div>
   
                     {/* Month of Payment */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Month of Payment <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -853,19 +851,19 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
                           const selectedValue = e.target.value;
                           setPaymentMonth(selectedValue);
                         }}
-                        className="w-full px-4 py-3 text-sm bg-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                       />
                     </div>
   
                     {/* Due Date */}
                     <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Due Date <span className="text-red-500">*</span>
                       </label>
                       <select
                         value={dueDate}
                         onChange={(e) => setDueDate(e.target.value)}
-                        className="w-full px-4 py-3 text-sm bg-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                         required
                       >
                         <option value="15th">15th</option>
@@ -874,12 +872,12 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
                     </div>
   
                     {/* Receipt Image - Full Width */}
-                    <div className="lg:col-span-2">
-                      <label className="block text-sm font-semibold text-gray-800 mb-3">
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Receipt Image <span className="text-red-500">*</span>
                       </label>
                       <div 
-                        className="mt-1 flex justify-center px-6 pt-8 pb-8 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors cursor-pointer group"
+                        className="border-2 border-dashed border-gray-300 rounded-md p-6 text-center hover:border-gray-400 cursor-pointer"
                         onClick={() => document.getElementById('receipt-upload')?.click()}
                         onDrop={(e) => {
                           e.preventDefault();
@@ -890,74 +888,61 @@ const UploadPaymentModal: React.FC<UploadPaymentModalProps> = ({ isOpen, onClose
                         }}
                         onDragOver={(e) => e.preventDefault()}
                       >
-                        <div className="space-y-3 text-center">
-                          <input
-                            id="receipt-upload"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="hidden"
-                          />
-                          <div className="flex flex-col items-center justify-center text-sm text-gray-600">
-                            {file ? (
-                              <div className="bg-white p-4 rounded-xl shadow-sm">
-                                <div className="flex items-center space-x-3">
-                                  <div className="flex-shrink-0">
-                                    <svg className="h-10 w-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                  </div>
-                                  <div className="text-left">
-                                    <p className="text-blue-600 font-semibold">{file.name}</p>
-                                    <p className="text-xs text-gray-500 mt-1">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                                  </div>
-                                </div>
-                              </div>
-                            ) : (
-                              <>
-                                <div className="mx-auto h-16 w-16 text-gray-400 group-hover:text-blue-500 transition-colors">
-                                  <svg fill="none" stroke="currentColor" viewBox="0 0 48 48" aria-hidden="true">
-                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-                                </div>
-                                <div className="mt-4">
-                                  <span className="text-blue-600 hover:text-blue-500 font-semibold group-hover:underline">
-                                    Choose file to upload
-                                  </span>
-                                  <p className="text-gray-500 mt-1">or drag and drop here</p>
-                                </div>
-                                <p className="text-xs text-gray-400 mt-2">PNG, JPG, GIF up to 10MB</p>
-                              </>
-                            )}
+                        <input
+                          id="receipt-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="hidden"
+                        />
+                        {file ? (
+                          <div className="flex items-center justify-center">
+                            <div className="flex items-center space-x-2">
+                              <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <span className="text-sm text-gray-600">{file.name}</span>
+                              <span className="text-xs text-gray-400">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                            </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div>
+                            <svg className="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <p className="mt-2 text-sm text-gray-600">
+                              <span className="font-medium">Click to upload</span> or drag and drop
+                            </p>
+                            <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 10MB</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
   
                 {/* Footer */}
-                <div className="bg-gray-50 px-8 py-6 flex items-center justify-end space-x-4">
+                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
                   <button
                     type="button"
-                    className="inline-flex items-center px-6 py-3 text-sm font-semibold rounded-xl text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     onClick={onClose}
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
-                    className="inline-flex items-center px-6 py-3 text-sm font-semibold rounded-xl shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
                     onClick={handleUpload}
                     disabled={isUploading}
                   >
                     {isUploading ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Uploading Payment...
+                        Uploading...
                       </>
                     ) : (
                       'Upload Payment'

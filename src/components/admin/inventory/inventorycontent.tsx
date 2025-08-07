@@ -2173,199 +2173,199 @@ const InventoryPage: React.FC = () => {
           </Dialog>
         </Transition>
 
- {/* Single Unified Header Card */}
-  <div className="bg-white rounded-t-2xl shadow-xl border border-slate-200 overflow-hidden">
-  {/* Hero Header Section */}
-  <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 relative overflow-hidden">
-    {/* Background decoration */}
-    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-blue-400/20 rounded-full transform translate-x-16 -translate-y-16"></div>
-    <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full transform -translate-x-12 translate-y-12"></div>
-    
-    <div className="relative z-10">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        {/* Left Side - Title and Stats */}
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Property Inventory
-          </h1>
-          <p className="text-slate-300 mb-4">
-            A list of all properties in the system.
-          </p>
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
+  {/* Single Unified Header Card */}
+    <div className="bg-white rounded-t-2xl shadow-xl border border-slate-200 overflow-hidden">
+    {/* Hero Header Section */}
+    <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-blue-400/20 rounded-full transform translate-x-16 -translate-y-16"></div>
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full transform -translate-x-12 translate-y-12"></div>
+      
+      <div className="relative z-10">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          {/* Left Side - Title and Stats */}
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Property Inventory
+            </h1>
+            <p className="text-slate-300 mb-4">
+              A list of all properties in the system.
+            </p>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <div>
+                  <span className="font-bold text-xl text-white">{filteredProperties?.length || 0}</span>
+                  <span className="ml-2 text-slate-300 text-sm">Properties</span>
+                </div>
               </div>
-              <div>
-                <span className="font-bold text-xl text-white">{filteredProperties?.length || 0}</span>
-                <span className="ml-2 text-slate-300 text-sm">Properties</span>
-              </div>
-            </div>
-            <div className="w-px h-6 bg-slate-600"></div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <span className="font-bold text-xl text-white">{selectedProject?.name || 'All'}</span>
-                <span className="ml-2 text-slate-300 text-sm">Project</span>
+              <div className="w-px h-6 bg-slate-600"></div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <span className="font-bold text-xl text-white">{selectedProject?.name || 'All'}</span>
+                  <span className="ml-2 text-slate-300 text-sm">Project</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        
-        {/* Right Side - Search and Filters */}
-        <div className="flex flex-col lg:flex-row gap-4 lg:items-end">
-          {/* Search Bar */}
-          <div className="w-full lg:w-72">
-            <label className="block text-sm font-medium text-slate-300">
-              Search Properties
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search properties..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-11 pl-4 pr-10 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 placeholder-slate-400 text-white"
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
+          
+          {/* Right Side - Search and Filters */}
+          <div className="flex flex-col lg:flex-row gap-4 lg:items-end">
+            {/* Search Bar */}
+            <div className="w-full lg:w-72">
+              <label className="block text-sm font-medium text-slate-300">
+                Search Properties
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search properties..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full h-11 pl-4 pr-10 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 placeholder-slate-400 text-white"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </div>
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-200 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
               </div>
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm('')}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-200 transition-colors"
+            </div>
+
+            {/* Project Selector */}
+            <div className="w-full lg:w-48">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Project
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedProject.id}
+                  onChange={(e) => setSelectedProject(projects.find(p => p.id === e.target.value) || projects[0])}
+                  className="w-full h-11 pl-4 pr-8 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
                 >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Project Selector */}
-          <div className="w-full lg:w-48">
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Project
-            </label>
-            <div className="relative">
-              <select
-                value={selectedProject.id}
-                onChange={(e) => setSelectedProject(projects.find(p => p.id === e.target.value) || projects[0])}
-                className="w-full h-11 pl-4 pr-8 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
-              >
-                {projects.map((project) => (
-                  <option key={project.id} value={project.id}>
-                    {project.name}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Status Filter */}
-          <div className="w-full lg:w-44">
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Status
-            </label>
-            <div className="relative">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full h-11 pl-4 pr-8 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
-              >
-                {statusOptions.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+            {/* Status Filter */}
+            <div className="w-full lg:w-44">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Status
+              </label>
+              <div className="relative">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full h-11 pl-4 pr-8 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent cursor-pointer appearance-none transition-all duration-200 text-white"
+                >
+                  {statusOptions.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
-             </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>  
-  </div>
+      </div>  
+    </div>
 
-  {/* Loading State */}
-  {isLoading ? (
-  <div className="flex justify-center items-center h-64">
-    <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${selectedProject.id === 'LivingWater' ? 'border-blue-500' : 'border-emerald-500'}`}></div>
-  </div>
+    {/* Loading State */}
+    {isLoading ? (
+    <div className="flex justify-center items-center h-64">
+      <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${selectedProject.id === 'LivingWater' ? 'border-blue-500' : 'border-emerald-500'}`}></div>
+    </div>
 
-    ) : (
-      <div className="relative">
-        {showScrollButtons && (
-          <button
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white hover:bg-slate-50 rounded-lg p-2 shadow-lg border border-slate-200 transition-all duration-200"
-            onClick={() => scrollTable('left')}
-          >
-            <svg
-              className="h-5 w-5 text-slate-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+      ) : (
+        <div className="relative">
+          {showScrollButtons && (
+            <button
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white hover:bg-slate-50 rounded-lg p-2 shadow-lg border border-slate-200 transition-all duration-200"
+              onClick={() => scrollTable('left')}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
-        )}
+              <svg
+                className="h-5 w-5 text-slate-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+          )}
 
-        {selectedProject.id === 'LivingWater' ? (
-          renderLivingWaterTable(filteredProperties as LivingWaterProperty[])
-        ) : (
-          renderHavahillsTable(filteredProperties as HavahillsProperty[])
-        )}
+          {selectedProject.id === 'LivingWater' ? (
+            renderLivingWaterTable(filteredProperties as LivingWaterProperty[])
+          ) : (
+            renderHavahillsTable(filteredProperties as HavahillsProperty[])
+          )}
 
-        {showScrollButtons && (
-          <button
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white hover:bg-slate-50 rounded-lg p-2 shadow-lg border border-slate-200 transition-all duration-200"
-            onClick={() => scrollTable('right')}
-          >
-            <svg
-              className="h-5 w-5 text-slate-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+          {showScrollButtons && (
+            <button
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white hover:bg-slate-50 rounded-lg p-2 shadow-lg border border-slate-200 transition-all duration-200"
+              onClick={() => scrollTable('right')}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-        )}
-      </div>
-    )}
-  </div>
-);
+              <svg
+                className="h-5 w-5 text-slate-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default InventoryPage;
