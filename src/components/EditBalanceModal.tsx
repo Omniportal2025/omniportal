@@ -208,7 +208,7 @@ const EditBalanceModal: React.FC<EditBalanceModalProps> = ({ isOpen, onClose, on
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-black/25" />
         </Transition.Child>
   
         <div className="fixed inset-0 overflow-y-auto">
@@ -222,24 +222,19 @@ const EditBalanceModal: React.FC<EditBalanceModalProps> = ({ isOpen, onClose, on
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <Dialog.Panel className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 <form onSubmit={handleSubmit}>
                   {/* Header */}
-                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl">
+                  <div className="px-6 py-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                        <span className="bg-[#0A0D50] text-white p-1.5 rounded-lg">
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                          </svg>
-                        </span>
+                      <h3 className="text-lg font-medium text-gray-900">
                         Add Payment
                         <span className="text-sm font-normal text-gray-500 ml-2">Record a new payment for this client</span>
                       </h3>
                       <button
                         type="button"
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-500 focus:outline-none bg-white hover:bg-gray-50 rounded-lg p-1.5 transition-colors duration-150"
+                        className="text-gray-400 hover:text-gray-500 focus:outline-none"
                       >
                         <X className="h-5 w-5" />
                       </button>
@@ -341,7 +336,7 @@ const EditBalanceModal: React.FC<EditBalanceModalProps> = ({ isOpen, onClose, on
                               id="amount"
                               value={formData?.Amount || ''}
                               onChange={(e) => handleInputChange('Amount', e.target.value)}
-                              className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                              className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                               placeholder="0.00"
                             />
                           </div>
@@ -360,7 +355,7 @@ const EditBalanceModal: React.FC<EditBalanceModalProps> = ({ isOpen, onClose, on
                               id="penalty"
                               value={penalty || ''}
                               onChange={(e) => handleInputChange('Penalty', e.target.value)}
-                              className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                              className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                               placeholder="0.00"
                             />
                           </div>
@@ -376,7 +371,7 @@ const EditBalanceModal: React.FC<EditBalanceModalProps> = ({ isOpen, onClose, on
                             id="vat"
                             value={vat}
                             onChange={(e) => setVat(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 cursor-pointer"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                           >
                             <option value="Non Vat">Non Vat</option>
                             <option value="Vatable">Vatable</option>
@@ -391,7 +386,7 @@ const EditBalanceModal: React.FC<EditBalanceModalProps> = ({ isOpen, onClose, on
                             id="paymentType"
                             value={paymentType}
                             onChange={(e) => setPaymentType(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 cursor-pointer"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                           >
                             {paymentTypes.map((type) => (
                               <option key={type} value={type}>
@@ -411,7 +406,7 @@ const EditBalanceModal: React.FC<EditBalanceModalProps> = ({ isOpen, onClose, on
                             id="paymentMonth"
                             value={paymentMonth}
                             onChange={(e) => setPaymentMonth(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 cursor-pointer"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                             required
                           >
                             <option value="">Select Month</option>
@@ -429,7 +424,7 @@ const EditBalanceModal: React.FC<EditBalanceModalProps> = ({ isOpen, onClose, on
                             id="dueDate"
                             value={dueDate}
                             onChange={(e) => setDueDate(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 cursor-pointer"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                             required
                           >
                             <option value="15th">15th</option>
@@ -448,7 +443,7 @@ const EditBalanceModal: React.FC<EditBalanceModalProps> = ({ isOpen, onClose, on
                             id="monthsPaid"
                             value={formData?.["Months Paid"] || ''}
                             onChange={(e) => handleInputChange("Months Paid", e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="e.g. March 22 - February 25"
                           />
                         </div>
@@ -462,7 +457,7 @@ const EditBalanceModal: React.FC<EditBalanceModalProps> = ({ isOpen, onClose, on
                             id="MONTHSPAID"
                             value={formData?.["MONTHS PAID"] || ''}
                             onChange={(e) => handleInputChange("MONTHS PAID", e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="e.g. 37"
                           />
                         </div>
@@ -471,18 +466,18 @@ const EditBalanceModal: React.FC<EditBalanceModalProps> = ({ isOpen, onClose, on
                   </div>
   
                   {/* Footer */}
-                  <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl flex justify-end space-x-3">
+                  <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-3">
                     <button
                       type="button"
                       onClick={onClose}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={loading}
-                      className="px-4 py-2 text-sm font-medium text-white bg-[#0A0D50] hover:bg-[#0A0D50]/90 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {loading ? 'Saving...' : 'Save Changes'}
                     </button>

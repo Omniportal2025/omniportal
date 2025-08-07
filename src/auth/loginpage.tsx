@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, AlertTriangle, CheckCircle } from 'lucide-react';
-import './loginpage.css';
 import { supabase } from '../supabase/supabaseClient';
 
 const LoginPage: React.FC = () => {

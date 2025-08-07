@@ -84,24 +84,19 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-gray-900/25 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl">
+          <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <span className="bg-[#0A0D50] text-white p-1.5 rounded-lg">
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </span>
+              <h3 className="text-lg font-medium text-gray-900">
                 Edit Balance Details
               </h3>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-500 focus:outline-none bg-white hover:bg-gray-50 rounded-lg p-1.5 transition-colors duration-150"
+                className="text-gray-400 hover:text-gray-500 focus:outline-none"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -109,7 +104,7 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
               </button>
             </div>
           </div>
-
+  
           {/* Form Content */}
           <div className="px-6 py-6 space-y-6">
             {/* Client Information */}
@@ -127,12 +122,12 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     type="text"
                     value={formData.Name}
                     onChange={(e) => handleInputChange('Name', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter client name"
                     required
                   />
                 </div>
-
+  
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Project
@@ -140,7 +135,7 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                   <select
                     value={formData.Project}
                     onChange={(e) => handleInputChange('Project', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 cursor-pointer"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     required
                   >
                     <option value="">Select project</option>
@@ -152,7 +147,7 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                   </select>
                 </div>
               </div>
-
+  
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -162,12 +157,12 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     type="text"
                     value={formData.Block}
                     onChange={(e) => handleInputChange('Block', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter block number"
                     required
                   />
                 </div>
-
+  
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Lot
@@ -176,12 +171,12 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     type="text"
                     value={formData.Lot}
                     onChange={(e) => handleInputChange('Lot', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter lot number"
                     required
                   />
                 </div>
-
+  
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     SQM
@@ -191,11 +186,11 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     step="0.01"
                     value={formatNumberForInput(formData.sqm)}
                     onChange={(e) => handleNumberChange('sqm', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.00"
                   />
                 </div>
-
+  
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Price Per SQM
@@ -205,13 +200,13 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     step="0.01"
                     value={formatNumberForInput(formData["pricepersqm"])}
                     onChange={(e) => handleNumberChange('pricepersqm', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.00"
                   />
                 </div>
               </div>
             </div>
-
+  
             {/* Financial Information */}
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-gray-900 border-b border-gray-200 pb-2">
@@ -228,11 +223,11 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     step="0.01"
                     value={formatNumberForInput(formData.TCP)}
                     onChange={(e) => handleNumberChange('TCP', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.00"
                   />
                 </div>
-
+  
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Amount Paid
@@ -242,12 +237,12 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     step="0.01"
                     value={formatNumberForInput(formData.Amount)}
                     onChange={(e) => handleNumberChange('Amount', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.00"
                   />
                 </div>
               </div>
-
+  
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -258,7 +253,7 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     step="0.01"
                     value={formatNumberForInput(formData["Remaining Balance"])}
                     onChange={(e) => handleNumberChange('Remaining Balance', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.00"
                   />
                 </div>
@@ -271,13 +266,13 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     step="0.01"
                     value={formatNumberForInput(formData["Monthly Amortization"])}
                     onChange={(e) => handleNumberChange('Monthly Amortization', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.00"
                   />
                 </div>
               </div>
             </div>
-
+  
             {/* Payment Information */}
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-gray-900 border-b border-gray-200 pb-2">
@@ -293,11 +288,11 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     type="text"
                     value={formData.Terms}
                     onChange={(e) => handleInputChange('Terms', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="e.g., 36"
                   />
                 </div>
-
+  
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Months Paid (Display)
@@ -306,11 +301,11 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     type="text"
                     value={formData["Months Paid"]}
                     onChange={(e) => handleInputChange('Months Paid', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="e.g., 12"
                   />
                 </div>
-
+  
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     MONTHS PAID (Counter)
@@ -319,41 +314,41 @@ const EditBalanceDetailsModal: React.FC<EditBalanceDetailsModalProps> = ({
                     type="text"
                     value={formData["MONTHS PAID"]}
                     onChange={(e) => handleInputChange('MONTHS PAID', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="e.g., 12"
                   />
                 </div>
               </div>
-
+  
               <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-              Due Date
-            </label>
-            <select
-              value={formData["Due Date"] || ''}
-              onChange={(e) => handleInputChange('Due Date', e.target.value || null)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
-            >
-              <option value="">Select Due Date</option>
-              <option value="15th">15th</option>
-              <option value="30th">30th</option>
-            </select>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Due Date
+                </label>
+                <select
+                  value={formData["Due Date"] || ''}
+                  onChange={(e) => handleInputChange('Due Date', e.target.value || null)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Select Due Date</option>
+                  <option value="15th">15th</option>
+                  <option value="30th">30th</option>
+                </select>
               </div>
             </div>
           </div>
-
+  
           {/* Footer */}
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl flex justify-end space-x-3">
+          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-[#0A0D50] hover:bg-[#0A0D50]/90 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               Save Changes
             </button>

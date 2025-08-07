@@ -1030,11 +1030,11 @@ const EditPaymentModal: React.FC<EditPaymentModalProps> = ({ isOpen, onClose, pa
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-25" />
+          <div className="fixed inset-0 bg-black/25" />
         </Transition.Child>
-
+  
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
+          <div className="flex min-h-full items-center justify-center p-4">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -1044,16 +1044,12 @@ const EditPaymentModal: React.FC<EditPaymentModalProps> = ({ isOpen, onClose, pa
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-xl bg-white shadow-2xl transition-all">
-                <div className="px-6 pt-6 pb-4">
-                  <div className="flex items-start justify-between mb-5">
+              <Dialog.Panel className="w-full max-w-2xl bg-white rounded-lg shadow-lg">
+                {/* Header */}
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-semibold flex items-center gap-2">
-                        <span className="bg-[#0A0D50] text-white p-1.5 rounded-lg">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </span>
+                      <h3 className="text-lg font-medium text-gray-900">
                         Edit Payment
                       </h3>
                       <p className="text-sm text-gray-500 mt-1">Update payment details • {payment?.Name}</p>
@@ -1062,143 +1058,145 @@ const EditPaymentModal: React.FC<EditPaymentModalProps> = ({ isOpen, onClose, pa
                       onClick={onClose}
                       className="text-gray-400 hover:text-gray-500 focus:outline-none"
                     >
-                      <X className="h-6 w-6" />
+                      <X className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
-                {/* Modal body scrollable if needed */}
-                <div className="px-6 pb-6 space-y-8 max-h-[70vh] overflow-y-auto">
-                  {/* Section: Payment Details */}
-                  <div>
-                    <h4 className="text-md font-semibold text-[#0A0D50] mb-3">Payment Details</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="block text-sm font-medium text-gray-700">Name <span className="text-red-500">*</span></label>
-                        <input
-                          type="text"
-                          value={editedPayment.Name}
-                          onChange={(e) => setEditedPayment({ ...editedPayment, Name: e.target.value })}
-                          className={`block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0A0D50] sm:text-sm sm:leading-6 ${errors.Name ? 'ring-red-400' : ''}`}
-                        />
-                        {errors.Name && <p className="text-xs text-red-500 mt-1">{errors.Name}</p>}
+  
+                {/* Content */}
+                <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">
+                  <div className="space-y-6">
+                    {/* Payment Details */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 mb-3">Payment Details</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Name <span className="text-red-500">*</span></label>
+                          <input
+                            type="text"
+                            value={editedPayment.Name}
+                            onChange={(e) => setEditedPayment({ ...editedPayment, Name: e.target.value })}
+                            className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${errors.Name ? 'border-red-400' : 'border-gray-300'}`}
+                          />
+                          {errors.Name && <p className="text-xs text-red-500 mt-1">{errors.Name}</p>}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Block & Lot</label>
+                          <input
+                            type="text"
+                            value={editedPayment['Block & Lot']}
+                            onChange={(e) => setEditedPayment({ ...editedPayment, 'Block & Lot': e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Payment Amount <span className="text-red-500">*</span></label>
+                          <input
+                            type="number"
+                            value={editedPayment['Payment Amount']}
+                            onChange={(e) => setEditedPayment({ ...editedPayment, 'Payment Amount': parseFloat(e.target.value) })}
+                            className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${errors['Payment Amount'] ? 'border-red-400' : 'border-gray-300'}`}
+                          />
+                          {errors['Payment Amount'] && <p className="text-xs text-red-500 mt-1">{errors['Payment Amount']}</p>}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Penalty Amount</label>
+                          <input
+                            type="number"
+                            value={editedPayment['Penalty Amount'] || ''}
+                            onChange={(e) => setEditedPayment({ ...editedPayment, 'Penalty Amount': e.target.value ? parseFloat(e.target.value) : null })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Date of Payment</label>
+                          <input
+                            type="date"
+                            value={editedPayment['Date of Payment'].split('T')[0]}
+                            onChange={(e) => setEditedPayment({ ...editedPayment, 'Date of Payment': e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Month of Payment</label>
+                          <input
+                            type="month"
+                            value={editedPayment['Month of Payment']?.split('T')[0].slice(0, 7)}
+                            onChange={(e) => setEditedPayment({ ...editedPayment, 'Month of Payment': e.target.value + '-01' })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Reference Number</label>
+                          <input
+                            type="text"
+                            value={editedPayment['Reference Number'] || ''}
+                            onChange={(e) => setEditedPayment({ ...editedPayment, 'Reference Number': e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Project</label>
+                          <select
+                            value={editedPayment.Project}
+                            onChange={(e) => setEditedPayment({ ...editedPayment, Project: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="Living Water Subdivision">Living Water Subdivision</option>
+                            <option value="Havahills Estate">Havahills Estate</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                          <select
+                            value={editedPayment['Due Date'] || ''}
+                            onChange={(e) => setEditedPayment({ ...editedPayment, 'Due Date': e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="">Select Due Date</option>
+                            <option value="15th">15th</option>
+                            <option value="30th">30th</option>
+                          </select>
+                        </div>
                       </div>
-                      <div className="space-y-1">
-                        <label className="block text-sm font-medium text-gray-700">Block & Lot</label>
-                        <input
-                          type="text"
-                          value={editedPayment['Block & Lot']}
-                          onChange={(e) => setEditedPayment({ ...editedPayment, 'Block & Lot': e.target.value })}
-                          className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0A0D50] sm:text-sm sm:leading-6"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="block text-sm font-medium text-gray-700">Payment Amount <span className="text-red-500">*</span></label>
-                        <input
-                          type="number"
-                          value={editedPayment['Payment Amount']}
-                          onChange={(e) => setEditedPayment({ ...editedPayment, 'Payment Amount': parseFloat(e.target.value) })}
-                          className={`block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0A0D50] sm:text-sm sm:leading-6 ${errors['Payment Amount'] ? 'ring-red-400' : ''}`}
-                        />
-                        {errors['Payment Amount'] && <p className="text-xs text-red-500 mt-1">{errors['Payment Amount']}</p>}
-                      </div>
-                      <div className="space-y-1">
-                        <label className="block text-sm font-medium text-gray-700">Penalty Amount</label>
-                        <input
-                          type="number"
-                          value={editedPayment['Penalty Amount'] || ''}
-                          onChange={(e) => setEditedPayment({ ...editedPayment, 'Penalty Amount': e.target.value ? parseFloat(e.target.value) : null })}
-                          className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0A0D50] sm:text-sm sm:leading-6"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="block text-sm font-medium text-gray-700">Date of Payment</label>
-                        <input
-                          type="date"
-                          value={editedPayment['Date of Payment'].split('T')[0]}
-                          onChange={(e) => setEditedPayment({ ...editedPayment, 'Date of Payment': e.target.value })}
-                          className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0A0D50] sm:text-sm sm:leading-6"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="block text-sm font-medium text-gray-700">Month of Payment</label>
-                        <input
-                          type="month"
-                          value={editedPayment['Month of Payment']?.split('T')[0].slice(0, 7)}
-                          onChange={(e) => setEditedPayment({ ...editedPayment, 'Month of Payment': e.target.value + '-01' })}
-                          className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0A0D50] sm:text-sm sm:leading-6"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="block text-sm font-medium text-gray-700">Reference Number</label>
-                        <input
-                          type="text"
-                          value={editedPayment['Reference Number'] || ''}
-                          onChange={(e) => setEditedPayment({ ...editedPayment, 'Reference Number': e.target.value })}
-                          className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0A0D50] sm:text-sm sm:leading-6"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="block text-sm font-medium text-gray-700">Project</label>
+                    </div>
+  
+                    {/* VAT Details */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 mb-3">VAT Details</h4>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">VAT Type <span className="text-red-500">*</span></label>
                         <select
-                          value={editedPayment.Project}
-                          onChange={(e) => setEditedPayment({ ...editedPayment, Project: e.target.value })}
-                          className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0A0D50] sm:text-sm sm:leading-6"
+                          value={editedPayment.Vat ?? ''}
+                          onChange={e => setEditedPayment({ ...editedPayment, Vat: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                         >
-                          <option value="Living Water Subdivision">Living Water Subdivision</option>
-                          <option value="Havahills Estate">Havahills Estate</option>
+                          <option value="">Select VAT Type</option>
+                          <option value="Vatable">Vatable</option>
+                          <option value="Non Vat">Non Vat</option>
                         </select>
-                      </div>
-                      
-                      <div className="space-y-1">
-                        <label className="block text-sm font-medium text-gray-700">Due Date</label>
-                        <select
-                          value={editedPayment['Due Date'] || ''}
-                          onChange={(e) => setEditedPayment({ ...editedPayment, 'Due Date': e.target.value })}
-                          className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0A0D50] sm:text-sm sm:leading-6"
-                        >
-                          <option value="">Select Due Date</option>
-                          <option value="15th">15th</option>
-                          <option value="30th">30th</option>
-                        </select>
+                        <p className="text-xs text-gray-500 mt-1">Choose if this payment is subject to VAT or not.</p>
                       </div>
                     </div>
                   </div>
-
-                  {/* Section: VAT Details */}
-                  <div>
-                    <h4 className="text-md font-semibold text-[#0A0D50] mb-3 mt-6">VAT Details</h4>
-                    <div className="space-y-1">
-                      <label className="block text-sm font-medium text-gray-700">VAT Type <span className="text-red-500">*</span></label>
-                      <select
-                        value={editedPayment.Vat ?? ''}
-                        onChange={e => setEditedPayment({ ...editedPayment, Vat: e.target.value })}
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0A0D50] sm:text-sm sm:leading-6"
-                      >
-                        <option value="">Select VAT Type</option>
-                        <option value="Vatable">Vatable</option>
-                        <option value="Non Vat">Non Vat</option>
-                      </select>
-                      <p className="text-xs text-gray-500 mt-1">Choose if this payment is subject to VAT or not.</p>
-                    </div>
-                  </div>
-
-                  {/* Modal Actions */}
-                  <div className="flex flex-col md:flex-row justify-end gap-2 md:gap-3 px-0 md:px-6 py-4 bg-gray-50 mt-6 rounded-xl">
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className="inline-flex justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleSaveWithValidation}
-                      className="inline-flex justify-center rounded-lg border border-transparent bg-[#0A0D50] px-4 py-2 text-sm font-medium text-white hover:bg-[#0A0D50]/90 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
-                    >
-                      Save Changes
-                    </button>
-                  </div>
+                </div>
+  
+                {/* Footer */}
+                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveWithValidation}
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    Save Changes
+                  </button>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
