@@ -200,26 +200,26 @@ const InventoryPage: React.FC = () => {
   };
 
 // Function to render status badge with clean design
-  const renderStatusBadge = (status: string | undefined) => {
-    if (!status) return null;
-    
-    const statusLower = status.toLowerCase();
-    let badgeStyle = '';
-    
-    if (statusLower === 'available') {
-      badgeStyle = 'bg-green-100 text-green-800 border border-green-200';
-    } else if (statusLower === 'sold') {
-      badgeStyle = 'bg-red-100 text-red-800 border border-red-200';
-    } else {
-      badgeStyle = 'bg-gray-100 text-gray-800 border border-gray-200';
-    }
-    
-    return (
-      <span className={`inline-flex items-center justify-center px-3 py-1 text-sm font-medium rounded-md ${badgeStyle}`}>
-        {status}
-      </span>
-    );
-  };
+const renderStatusBadge = (status: string | undefined) => {
+  if (!status) return null;
+  
+  const statusLower = status.toLowerCase();
+  let badgeStyle = '';
+  
+  if (statusLower === 'available') {
+    badgeStyle = 'bg-green-100 text-green-800 border border-green-200';
+  } else if (statusLower === 'sold') {
+    badgeStyle = 'bg-red-100 text-red-800 border border-red-200';
+  } else {
+    badgeStyle = 'bg-gray-100 text-gray-800 border border-gray-200';
+  }
+  
+  return (
+    <span className={`inline-flex items-center justify-center px-3 py-1 text-sm font-medium rounded-md ${badgeStyle}`}>
+      {status}
+    </span>
+  );
+};
 
   const filteredProperties = properties.filter((property) => {
     const searchQuery = searchTerm;
@@ -1160,97 +1160,10 @@ const InventoryPage: React.FC = () => {
                   <div className="max-h-[80vh] overflow-y-auto">
                     {propertyToSell && (
                       <>
-                        {/* Property Summary Banner */}
-                        <div className={`bg-gradient-to-r ${propertyToSell && isLivingWaterProperty(propertyToSell) ? 'from-blue-50 to-blue-100 border-l-4 border-blue-500' : 'from-green-50 to-green-100 border-l-4 border-green-500'} p-5 mb-6`}>
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className={`text-lg font-semibold ${propertyToSell && isLivingWaterProperty(propertyToSell) ? 'text-blue-800' : 'text-green-800'} mb-2 flex items-center`}>
-                                <Home className="h-5 w-5 mr-2" />
-                                Property {propertyToSell.Block}-{propertyToSell.Lot}
-                              </h4>
-                              <div className={`text-sm ${propertyToSell && isLivingWaterProperty(propertyToSell) ? 'text-blue-800' : 'text-green-800'}`}>
-                                {selectedProject.name}
-                              </div>
-                            </div>
-                            <div className={`bg-gradient-to-r ${propertyToSell && isLivingWaterProperty(propertyToSell) ? 'from-blue-500 to-indigo-500 border border-blue-300' : 'from-green-500 to-green-600 border border-green-300'} px-4 py-1.5 rounded-full shadow-md flex items-center space-x-1`}>
-                              <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                              </span>
-                              <span className="text-sm font-medium text-white tracking-wide">
-                                {propertyToSell.Status || 'Available'}
-                              </span>
-                            </div>
-                          </div>
-                          
-                          <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-4">
-                            
-                            {isLivingWaterProperty(propertyToSell) && (
-                              <>
-                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 shadow-md border border-blue-200 backdrop-blur-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                                  <div className="text-xs font-medium text-indigo-500 uppercase tracking-wider mb-1 flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
-                                    </svg>
-                                    Lot Area
-                                  </div>
-                                  <div className="font-bold text-gray-800 text-xl flex items-baseline">
-                                    <span>{propertyToSell["Lot Area"]}</span>
-                                    <span className="ml-1 text-sm text-gray-600">sqm</span>
-                                  </div>
-                                </div>
-                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 shadow-md border border-blue-200 backdrop-blur-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                                  <div className="text-xs font-medium text-indigo-500 uppercase tracking-wider mb-1 flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                      <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
-                                    </svg>
-                                    Price
-                                  </div>
-                                  <div className="font-bold text-gray-800 text-xl">₱{formatNumber(propertyToSell.TCP || 0)}</div>
-                                </div>
-                              </>
-                            )}
-                            
-                            {!isLivingWaterProperty(propertyToSell) && (
-                              <>
-                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 shadow-md border border-blue-200 backdrop-blur-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                                  <div className="text-xs font-medium text-indigo-500 uppercase tracking-wider mb-1 flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
-                                    </svg>
-                                    Lot Size
-                                  </div>
-                                  <div className="font-bold text-gray-800 text-xl flex items-baseline">
-                                    <span>{propertyToSell["Lot Size"]}</span>
-                                    <span className="ml-1 text-sm text-gray-600">sqm</span>
-                                  </div>
-                                </div>
-                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 shadow-md border border-blue-200 backdrop-blur-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                                  <div className="text-xs font-medium text-indigo-500 uppercase tracking-wider mb-1 flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                      <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
-                                    </svg>
-                                    Price
-                                  </div>
-                                  <div className="font-bold text-gray-800 text-xl">₱{formatNumber(propertyToSell.Price || 0)}</div>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                        
                         {/* Main Content Area */}
                         <div className="px-6">
                           {/* Payment Details Section */}
                           <div className="mb-8">
-                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                              </svg>
-                              Payment Details
-                            </h4>
                             <div className="bg-white p-5 rounded-xl shadow-sm">
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                               {/* Living Water specific fields */}

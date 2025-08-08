@@ -1510,7 +1510,7 @@ const PaymentPage: React.FC = () => {
                       <select
                         value={selectedStatus}
                         onChange={(e) => setSelectedStatus(e.target.value)}
-                        className="block w-40 h-10 pl-3 pr-10 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white cursor-pointer appearance-none"
+                        className="block w-48 h-10 pl-3 pr-10 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white cursor-pointer appearance-none"
                       >
                         {statuses.map((status) => (
                           <option key={status.value} value={status.value}>

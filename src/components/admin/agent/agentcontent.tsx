@@ -413,7 +413,7 @@ const AgentContent: FC = () => {
                     {/* Profile Picture */}
                     <div className="relative inline-block mb-4">
                       <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-gray-100 shadow-md bg-gray-50 relative">
-{(() => {
+                        {(() => {
                           const imageUrl = getImageUrl(agent.dpurl);
                           return imageUrl ? (
                             <img 
