@@ -104,7 +104,6 @@ const LoginPage: React.FC = () => {
           localStorage.removeItem('rememberedEmail');
         }
 
-        // Enforce admin access only for emails in Admin table
         // Step 1: Check if user is admin
         const { data: adminData, error: adminError } = await supabase
           .from('Admin')
@@ -135,18 +134,43 @@ const LoginPage: React.FC = () => {
             navigate('/components/admin/admindashboard');
             return;
           } else {
-            // Access is False or email not allowed, block login and show error
             setError('You do not have access to this Dashboard.');
             return;
           }
-        } else if (adminError && adminError.code !== 'PGRST116') { // PGRST116: No rows found
-          // Log unexpected errors (not just 'not found')
+        } else if (adminError && adminError.code !== 'PGRST116') { 
+
           console.error("Error checking Admin table:", adminError);
           setError('An error occurred while verifying admin access.');
           return;
         }
 
-        // Step 2: Check if user is a client
+        // Step 2: Check if user is an agent
+        const { data: agentData, error: agentError } = await supabase
+          .from('Agents')
+          .select('email, fullname, status')
+          .eq('email', email)
+          .single();
+
+        if (agentData && agentData.email === email) {
+          if (agentData.status === 'active' || agentData.status === 'Active') {
+            const agentName = agentData.fullname || 'Agent';
+            localStorage.setItem('agentName', agentName);
+            console.log(`User is an agent (${agentName}), redirecting to agent dashboard`);
+            navigate('/components/agent/agentdashboard');
+            return;
+          } else {
+            // Agent access is disabled
+            setError('Your agent access has been disabled. Please contact the administrator.');
+            return;
+          }
+        } else if (agentError && agentError.code !== 'PGRST116') { // PGRST116: No rows found
+          // Log unexpected errors (not just 'not found')
+          console.error("Error checking Agent table:", agentError);
+          setError('An error occurred while verifying agent access.');
+          return;
+        }
+
+        // Step 3: Check if user is a client
         const { data: clientData } = await supabase
           .from('Clients')
           .select('id')
@@ -158,7 +182,7 @@ const LoginPage: React.FC = () => {
           console.log("User is a client, redirecting to client dashboard");
           navigate('/components/client/clientdashboard');
         } else {
-          // Not an admin or client
+          // Not an admin, agent, or client
           setError('You do not have access to this Dashboard.');
         }
       }

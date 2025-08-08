@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { Home, X, ShoppingCart } from 'lucide-react'; // Updated import
+import { Home, X, ShoppingCart, Edit  } from 'lucide-react'; // Updated import
 import { supabase } from '../../../supabase/supabaseClient';
 
 interface LivingWaterProperty {
@@ -92,6 +92,10 @@ const statusOptions = [
   { id: 'available', name: 'Available' },
   { id: 'sold', name: 'Sold' }
 ];
+
+const handleEditProperty = (property: Property) => {
+  console.log('Editing property:', property);
+};
 
 const InventoryPage: React.FC = () => {
 
@@ -195,21 +199,23 @@ const InventoryPage: React.FC = () => {
     }).format(value);
   };
 
-  // Function to render status badge with appropriate color
+// Function to render status badge with clean design
   const renderStatusBadge = (status: string | undefined) => {
     if (!status) return null;
     
     const statusLower = status.toLowerCase();
-    let bgColor = 'bg-gray-100 text-gray-800'; // Default style
+    let badgeStyle = '';
     
     if (statusLower === 'available') {
-      bgColor = 'bg-green-100 text-green-800';
+      badgeStyle = 'bg-green-100 text-green-800 border border-green-200';
     } else if (statusLower === 'sold') {
-      bgColor = 'bg-red-100 text-red-800';
+      badgeStyle = 'bg-red-100 text-red-800 border border-red-200';
+    } else {
+      badgeStyle = 'bg-gray-100 text-gray-800 border border-gray-200';
     }
     
     return (
-      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${bgColor}`}>
+      <span className={`inline-flex items-center justify-center px-3 py-1 text-sm font-medium rounded-md ${badgeStyle}`}>
         {status}
       </span>
     );
@@ -294,7 +300,7 @@ const InventoryPage: React.FC = () => {
               <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">1st MA net of Advance Payment</th>
               <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">2ndto60th MA</th>
               <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[100px]">Status</th>
-              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">Actions</th>
+              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -328,6 +334,16 @@ const InventoryPage: React.FC = () => {
                 </td>
                 <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-center">
                   <div className="flex items-center justify-center space-x-2">
+                    <button
+                      onClick={() => handleEditProperty(property)}
+                      className="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition-colors duration-200"
+                      title="Edit Property"
+                    >
+                      <span className="flex items-center space-x-1">
+                        <Edit className="h-4 w-4" />
+                        <span>Edit</span>
+                      </span>
+                    </button>
                     {property.Status?.toLowerCase() === 'sold' && (
                       <button
                         onClick={() => handleReopenProperty(property)}
@@ -399,7 +415,7 @@ const InventoryPage: React.FC = () => {
               <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">PASALO PRICE</th>
               <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">NEW MA</th>
               <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[100px]">Status</th>
-              <th className="px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider min-w-[80px]">Actions</th>
+              <th className="px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider min-w-[140px]">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -442,6 +458,16 @@ const InventoryPage: React.FC = () => {
                 </td>
                 <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-center">
                   <div className="flex items-center justify-center space-x-2">
+                    <button
+                      onClick={() => handleEditProperty(property)}
+                      className="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition-colors duration-200"
+                      title="Edit Property"
+                    >
+                      <span className="flex items-center space-x-1">
+                        <Edit className="h-4 w-4" />
+                        <span>Edit</span>
+                      </span>
+                    </button>
                     {property.Status?.toLowerCase() === 'sold' && (
                       <button
                         onClick={() => handleReopenProperty(property)}
@@ -539,44 +565,6 @@ const InventoryPage: React.FC = () => {
       if (styleElement.parentNode) {
         styleElement.parentNode.removeChild(styleElement);
       }
-    };
-  }, []);
-
-  useEffect(() => {
-    // Create a style element
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .inventory-table-container {
-        overflow-x: scroll !important;
-        scrollbar-width: auto;
-      }
-      
-      .inventory-table-container::-webkit-scrollbar {
-        height: 10px;
-        display: block;
-      }
-      
-      .inventory-table-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 5px;
-      }
-      
-      .inventory-table-container::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 5px;
-      }
-      
-      .inventory-table-container::-webkit-scrollbar-thumb:hover {
-        background: #555;
-      }
-    `;
-    
-    // Add the style element to the head
-    document.head.appendChild(style);
-    
-    // Clean up function to remove the style when component unmounts
-    return () => {
-      document.head.removeChild(style);
     };
   }, []);
 

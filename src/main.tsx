@@ -12,6 +12,7 @@ import ClientDashboardPage from './components/client/clientdashboard'
 import TicketPage from './components/admin/ticket/ticketcontent'
 import ForgotPassword from './components/ForgotPassword'
 import ResetPassword from './components/ResetPassword'
+import AgentDashboard from './components/agent/agentdashboard'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/components/admin/ticket/ticketcontent" element={<TicketPage/>} />
         <Route path="/components/ForgotPassword" element={<ForgotPassword/>} />
         <Route path="/reset-password" element={<ResetPassword/>} />
+        <Route path="/components/agent/agentdashboard" element={<AgentDashboard/>} />
       </Routes>
     </Router>
   </StrictMode>,
