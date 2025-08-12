@@ -1070,248 +1070,260 @@ const ReportPage = (): ReactNode => {
       )}
     </div>
 
-        {/* Delete Confirmation Modal */}
-        {isDeleteModalOpen && recordToDelete && (
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full transform transition-all">
-              <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                  <h3 className="text-lg font-medium text-gray-900">Delete Payment Record</h3>
-                </div>
-                <button
-                  onClick={() => setIsDeleteModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="px-6 py-4">
-                <p className="text-sm text-gray-500">
-                  Are you sure you want to delete this payment record? This action cannot be undone.
-                </p>
-                <div className="mt-4 bg-gray-50 p-4 rounded-lg">
-                  <div className="text-sm">
-                    <p><span className="font-medium text-gray-900">Client:</span> {recordToDelete.Name}</p>
-                    <p><span className="font-medium text-gray-900">Amount:</span> {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(recordToDelete.Amount)}</p>
-                    <p><span className="font-medium text-gray-900">Date:</span> {new Date(recordToDelete.created_at).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-lg">
-                <button
-                  type="button"
-                  onClick={() => setIsDeleteModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={confirmDelete}
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                >
-                  Delete
-                </button>
-              </div>
+{/* Delete Confirmation Modal */}
+{isDeleteModalOpen && recordToDelete && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all scale-100 animate-fadeIn">
+      
+      {/* Header */}
+      <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full">
+            <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 leading-none">
+            Delete Payment Record
+          </h3>
+        </div>
+        <button
+          onClick={() => setIsDeleteModalOpen(false)}
+          className="text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="px-6 py-5 space-y-4">
+        <p className="text-sm text-gray-600">
+          Are you sure you want to delete this payment record? <br />
+          <span className="text-red-500 font-medium">This action cannot be undone.</span>
+        </p>
+
+        <div className="bg-gray-50 p-4 rounded-xl text-sm space-y-2">
+          <div className="flex justify-between">
+            <span className="font-medium text-gray-800">Client:</span>
+            <span className="text-gray-700">{recordToDelete.Name}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="font-medium text-gray-800">Amount:</span>
+            <span className="text-gray-700">
+              {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(recordToDelete.Amount)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="font-medium text-gray-800">Date:</span>
+            <span className="text-gray-700">
+              {new Date(recordToDelete.created_at).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3 rounded-b-2xl">
+        <button
+          onClick={() => setIsDeleteModalOpen(false)}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={confirmDelete}
+          className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-sm transition-colors"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+{/* Edit Modal */}
+{isEditModalOpen && editingRecord && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all scale-100 animate-fadeIn max-h-[90vh] overflow-y-auto">
+      
+      {/* Modal Header */}
+      <div className="px-6 py-5 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-900 leading-none">
+          Edit Payment Record
+        </h3>
+        <button
+          onClick={() => setIsEditModalOpen(false)}
+          className="text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Form Content */}
+      <div className="px-6 py-6">
+        <p className="text-gray-600 mb-6">
+          Update the payment record details below.
+        </p>
+        
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (editingRecord) {
+              await handleUpdateRecord(editingRecord);
+            }
+          }}
+          id="editPaymentForm"
+          className="space-y-5"
+        >
+          {/* Full Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <input
+              type="text"
+              value={editingRecord.Name}
+              onChange={(e) => setEditingRecord({ ...editingRecord, Name: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              placeholder="Enter full name"
+            />
+          </div>
+
+          {/* Payment Month */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Payment Month</label>
+            <select
+              value={editingRecord["Payment for the Month of"] || ''}
+              onChange={(e) => setEditingRecord({ ...editingRecord, "Payment for the Month of": e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              <option value="">Select month</option>
+              {months.map((month) => (
+                <option key={month} value={month}>{month}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Amount */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-sm">₱</span>
+              <input
+                type="number"
+                value={editingRecord.Amount}
+                onChange={(e) => setEditingRecord({ ...editingRecord, Amount: parseFloat(e.target.value) })}
+                className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                placeholder="0.00"
+                step="0.01"
+              />
             </div>
           </div>
-        )}
 
-       {/* Edit Modal */}
-        {isEditModalOpen && editingRecord && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all scale-100 opacity-100 max-h-[90vh] overflow-y-auto">
-              {/* Modal Header */}
-              <div className="px-6 py-4 border-b border-gray-200 sticky top-0 bg-white rounded-t-2xl">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Edit Payment Record</h3>
-                  <button
-                    onClick={() => setIsEditModalOpen(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                  >
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
-              {/* Form Content */}
-              <div className="px-6 py-6">
-                <p className="text-gray-600 mb-6">
-                  Update payment record information.
-                </p>
-                
-                <form 
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    if (editingRecord) {
-                      await handleUpdateRecord(editingRecord);
-                    }
-                  }} 
-                  id="editPaymentForm" 
-                  className="space-y-4"
-                >
-                <div className="space-y-4">
-                  {/* Name Field */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                    <input
-                      type="text"
-                      value={editingRecord.Name}
-                      onChange={(e) => setEditingRecord({ ...editingRecord, Name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                      placeholder="Enter full name"
-                    />
-                  </div>
-
-                  {/* Payment Month */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Month</label>
-                    <select
-                      value={editingRecord["Payment for the Month of"] || ''}
-                      onChange={(e) => setEditingRecord({ ...editingRecord, "Payment for the Month of": e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                    >
-                      <option value="">Select month</option>
-                      {months.map((month) => (
-                        <option key={month} value={month}>{month}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Amount */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span className="text-gray-500 text-sm">₱</span>
-                      </div>
-                      <input
-                        type="number"
-                        value={editingRecord.Amount}
-                        onChange={(e) => setEditingRecord({ ...editingRecord, Amount: parseFloat(e.target.value) })}
-                        className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                        placeholder="0.00"
-                        step="0.01"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Penalty */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Penalty</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span className="text-gray-500 text-sm">₱</span>
-                      </div>
-                      <input
-                        type="number"
-                        value={editingRecord.Penalty}
-                        onChange={(e) => setEditingRecord({ ...editingRecord, Penalty: parseFloat(e.target.value) })}
-                        className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                        placeholder="0.00"
-                        step="0.01"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Payment Type */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Type</label>
-                    <select
-                      value={editingRecord["Payment Type"] || ''}
-                      onChange={(e) => setEditingRecord({ ...editingRecord, "Payment Type": e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                    >
-                      {paymentTypes.filter(type => type !== 'all').map((type) => (
-                        <option key={type} value={type}>
-                          {type.toUpperCase()}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* VAT Field */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">VAT Status</label>
-                    <select
-                      value={editingRecord.Vat || ''}
-                      onChange={e => setEditingRecord({ ...editingRecord, Vat: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                    >
-                      <option value="Non Vat">Non VAT</option>
-                      <option value="Vatable">Vatable</option>
-                    </select>
-                  </div>
-
-                  {/* Block */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Block</label>
-                    <input
-                      type="text"
-                      value={editingRecord.Block}
-                      onChange={(e) => setEditingRecord({ ...editingRecord, Block: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                      placeholder="Block number"
-                    />
-                  </div>
-
-                  {/* Lot */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Lot</label>
-                    <input
-                      type="text"
-                      value={editingRecord.Lot}
-                      onChange={(e) => setEditingRecord({ ...editingRecord, Lot: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                      placeholder="Lot number"
-                    />
-                  </div>
-
-                  {/* Project Field */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Project</label>
-                    <select
-                      value={editingRecord.Project}
-                      onChange={(e) => setEditingRecord({ ...editingRecord, Project: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                    >
-                      {projects.filter(project => project !== 'all').map((project) => (
-                        <option key={project} value={project}>
-                          {project}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                </form>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3 sticky bottom-0 bg-white rounded-b-2xl">
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  form="editPaymentForm"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
-                >
-                  Save Changes
-                </button>
-              </div>
+          {/* Penalty */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Penalty</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-sm">₱</span>
+              <input
+                type="number"
+                value={editingRecord.Penalty}
+                onChange={(e) => setEditingRecord({ ...editingRecord, Penalty: parseFloat(e.target.value) })}
+                className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                placeholder="0.00"
+                step="0.01"
+              />
             </div>
           </div>
-        )}
+
+          {/* Payment Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Payment Type</label>
+            <select
+              value={editingRecord["Payment Type"] || ''}
+              onChange={(e) => setEditingRecord({ ...editingRecord, "Payment Type": e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              {paymentTypes.filter(type => type !== 'all').map((type) => (
+                <option key={type} value={type}>{type.toUpperCase()}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* VAT */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">VAT Status</label>
+            <select
+              value={editingRecord.Vat || ''}
+              onChange={e => setEditingRecord({ ...editingRecord, Vat: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              <option value="Non Vat">Non VAT</option>
+              <option value="Vatable">Vatable</option>
+            </select>
+          </div>
+
+          {/* Block */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Block</label>
+            <input
+              type="text"
+              value={editingRecord.Block}
+              onChange={(e) => setEditingRecord({ ...editingRecord, Block: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              placeholder="Block number"
+            />
+          </div>
+
+          {/* Lot */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Lot</label>
+            <input
+              type="text"
+              value={editingRecord.Lot}
+              onChange={(e) => setEditingRecord({ ...editingRecord, Lot: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              placeholder="Lot number"
+            />
+          </div>
+
+          {/* Project */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Project</label>
+            <select
+              value={editingRecord.Project}
+              onChange={(e) => setEditingRecord({ ...editingRecord, Project: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              {projects.filter(project => project !== 'all').map((project) => (
+                <option key={project} value={project}>{project}</option>
+              ))}
+            </select>
+          </div>
+        </form>
+      </div>
+
+      {/* Modal Footer */}
+      <div className="px-6 py-4 border-t border-gray-100 sticky bottom-0 bg-white rounded-b-2xl flex justify-end gap-3">
+        <button
+          type="button"
+          onClick={() => setIsEditModalOpen(false)}
+          className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          form="editPaymentForm"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </PageTransition> 
   );
 };
