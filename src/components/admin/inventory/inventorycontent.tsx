@@ -199,28 +199,6 @@ const InventoryPage: React.FC = () => {
     }).format(value);
   };
 
-// Function to render status badge with clean design
-const renderStatusBadge = (status: string | undefined) => {
-  if (!status) return null;
-  
-  const statusLower = status.toLowerCase();
-  let badgeStyle = '';
-  
-  if (statusLower === 'available') {
-    badgeStyle = 'bg-green-100 text-green-800 border border-green-200';
-  } else if (statusLower === 'sold') {
-    badgeStyle = 'bg-red-100 text-red-800 border border-red-200';
-  } else {
-    badgeStyle = 'bg-gray-100 text-gray-800 border border-gray-200';
-  }
-  
-  return (
-    <span className={`inline-flex items-center justify-center px-3 py-1 text-sm font-medium rounded-md ${badgeStyle}`}>
-      {status}
-    </span>
-  );
-};
-
   const filteredProperties = properties.filter((property) => {
     const searchQuery = searchTerm;
     if (!searchQuery) return true;
@@ -273,99 +251,253 @@ const renderStatusBadge = (status: string | undefined) => {
   console.log('Filtered properties length:', filteredProperties.length);
 
   const renderLivingWaterTable = (data: LivingWaterProperty[]) => (
-    <div className="bg-white rounded-lg shadow flex flex-col h-[calc(100vh-17rem)]">
-      <div className="overflow-auto flex-1">
-        <table className="w-full divide-y divide-gray-200">
-          <thead className="sticky top-0 bg-[#29374C] z-30">
-            <tr>
-              <th className="sticky left-0 bg-[#29374C] z-20 px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[80px]">Block</th>
-              <th className="sticky left-[80px] bg-[#29374C] z-20 px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[80px]">Lot</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">Owner</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[100px]">Due Date 15/30</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">First Due Month</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Amount</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">Realty</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">Reservation Date</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">Seller Name</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">Broker / Realty</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Reservation</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Optional: Advance Payment</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[100px]">Lot Area</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Price per sqm</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">TCP</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">TSP</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">MISC FEE</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">Net Contract Price</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Monthly Amortization</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">1st MA net of Advance Payment</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">2ndto60th MA</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[100px]">Status</th>
-              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Actions</th>
+    <div className="overflow-y-auto h-full">
+      <div className="max-h-[80vh] flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
+        <table className="min-w-full table-auto">
+          <thead className="sticky top-0 z-10">
+            <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+              <th className="sticky left-0 bg-gradient-to-r from-slate-50 to-slate-100 z-20 px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide min-w-[80px] border-r border-slate-200/50">
+                Block
+              </th>
+              <th className="sticky left-[80px] bg-gradient-to-r from-slate-50 to-slate-100 z-20 px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide min-w-[80px] border-r border-slate-200/50">
+                Lot
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Owner
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Due Date 15/30
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                First Due Month
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Amount
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Realty
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Reservation Date
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Seller Name
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Broker / Realty
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Reservation
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Optional: Advance Payment
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[100px]">
+                Lot Area
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Price per sqm
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                TCP
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                TSP
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                MISC FEE
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Net Contract Price
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Monthly Amortization
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[180px]">
+                1st MA net of Advance Payment
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                2ndto60th MA
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[100px]">
+                Status
+              </th>
+              <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide min-w-[140px]">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-slate-100">
             {data.map((property) => (
-              <tr key={property.id} className="hover:bg-gray-50">
-                <td className="sticky left-0 bg-white z-10 px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property.Block}</td>
-                <td className="sticky left-[80px] bg-white z-10 px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property.Lot}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property.Owner}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property["Due Date 15/30"]}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property["First Due Month"]}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property.Amount)}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property.Realty}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{formatDate(property["Date of Reservation"])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property["Seller Name"]}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property["Broker / Realty"]}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property.Reservation)}</td>
-                    {isLivingWaterProperty(property) && (
-                      <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property["Optional: Advance Payment"] ?? null)}</td>
-                    ) }
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatNumber(property["Lot Area"])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property["Price per sqm"])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property.TCP)}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property.TSP)}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property["MISC FEE"])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property["Net Contract Price"])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property["First MA"])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property["1st MA net of Advance Payment"])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property["2ndto60th MA"])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">
-                  {renderStatusBadge(property.Status)}
+              <tr key={property.id} className="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0">
+                <td className="sticky left-0 bg-white group-hover:bg-slate-50/80 z-10 px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
+                  {property.Block}
                 </td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-center">
-                  <div className="flex items-center justify-center space-x-2">
+                <td className="sticky left-[80px] bg-white group-hover:bg-slate-50/80 z-10 px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
+                  {property.Lot}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-slate-800">
+                  {property.Owner}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property["Due Date 15/30"]}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property["First Due Month"]}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.Amount ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-50 to-green-100 text-green-700 border border-green-200/60 shadow-sm">
+                      {formatCurrency(property.Amount)}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.Realty}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {formatDate(property["Date of Reservation"])}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property["Seller Name"]}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property["Broker / Realty"]}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.Reservation ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60 shadow-sm">
+                      {formatCurrency(property.Reservation)}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                {isLivingWaterProperty(property) && (
+                  <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                    {property["Optional: Advance Payment"] ? (
+                      <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-orange-50 to-orange-100 text-orange-700 border border-orange-200/60 shadow-sm">
+                        {formatCurrency(property["Optional: Advance Payment"])}
+                      </div>
+                    ) : (
+                      <span className="text-slate-400">N/A</span>
+                    )}
+                  </td>
+                )}
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {formatNumber(property["Lot Area"]) || 'N/A'}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property["Price per sqm"] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border border-blue-200/60 shadow-sm">
+                      {formatCurrency(property["Price per sqm"])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.TCP ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-teal-50 to-teal-100 text-teal-700 border border-teal-200/60 shadow-sm">
+                      {formatCurrency(property.TCP)}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.TSP ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-purple-50 to-purple-100 text-purple-700 border border-purple-200/60 shadow-sm">
+                      {formatCurrency(property.TSP)}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property["MISC FEE"] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-700 border border-yellow-200/60 shadow-sm">
+                      {formatCurrency(property["MISC FEE"])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property["Net Contract Price"] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-700 border border-indigo-200/60 shadow-sm">
+                      {formatCurrency(property["Net Contract Price"])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property["First MA"] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-cyan-50 to-cyan-100 text-cyan-700 border border-cyan-200/60 shadow-sm">
+                      {formatCurrency(property["First MA"])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property["1st MA net of Advance Payment"] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-pink-50 to-pink-100 text-pink-700 border border-pink-200/60 shadow-sm">
+                      {formatCurrency(property["1st MA net of Advance Payment"])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property["2ndto60th MA"] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-violet-50 to-violet-100 text-violet-700 border border-violet-200/60 shadow-sm">
+                      {formatCurrency(property["2ndto60th MA"])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap">
+                  <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm
+                    ${property.Status?.toLowerCase() === "sold" ? "bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60" : 
+                      property.Status?.toLowerCase() === "available" ? "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border border-blue-200/60" : 
+                      property.Status?.toLowerCase() === "reserved" ? "bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 border border-amber-200/60" :
+                      "bg-gradient-to-r from-slate-50 to-slate-100 text-slate-700 border border-slate-200/60"}`}>
+                    {property.Status || 'N/A'}
+                  </span>
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-center">
+                  <div className="flex justify-center items-center space-x-2">
                     <button
                       onClick={() => handleEditProperty(property)}
-                      className="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition-colors duration-200"
+                      className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
                       title="Edit Property"
                     >
-                      <span className="flex items-center space-x-1">
-                        <Edit className="h-4 w-4" />
-                        <span>Edit</span>
-                      </span>
+                      <Edit className="h-3 w-3 mr-1" />
+                      <span>Edit</span>
                     </button>
                     {property.Status?.toLowerCase() === 'sold' && (
                       <button
                         onClick={() => handleReopenProperty(property)}
-                        className="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition-colors duration-200"
+                        className="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
                         title="Reopen Property"
                       >
-                        <span className="flex items-center space-x-1">
-                          <X className="h-4 w-4" />
-                          <span>Reopen</span>
-                        </span>
+                        <X className="h-3 w-3 mr-1" />
+                        <span>Reopen</span>
                       </button>
                     )}
                     {property.Status?.toLowerCase() === 'available' && (
                       <button
                         onClick={() => handleSellProperty(property)}
-                        className="text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md transition-colors duration-200"
+                        className="inline-flex items-center px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
                         title="Sell Property"
                       >
-                        <span className="flex items-center space-x-1">
-                          <ShoppingCart className="h-4 w-4" />
-                          <span>Sell</span>
-                        </span>
+                        <ShoppingCart className="h-3 w-3 mr-1" />
+                        <span>Sell</span>
                       </button>
                     )}
                   </div>
@@ -379,117 +511,322 @@ const renderStatusBadge = (status: string | undefined) => {
   );
 
   const renderHavahillsTable = (data: HavahillsProperty[]) => (
-    <div className="bg-white rounded-lg shadow flex flex-col h-[calc(100vh-17rem)]">
-      <div className="overflow-auto flex-1">
-        <table className="w-full divide-y divide-gray-200">
-          <thead className="sticky top-0 bg-[#29374C] z-30">
-            <tr>
-              <th className="sticky left-0 bg-[#0A0D50] z-20 px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[80px]">Block</th>
-              <th className="sticky left-[80px] bg-[#0A0D50] z-20 px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[80px]">Lot</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">Buyers Name</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[100px]">Due</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Date of Reservation</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">First Due</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[80px]">Terms</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Amount</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">Realty</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">Seller Name</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">Sales Director</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">Broker</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[100px]">Lot Size</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Price</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Payment Scheme</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[100px]">Vat Status</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">TSP</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Mode of Payment</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Reservation</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Optional: Advance Payment</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Comm Price</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Misc Fee</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Vat</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">TCP</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">1st MA</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[150px]">1ST MA with Holding Fee</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">2ND TO 48TH MA</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">NEW TERM</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">PASALO PRICE</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">NEW MA</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[100px]">Status</th>
-              <th className="px-3 py-3 text-center text-xs font-medium text-white uppercase tracking-wider min-w-[140px]">Actions</th>
+    <div className="overflow-y-auto h-full">
+      <div className="max-h-[80vh] flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
+        <table className="min-w-full table-auto">
+          <thead className="sticky top-0 z-10">
+            <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+              <th className="sticky left-0 bg-gradient-to-r from-slate-50 to-slate-100 z-20 px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide min-w-[80px] border-r border-slate-200/50">
+                Block
+              </th>
+              <th className="sticky left-[80px] bg-gradient-to-r from-slate-50 to-slate-100 z-20 px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide min-w-[80px] border-r border-slate-200/50">
+                Lot
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Buyers Name
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[100px]">
+                Due
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Date of Reservation
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                First Due
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[80px]">
+                Terms
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Amount
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Realty
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Seller Name
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Sales Director
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                Broker
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[100px]">
+                Lot Size
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Price
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Payment Scheme
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[100px]">
+                Vat Status
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                TSP
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Mode of Payment
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Reservation
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Comm Price
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Misc Fee
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                Vat
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                TCP
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                1st MA
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[150px]">
+                1ST MA with Holding Fee
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                2ND TO 48TH MA
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                NEW TERM
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                PASALO PRICE
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                NEW MA
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[100px]">
+                Status
+              </th>
+              <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide min-w-[140px]">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-slate-100">
             {data.map((property) => (
-              <tr key={property.id} className="hover:bg-gray-50">
-                <td className="sticky left-0 bg-white z-10 px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property.Block}</td>
-                <td className="sticky left-[80px] bg-white z-10 px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property.Lot}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property['Buyers Name']}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property.Due}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{formatDate(property['Date of Reservation'])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property['First Due']}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property.Terms}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property.Amount)}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property.Realty}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property['Seller Name']}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property['Sales Director']}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property.Broker}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatNumber(property['Lot Size'])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property.Price)}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property['Payment Scheme']}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property['Vat Status']}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property.TSP)}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property['Mode of Payment']}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property.Reservation)}</td>
-                    {isLivingWaterProperty(property) && (
-                      <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property["Optional: Advance Payment"] ?? null)}</td>
-                    ) }
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property['Comm Price'])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property['Misc Fee'])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property.Vat)}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property.TCP)}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property['1ST MA'])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property['1ST MA with Holding Fee'])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property['2ND TO 48TH MA'])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">{property['NEW TERM']}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property['PASALO PRICE'])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-right">{formatCurrency(property['NEW MA'])}</td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">
-                  {renderStatusBadge(property.Status)}
+              <tr key={property.id} className={`group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0`}>
+                <td className="sticky left-0 bg-white group-hover:bg-slate-50/80 z-10 px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
+                  {property.Block}
                 </td>
-                <td className="px-3 py-3 text-sm text-gray-900 whitespace-nowrap text-center">
-                  <div className="flex items-center justify-center space-x-2">
+                <td className="sticky left-[80px] bg-white group-hover:bg-slate-50/80 z-10 px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
+                  {property.Lot}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-slate-800">
+                  {property['Buyers Name']}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.Due}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {formatDate(property['Date of Reservation'])}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['First Due']}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.Terms}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.Amount ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-50 to-green-100 text-green-700 border border-green-200/60 shadow-sm">
+                      {formatCurrency(property.Amount)}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.Realty}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['Seller Name']}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['Sales Director']}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.Broker}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {formatNumber(property['Lot Size']) || 'N/A'}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.Price ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border border-blue-200/60 shadow-sm">
+                      {formatCurrency(property.Price)}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['Payment Scheme']}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['Vat Status']}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.TSP ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-purple-50 to-purple-100 text-purple-700 border border-purple-200/60 shadow-sm">
+                      {formatCurrency(property.TSP)}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['Mode of Payment']}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.Reservation ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60 shadow-sm">
+                      {formatCurrency(property.Reservation)}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                {isLivingWaterProperty(property) && (
+                  <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                    {property["Optional: Advance Payment"] ? (
+                      <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-orange-50 to-orange-100 text-orange-700 border border-orange-200/60 shadow-sm">
+                        {formatCurrency(property["Optional: Advance Payment"])}
+                      </div>
+                    ) : (
+                      <span className="text-slate-400">N/A</span>
+                    )}
+                  </td>
+                )}
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['Comm Price'] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-700 border border-indigo-200/60 shadow-sm">
+                      {formatCurrency(property['Comm Price'])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['Misc Fee'] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-700 border border-yellow-200/60 shadow-sm">
+                      {formatCurrency(property['Misc Fee'])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.Vat ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60 shadow-sm">
+                      {formatCurrency(property.Vat)}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property.TCP ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-teal-50 to-teal-100 text-teal-700 border border-teal-200/60 shadow-sm">
+                      {formatCurrency(property.TCP)}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['1ST MA'] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-cyan-50 to-cyan-100 text-cyan-700 border border-cyan-200/60 shadow-sm">
+                      {formatCurrency(property['1ST MA'])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['1ST MA with Holding Fee'] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-pink-50 to-pink-100 text-pink-700 border border-pink-200/60 shadow-sm">
+                      {formatCurrency(property['1ST MA with Holding Fee'])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['2ND TO 48TH MA'] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-violet-50 to-violet-100 text-violet-700 border border-violet-200/60 shadow-sm">
+                      {formatCurrency(property['2ND TO 48TH MA'])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['NEW TERM']}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['PASALO PRICE'] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-rose-50 to-rose-100 text-rose-700 border border-rose-200/60 shadow-sm">
+                      {formatCurrency(property['PASALO PRICE'])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                  {property['NEW MA'] ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-lime-50 to-lime-100 text-lime-700 border border-lime-200/60 shadow-sm">
+                      {formatCurrency(property['NEW MA'])}
+                    </div>
+                  ) : (
+                    <span className="text-slate-400">N/A</span>
+                  )}
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap">
+                  <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm
+                    ${property.Status?.toLowerCase() === "sold" ? "bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60" : 
+                      property.Status?.toLowerCase() === "available" ? "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border border-blue-200/60" : 
+                      property.Status?.toLowerCase() === "reserved" ? "bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 border border-amber-200/60" :
+                      "bg-gradient-to-r from-slate-50 to-slate-100 text-slate-700 border border-slate-200/60"}`}>
+                    {property.Status || 'N/A'}
+                  </span>
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap text-center">
+                  <div className="flex justify-center items-center space-x-2">
                     <button
                       onClick={() => handleEditProperty(property)}
-                      className="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition-colors duration-200"
+                      className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
                       title="Edit Property"
                     >
-                      <span className="flex items-center space-x-1">
-                        <Edit className="h-4 w-4" />
-                        <span>Edit</span>
-                      </span>
+                      <Edit className="h-3 w-3 mr-1" />
+                      <span>Edit</span>
                     </button>
                     {property.Status?.toLowerCase() === 'sold' && (
                       <button
                         onClick={() => handleReopenProperty(property)}
-                        className="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition-colors duration-200"
+                        className="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
                         title="Reopen Property"
                       >
-                        <span className="flex items-center space-x-1">
-                          <X className="h-4 w-4" />
-                          <span>Reopen</span>
-                        </span>
+                        <X className="h-3 w-3 mr-1" />
+                        <span>Reopen</span>
                       </button>
                     )}
                     {property.Status?.toLowerCase() === 'available' && (
                       <button
                         onClick={() => handleSellProperty(property)}
-                        className="text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md transition-colors duration-200"
+                        className="inline-flex items-center px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
                         title="Sell Property"
                       >
-                        <span className="flex items-center space-x-1">
-                          <ShoppingCart className="h-4 w-4" />
-                          <span>Sell</span>
-                        </span>
+                        <ShoppingCart className="h-3 w-3 mr-1" />
+                        <span>Sell</span>
                       </button>
                     )}
                   </div>
@@ -501,6 +838,7 @@ const renderStatusBadge = (status: string | undefined) => {
       </div>
     </div>
   );
+
 
   const scrollTable = (direction: 'left' | 'right') => {
     const tableContainers = document.querySelectorAll('.inventory-table-container');

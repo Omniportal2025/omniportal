@@ -333,7 +333,6 @@ const ClientsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [sortBy, setSortBy] = useState<'firstName' | 'lastName'>('firstName');
@@ -435,7 +434,6 @@ const ClientsPage: React.FC = () => {
     }
 
     setFilteredClients(filtered);
-    setTotalPages(Math.ceil(filtered.length / itemsPerPage));
     setCurrentPage(1); // Reset to first page when filters change
   }, [clients, searchQuery, selectedProject, livingWaterOwners, havahillsBuyers, accountStatus]);
 
@@ -489,7 +487,6 @@ const ClientsPage: React.FC = () => {
       
       setClients(sortedData);
       setFilteredClients(sortedData);
-      setTotalPages(Math.ceil((sortedData?.length || 0) / itemsPerPage));
     } catch (error) {
       console.error('Error fetching clients:', error);
       setError('Failed to fetch clients');
@@ -502,14 +499,6 @@ const ClientsPage: React.FC = () => {
   const getCurrentPageClients = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredClients.slice(startIndex, startIndex + itemsPerPage);
-  };
-
-  const handlePreviousPage = () => {
-    setCurrentPage(prev => Math.max(prev - 1, 1));
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
 
   const handleDelete = async (client: Client) => {
@@ -771,176 +760,116 @@ const ClientsPage: React.FC = () => {
           ) : (
             <>
               {/* Table Container - Now seamlessly integrated */}
-              <div className="flex-1 overflow-auto">
-                <table className="min-w-full divide-y divide-slate-200">
-                  <thead className="bg-slate-800 sticky top-0 z-10">
-                    <tr>
-                      <th scope="col" className="py-4 pl-6 pr-3 text-left text-sm font-semibold uppercase tracking-wider text-white">
-                        Client Information
-                      </th>
-                      <th scope="col" className="relative py-4 pl-3 pr-6 text-right text-sm font-semibold uppercase tracking-wider text-white">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 bg-white">
-                    {getCurrentPageClients().map((client) => (
-                      <tr key={client.id} className="hover:bg-slate-50 transition-colors duration-200">
-                        <td className="whitespace-nowrap py-4 pl-6 pr-3">
-                          <div className="flex items-center">
-                            <div className="h-10 w-10 flex-shrink-0">
-                              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                                <span className="text-sm font-medium text-white">
-                                  {client.Name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-semibold text-slate-900">{client.Name}</div>
-                              <div className="flex items-center mt-1">
-                                {client.auth_id ? (
-                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                                    <svg className="h-3 w-3 text-emerald-500" fill="currentColor" viewBox="0 0 8 8">
-                                      <circle cx="4" cy="4" r="3" />
-                                    </svg>
-                                    Account Active
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                                    <svg className="h-3 w-3 text-amber-500" fill="currentColor" viewBox="0 0 8 8">
-                                      <circle cx="4" cy="4" r="3" />
-                                    </svg>
-                                    No Account
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right">
-                          <div className="flex justify-end gap-3">
-                            <button 
-                              onClick={() => {
-                                setSelectedClient(client);
-                                setIsModalOpen(true);
-                              }}
-                              disabled={!!client.auth_id}
-                              className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                                client.auth_id 
-                                  ? 'text-slate-500 bg-slate-100 cursor-not-allowed' 
-                                  : 'text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-                              }`}
-                              title={client.auth_id ? 'Client already has an account' : 'Create account for this client'}
-                            >
-                              {client.auth_id ? (
-                                <span className="flex items-center gap-2">
-                                  <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                  </svg>
-                                  Account Exists
-                                </span>
-                              ) : (
-                                <span className="flex items-center gap-2">
-                                  <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                                  </svg>
-                                  Create Account
-                                </span>
-                              )}
-                            </button>
-                            {client.auth_id && (
-                              <button
-                                onClick={() => handleDelete(client)}
-                                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-                                title="Delete client account"
-                              >
-                                <span className="flex items-center gap-2">
-                                  <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V7z" clipRule="evenodd" />
-                                  </svg>
-                                  Delete
-                                </span>
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                {!loading && filteredClients.length === 0 && (
-                  <div className="flex flex-col items-center justify-center h-64 bg-white text-center px-6">
-                    <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-4">
-                      <svg className="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">No clients found</h3>
-                    <p className="text-slate-500 max-w-sm">
-                      {searchQuery ? 'Try adjusting your search term or filters to find what you\'re looking for.' : 'No clients are available at the moment. Check back later or contact support.'}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Pagination Footer - Fixed at bottom */}
-              <div className="bg-white border-t border-slate-200 px-6 py-4 flex-shrink-0">
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-1 justify-between sm:hidden">
-                    <button
-                      onClick={handlePreviousPage}
-                      disabled={currentPage === 1}
-                      className="relative inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                    >
-                      Previous
-                    </button>
-                    <button
-                      onClick={handleNextPage}
-                      disabled={currentPage === totalPages}
-                      className="relative ml-3 inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                    >
-                      Next
-                    </button>
-                  </div>
-                  <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-sm text-slate-700">
-                        Showing <span className="font-semibold text-slate-900">{Math.min((currentPage - 1) * itemsPerPage + 1, filteredClients.length)}</span> to{' '}
-                        <span className="font-semibold text-slate-900">{Math.min(currentPage * itemsPerPage, filteredClients.length)}</span> of{' '}
-                        <span className="font-semibold text-slate-900">{filteredClients.length}</span> results
-                      </p>
-                    </div>
-                    <div>
-                      <nav className="isolate inline-flex items-center space-x-2" aria-label="Pagination">
-                        <button
-                          onClick={handlePreviousPage}
-                          disabled={currentPage === 1}
-                          className="relative inline-flex items-center rounded-lg p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 focus:z-20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <span className="sr-only">Previous</span>
-                          <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.958 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-                        <div className="flex items-center px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg">
-                          Page <span className="font-semibold text-slate-900 mx-1">{currentPage}</span> of <span className="font-semibold text-slate-900 ml-1">{totalPages}</span>
-                        </div>
-                        <button
-                          onClick={handleNextPage}
-                          disabled={currentPage === totalPages}
-                          className="relative inline-flex items-center rounded-lg p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 focus:z-20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <span className="sr-only">Next</span>
-                          <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.04l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-                      </nav>
-                    </div>
-                  </div>
+              <div className="flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
+  <table className="min-w-full">
+    <thead className="sticky top-0 z-10">
+      <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+        <th scope="col" className="py-4 pl-6 pr-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">
+          Client Information
+        </th>
+        <th scope="col" className="py-4 pl-3 pr-6 text-right text-xs font-semibold text-slate-600 uppercase tracking-wide">
+          Actions
+        </th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-slate-100">
+      {getCurrentPageClients().map((client) => (
+        <tr key={client.id} className="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0">
+          <td className="whitespace-nowrap py-5 pl-6 pr-3">
+            <div className="flex items-center">
+              <div className="h-12 w-12 flex-shrink-0">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-md">
+                  <span className="text-sm font-semibold text-white">
+                    {client.Name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                  </span>
                 </div>
               </div>
+              <div className="ml-4">
+                <div className="text-sm font-semibold text-slate-800">{client.Name}</div>
+                <div className="flex items-center mt-2">
+                  {client.auth_id ? (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60 shadow-sm">
+                      <svg className="h-3 w-3 mr-1.5 text-emerald-500" fill="currentColor" viewBox="0 0 8 8">
+                        <circle cx="4" cy="4" r="3" />
+                      </svg>
+                      Account Active
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 border border-amber-200/60 shadow-sm">
+                      <svg className="h-3 w-3 mr-1.5 text-amber-500" fill="currentColor" viewBox="0 0 8 8">
+                        <circle cx="4" cy="4" r="3" />
+                      </svg>
+                      No Account
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </td>
+          <td className="whitespace-nowrap py-5 pl-3 pr-6 text-right">
+            <div className="flex justify-end items-center space-x-3">
+              <button 
+                onClick={() => {
+                  setSelectedClient(client);
+                  setIsModalOpen(true);
+                }}
+                disabled={!!client.auth_id}
+                className={`inline-flex items-center px-4 py-2 text-xs font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${
+                  client.auth_id 
+                    ? 'text-slate-500 bg-slate-100 border border-slate-200 cursor-not-allowed' 
+                    : 'text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300'
+                }`}
+                title={client.auth_id ? 'Client already has an account' : 'Create account for this client'}
+              >
+                {client.auth_id ? (
+                  <>
+                    <svg className="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Account Exists
+                  </>
+                ) : (
+                  <>
+                    <svg className="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                    </svg>
+                    Create Account
+                  </>
+                )}
+              </button>
+              {client.auth_id && (
+                <button
+                  onClick={() => handleDelete(client)}
+                  className="inline-flex items-center px-4 py-2 text-xs font-semibold rounded-lg bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 border border-red-200 hover:border-red-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                  title="Delete client account"
+                >
+                  <svg className="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V7z" clipRule="evenodd" />
+                  </svg>
+                  Delete
+                </button>
+              )}
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  {!loading && filteredClients.length === 0 && (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mb-6">
+        <svg className="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+        </svg>
+      </div>
+      <h3 className="text-xl font-semibold text-slate-800 mb-3">No clients found</h3>
+      <p className="text-slate-500 max-w-md leading-relaxed">
+        {searchQuery ? 'Try adjusting your search term or filters to find what you\'re looking for.' : 'No clients are available at the moment. Check back later or contact support.'}
+      </p>
+    </div>
+  )}
+</div>
             </>
           )}
         </div>

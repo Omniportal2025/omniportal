@@ -814,153 +814,168 @@ const ReportPage = (): ReactNode => {
       </div>
 
       {/* Table Section */}
-      <div className="flex-1 flex flex-col" style={{ height: 'calc(100vh - 12rem)' }}>
-        {/* Table Container */}
-        <div className="flex-1 overflow-auto">
-          <table className="w-full divide-y divide-slate-200">
-            <thead className="sticky top-0 bg-gradient-to-r from-slate-700 to-slate-800 z-10">
-              <tr>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
-                  Date
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
-                  Payment Month
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
-                  Project
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
-                  Name
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
-                  Block
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
-                  Lot
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
-                  Amount
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
-                  Penalty
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
-                  Payment Type
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
-                  Due Date
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider border-r border-slate-600">
-                  VAT
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
-              {loading ? (
-                <tr>
-                  <td colSpan={12} className="px-6 py-12 text-center">
-                    <div className="flex flex-col items-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                      <p className="text-sm text-slate-500">Loading payment records...</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : filteredRecords.length === 0 ? (
-                <tr>
-                  <td colSpan={12} className="px-6 py-16 text-center">
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="bg-slate-100 rounded-full p-4 mb-4">
-                        <svg className="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                      </div>
-                      <h3 className="text-lg font-medium text-slate-900 mb-2">No payment records found</h3>
-                      <p className="text-sm text-slate-500">
-                        {searchTerm ? 'Try adjusting your search criteria or filters' : 'No records available at the moment'}
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                filteredRecords.map((record, index) => (
-                  <tr key={record.id} className={`hover:bg-slate-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-25'}`}>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-900 font-medium">
-                      {new Date(record.created_at).toLocaleDateString('en-PH', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600">
-                      {record["Payment for the Month of"] || '—'}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
-                      {record.Project}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-900">
-                      {record.Name}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600 text-center">
-                      {record.Block}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600 text-center">
-                      {record.Lot}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">
-                      {new Intl.NumberFormat('en-PH', {
-                        style: 'currency',
-                        currency: 'PHP'
-                      }).format(record.Amount)}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-red-600">
-                      {record.Penalty ? new Intl.NumberFormat('en-PH', {
-                        style: 'currency',
-                        currency: 'PHP'
-                      }).format(record.Penalty) : '₱0.00'}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {record["Payment Type"] || 'GCASH'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600">
-                      {record["Due Date"] || '—'}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600">
-                      {record.Vat || '—'}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEdit(record)}
-                          className="text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-1.5 text-xs font-medium"
-                        >
-                          <Edit className="h-3.5 w-3.5" />
-                          <span>Edit</span>
-                        </button>
-                        <button
-                          onClick={() => handleDelete(record)}
-                          className="text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-1.5 text-xs font-medium"
-                        >
-                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                          <span>Delete</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+<div className="flex-1 flex flex-col" style={{ height: 'calc(100vh - 12rem)' }}>
+  {/* Table Container */}
+  <div className="flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
+    <table className="w-full">
+      <thead className="sticky top-0 z-10">
+        <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+            Date
+          </th>
+          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+            Payment Month
+          </th>
+          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+            Project
+          </th>
+          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+            Name
+          </th>
+          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+            Block
+          </th>
+          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+            Lot
+          </th>
+          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+            Amount
+          </th>
+          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+            Penalty
+          </th>
+          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+            Payment Type
+          </th>
+          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+            Due Date
+          </th>
+          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+            VAT
+          </th>
+          <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-slate-100">
+        {loading ? (
+          <tr>
+            <td colSpan={12} className="px-6 py-20">
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-200 border-t-blue-600"></div>
+                  <p className="text-sm text-slate-600 font-medium">Loading payment records...</p>
+                </div>
+              </div>
+            </td>
+          </tr>
+        ) : filteredRecords.length === 0 ? (
+          <tr>
+            <td colSpan={12} className="px-6 py-20">
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mb-6">
+                  <svg className="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-3">No payment records found</h3>
+                <p className="text-slate-500 max-w-md leading-relaxed">
+                  {searchTerm ? 'Try adjusting your search criteria or filters to find the records you\'re looking for.' : 'No records are available at the moment. Check back later or add new payment records.'}
+                </p>
+              </div>
+            </td>
+          </tr>
+        ) : (
+          filteredRecords.map((record) => (
+            <tr key={record.id} className="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0">
+              <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
+                {new Date(record.created_at).toLocaleDateString('en-PH', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </td>
+              <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                {record["Payment for the Month of"] || '—'}
+              </td>
+              <td className="px-6 py-5 whitespace-nowrap">
+                <div className="flex items-center space-x-3">
+                  <div className="w-2.5 h-2.5 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow-sm"></div>
+                  <span className="text-sm font-medium text-slate-800">{record.Project}</span>
+                </div>
+              </td>
+              <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-slate-800">
+                {record.Name}
+              </td>
+              <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700 text-center">
+                {record.Block}
+              </td>
+              <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700 text-center">
+                {record.Lot}
+              </td>
+              <td className="px-6 py-5 whitespace-nowrap">
+                <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-50 to-green-100 text-green-700 border border-green-200/60 shadow-sm">
+                  {new Intl.NumberFormat('en-PH', {
+                    style: 'currency',
+                    currency: 'PHP'
+                  }).format(record.Amount)}
+                </div>
+              </td>
+              <td className="px-6 py-5 whitespace-nowrap">
+                {record.Penalty ? (
+                  <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60 shadow-sm">
+                    {new Intl.NumberFormat('en-PH', {
+                      style: 'currency',
+                      currency: 'PHP'
+                    }).format(record.Penalty)}
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-slate-50 to-slate-100 text-slate-600 border border-slate-200/60 shadow-sm">
+                    ₱0.00
+                  </div>
+                )}
+              </td>
+              <td className="px-6 py-5 whitespace-nowrap">
+                <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border border-blue-200/60 shadow-sm">
+                  {record["Payment Type"] || 'GCASH'}
+                </div>
+              </td>
+              <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                {record["Due Date"] || '—'}
+              </td>
+              <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                {record.Vat || '—'}
+              </td>
+              <td className="px-6 py-5 whitespace-nowrap text-center">
+                <div className="flex justify-center items-center space-x-2">
+                  <button
+                    onClick={() => handleEdit(record)}
+                    className="inline-flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                  >
+                    <Edit className="h-4 w-4 mr-1.5" />
+                    <span>Edit</span>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(record)}
+                    className="inline-flex items-center px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                  >
+                    <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    <span>Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
     </div>
     
       {/* Print Modal */}
