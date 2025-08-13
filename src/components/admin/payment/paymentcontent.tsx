@@ -86,45 +86,144 @@ const ViewReceiptModal: React.FC<ViewReceiptModalProps> = ({ isOpen, onClose, re
 
       // Create the HTML content
       container.innerHTML = `
-        <div style="text-align: center; padding: 20px 0; margin-bottom: 30px; border-bottom: 3px solid #2563eb;">
-          <h2 style="margin: 0; color: #2563eb; font-size: 28px; font-weight: bold;">Payment Receipt</h2>
+  <div style="
+    max-width: 800px; 
+    margin: 0 auto; 
+    padding: 40px; 
+    background: #ffffff; 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #1f2937;
+  ">
+    <!-- Header -->
+    <div style="
+      text-align: center; 
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #e5e7eb;
+    ">
+      <h1 style="
+        margin: 0 0 8px 0; 
+        color: #111827; 
+        font-size: 32px; 
+        font-weight: 700;
+        letter-spacing: -0.025em;
+      ">Payment Receipt</h1>
+      <p style="
+        margin: 0;
+        color: #6b7280;
+        font-size: 16px;
+      ">Official Payment Confirmation</p>
+    </div>
+    
+    <!-- Payment Details Card -->
+    <div style="
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    ">
+      <div style="
+        display: grid;
+        gap: 20px;
+        grid-template-columns: 1fr;
+      ">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px;">
+          <span style="font-weight: 600; color: #374151; font-size: 15px;">Customer Name</span>
+          <span style="color: #111827; font-size: 15px;">${payment.Name}</span>
         </div>
         
-        <div style="width: 100%; margin-bottom: 30px; padding: 20px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px;">
-          <div style="display: flex; align-items: center; margin-bottom: 12px; font-size: 16px;">
-            <div style="color: #1e40af; font-weight: 600; width: 200px; flex-shrink: 0;">Name:</div>
-            <div style="flex-grow: 1;">${payment.Name}</div>
-          </div>
-          <div style="display: flex; align-items: center; margin-bottom: 12px; font-size: 16px;">
-            <div style="color: #1e40af; font-weight: 600; width: 200px; flex-shrink: 0;">Block & Lot:</div>
-            <div style="flex-grow: 1;">${payment['Block & Lot']}</div>
-          </div>
-          <div style="display: flex; align-items: center; margin-bottom: 12px; font-size: 16px;">
-            <div style="color: #1e40af; font-weight: 600; width: 200px; flex-shrink: 0;">Project:</div>
-            <div style="flex-grow: 1;">${payment.Project}</div>
-          </div>
-          <div style="display: flex; align-items: center; margin-bottom: 12px; font-size: 16px;">
-            <div style="color: #1e40af; font-weight: 600; width: 200px; flex-shrink: 0;">Date:</div>
-            <div style="flex-grow: 1;">${payment['Date of Payment']}</div>
-          </div>
-          <div style="display: flex; align-items: center; margin-bottom: 12px; font-size: 16px;">
-            <div style="color: #1e40af; font-weight: 600; width: 200px; flex-shrink: 0;">Payment For The Month Of:</div>
-            <div style="flex-grow: 1;">${formatMonthYear(payment['Month of Payment'])}</div>
-          </div>
-          <div style="display: flex; align-items: center; margin-bottom: 12px; font-size: 16px;">
-            <div style="color: #1e40af; font-weight: 600; width: 200px; flex-shrink: 0;">Due Date:</div>
-            <div style="flex-grow: 1;">${payment['Due Date'] || 'N/A'}</div>
-          </div>
-          <div style="display: flex; align-items: center; padding-top: 12px; border-top: 2px solid #e2e8f0; font-size: 16px;">
-            <div style="color: #1e40af; font-weight: 600; width: 200px; flex-shrink: 0;">Amount:</div>
-            <div style="flex-grow: 1; font-weight: bold;">₱${payment['Payment Amount'].toLocaleString()}</div>
-          </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+          <span style="font-weight: 600; color: #374151; font-size: 15px;">Block & Lot</span>
+          <span style="color: #111827; font-size: 15px;">${payment['Block & Lot']}</span>
         </div>
         
-        <div style="width: 100%; text-align: center;">
-          <img id="receipt-img" src="${receiptUrl}" style="max-width: 500px; height: auto; border: 2px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="Receipt" />
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+          <span style="font-weight: 600; color: #374151; font-size: 15px;">Project</span>
+          <span style="color: #111827; font-size: 15px;">${payment.Project}</span>
         </div>
-      `;
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+          <span style="font-weight: 600; color: #374151; font-size: 15px;">Payment Date</span>
+          <span style="color: #111827; font-size: 15px;">${payment['Date of Payment']}</span>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+          <span style="font-weight: 600; color: #374151; font-size: 15px;">Payment Period</span>
+          <span style="color: #111827; font-size: 15px;">${formatMonthYear(payment['Month of Payment'])}</span>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+          <span style="font-weight: 600; color: #374151; font-size: 15px;">Due Date</span>
+          <span style="color: #111827; font-size: 15px;">${payment['Due Date'] || 'N/A'}</span>
+        </div>
+        
+        <!-- Amount - Highlighted -->
+        <div style="
+          display: flex; 
+          justify-content: space-between; 
+          align-items: center; 
+          padding: 20px;
+          margin-top: 12px;
+          background: #dbeafe;
+          border: 1px solid #bfdbfe;
+          border-radius: 8px;
+        ">
+          <span style="font-weight: 700; color: #1e40af; font-size: 18px;">Total Amount</span>
+          <span style="font-weight: 800; color: #1e40af; font-size: 24px;">₱${payment['Payment Amount'].toLocaleString()}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Receipt Image -->
+    <div style="
+      text-align: center;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    ">
+      <h3 style="
+        margin: 0 0 20px 0;
+        color: #374151;
+        font-size: 18px;
+        font-weight: 600;
+      ">Receipt Document</h3>
+      
+      <img 
+        id="receipt-img" 
+        src="${receiptUrl}" 
+        style="
+          max-width: 100%; 
+          height: auto; 
+          border-radius: 8px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          transition: transform 0.2s ease-in-out;
+        " 
+        alt="Payment Receipt"
+        onmouseover="this.style.transform='scale(1.02)'"
+        onmouseout="this.style.transform='scale(1)'"
+      />
+    </div>
+    
+    <!-- Footer -->
+    <div style="
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+    ">
+      <p style="
+        margin: 0;
+        color: #9ca3af;
+        font-size: 14px;
+      ">Thank you for your payment • This is an official receipt</p>
+    </div>
+  </div>
+`;
 
       document.body.appendChild(container);
 
@@ -1212,6 +1311,7 @@ const PaymentPage: React.FC = () => {
   const [showNoARReceiptsOnly, setShowNoARReceiptsOnly] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [isLoadingPayments, setIsLoadingPayments] = useState(false);
+  const [totalPaymentCount, setTotalPaymentCount] = useState<number>(0);
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [isLoadingReceipt, setIsLoadingReceipt] = useState(false);
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
@@ -1224,6 +1324,10 @@ const PaymentPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProject, setSelectedProject] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(500); // Show 50 records per page
   
   const projects = [
     'all',
@@ -1319,7 +1423,12 @@ const PaymentPage: React.FC = () => {
 
   useEffect(() => {
     fetchAllPayments();
-  }, []);
+  }, [currentPage]); // Refetch when page changes
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedProject, selectedStatus, showNoARReceiptsOnly]);
 
   const filteredPayments = useMemo(() => {
     return payments.filter(payment => {
@@ -1331,17 +1440,28 @@ const PaymentPage: React.FC = () => {
     });
   }, [payments, searchTerm, selectedProject, selectedStatus, showNoARReceiptsOnly]);
 
-
   const fetchAllPayments = async () => {
     setIsLoadingPayments(true);
     try {
+      // First, get the total count
+      const { count, error: countError } = await supabase
+        .from('Payment')
+        .select('*', { count: 'exact', head: true });
+
+      if (countError) throw countError;
+      setTotalPaymentCount(count ?? 0);
+
+      // Calculate offset for pagination
+      const offset = (currentPage - 1) * pageSize;
+
+      // Fetch paginated records
       const { data, error } = await supabase
         .from('Payment')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(offset, offset + pageSize - 1);
 
       if (error) throw error;
-      
       setPayments(data || []);
     } catch (error) {
       console.error('Error fetching payments:', error);
@@ -1368,7 +1488,6 @@ const PaymentPage: React.FC = () => {
     }
   };
 
-
   // Handler for deleting a payment
   const handleDeletePayment = async (payment: Payment) => {
     try {
@@ -1382,6 +1501,23 @@ const PaymentPage: React.FC = () => {
     } catch (error) {
       console.error('Error deleting payment:', error);
       toast.error('Failed to delete payment');
+    }
+  };
+
+  // Pagination calculations
+  const totalPages = Math.ceil(totalPaymentCount / pageSize);
+  const startRecord = (currentPage - 1) * pageSize + 1;
+  const endRecord = Math.min(currentPage * pageSize, totalPaymentCount);
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
@@ -1414,7 +1550,7 @@ const PaymentPage: React.FC = () => {
                           </svg>
                         </div>
                         <div>
-                          <span className="font-bold text-xl text-white">{filteredPayments.length}</span>
+                          <span className="font-bold text-xl text-white">{totalPaymentCount}</span>
                           <span className="ml-2 text-slate-300 text-sm">Total Records</span>
                         </div>
                       </div>
@@ -1472,314 +1608,352 @@ const PaymentPage: React.FC = () => {
 
                 {/* Bottom Filters */}
                 <div className="mt-6 pt-4 border-t border-slate-700">
-                  <div className="flex flex-wrap items-center gap-4">
-                    {/* No AR Receipt Filter */}
-                    <label className="flex items-center space-x-2 text-sm text-slate-200">
-                      <input
-                        type="checkbox"
-                        checked={showNoARReceiptsOnly}
-                        onChange={e => setShowNoARReceiptsOnly(e.target.checked)}
-                        className="form-checkbox h-4 w-4 text-blue-400 bg-slate-700 border-slate-600 rounded focus:ring-blue-400"
-                      />
-                      <span>No AR Receipt</span>
-                    </label>
-                    
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex flex-wrap items-center gap-4">
+                      {/* No AR Receipt Filter */}
+                      <label className="flex items-center space-x-2 text-sm text-slate-200">
+                        <input
+                          type="checkbox"
+                          checked={showNoARReceiptsOnly}
+                          onChange={e => setShowNoARReceiptsOnly(e.target.checked)}
+                          className="form-checkbox h-4 w-4 text-blue-400 bg-slate-700 border-slate-600 rounded focus:ring-blue-400"
+                        />
+                        <span>No AR Receipt</span>
+                      </label>
 
-                    {/* Project Filter */}
-                    <div className="relative">
-                      <select
-                        value={selectedProject}
-                        onChange={(e) => setSelectedProject(e.target.value)}
-                        className="block w-48 h-10 pl-3 pr-10 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white cursor-pointer appearance-none"
-                      >
-                        {projects.map((project) => (
-                          <option key={project} value={project}>
-                            {project === 'all' ? 'All Projects' : project}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
+                      {/* Project Filter */}
+                      <div className="relative">
+                        <select
+                          value={selectedProject}
+                          onChange={(e) => setSelectedProject(e.target.value)}
+                          className="block w-48 h-10 pl-3 pr-10 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white cursor-pointer appearance-none"
+                        >
+                          {projects.map((project) => (
+                            <option key={project} value={project}>
+                              {project === 'all' ? 'All Projects' : project}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                      
+                      {/* Status Filter */}
+                      <div className="relative">
+                        <select
+                          value={selectedStatus}
+                          onChange={(e) => setSelectedStatus(e.target.value)}
+                          className="block w-48 h-10 pl-3 pr-10 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white cursor-pointer appearance-none"
+                        >
+                          {statuses.map((status) => (
+                            <option key={status.value} value={status.value}>
+                              {status.label}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    
-                    {/* Status Filter */}
-                    <div className="relative">
-                      <select
-                        value={selectedStatus}
-                        onChange={(e) => setSelectedStatus(e.target.value)}
-                        className="block w-48 h-10 pl-3 pr-10 text-sm bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white cursor-pointer appearance-none"
-                      >
-                        {statuses.map((status) => (
-                          <option key={status.value} value={status.value}>
-                            {status.label}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
+
+                    {/* Pagination Controls */}
+                    <div className="flex items-center gap-4">
+                      <div className="text-sm text-slate-300">
+                        {totalPaymentCount > 0 ? (
+                          <>Showing {startRecord}-{endRecord} of {totalPaymentCount}</>
+                        ) : (
+                          'No records'
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={handlePreviousPage}
+                          disabled={currentPage <= 1 || isLoadingPayments}
+                          className="p-2 text-slate-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                        </button>
+                        <span className="text-sm text-slate-300 min-w-[60px] text-center">
+                          {currentPage} / {totalPages}
+                        </span>
+                        <button
+                          onClick={handleNextPage}
+                          disabled={currentPage >= totalPages || isLoadingPayments}
+                          className="p-2 text-slate-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-  
+
             {/* Table Section - No scrolling */}
-<div className="flex-1 overflow-hidden">
-  {isLoadingPayments ? (
-    <div className="flex justify-center py-12">
-      <div className="flex flex-col items-center space-y-3">
-        <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-200 border-t-blue-600"></div>
-        <p className="text-sm text-slate-600 font-medium">Loading payments...</p>
-      </div>
-    </div>
-  ) : filteredPayments.length > 0 ? (
-    <div className="overflow-y-auto h-full">
-      <div className="max-h-[80vh] flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
-        <table className="min-w-full table-auto">
-          <thead className="sticky top-0 z-10">
-            <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Payment Date</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Payment For The Month Of</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Due Date</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Name</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Reference Number</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Project</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Block & Lot</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Amount</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Penalty Amount</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">VAT</th>
-              <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Client Receipt</th>
-              <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">AR Receipt</th>
-              <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Action</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {filteredPayments.map((payment, index) => (
-              <tr key={index} className="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0">
-                <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
-                  {new Date(payment["Date of Payment"]).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                  {payment["Month of Payment"] ? new Date(payment["Month of Payment"]).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                  {payment["Due Date"] || 'N/A'}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-slate-800">
-                  {payment.Name}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
-                  {payment["Reference Number"] || 'N/A'}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                  {payment.Project}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                  {payment["Block & Lot"]}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-slate-800">
-                  <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-50 to-green-100 text-green-700 border border-green-200/60 shadow-sm">
-                    ₱{payment["Payment Amount"].toLocaleString()}
+            <div className="flex-1 overflow-hidden">
+              {isLoadingPayments ? (
+                <div className="flex justify-center py-12">
+                  <div className="flex flex-col items-center space-y-3">
+                    <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-200 border-t-blue-600"></div>
+                    <p className="text-sm text-slate-600 font-medium">Loading payments...</p>
                   </div>
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                  {payment["Penalty Amount"] ? (
-                    <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60 shadow-sm">
-                      ₱{payment["Penalty Amount"].toLocaleString()}
-                    </div>
-                  ) : (
-                    <span className="text-slate-400">N/A</span>
-                  )}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                  {payment.Vat || 'N/A'}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-center">
-                  {payment.receipt_path ? (
-                    <button
-                      onClick={() => handleViewReceipt(payment)}
-                      disabled={isLoadingReceipt}
-                      className={`inline-flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md ${
-                        isLoadingReceipt ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                    >
-                      {isLoadingReceipt ? (
-                        <svg className="animate-spin h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      )}
-                      <span>{isLoadingReceipt ? 'Loading...' : 'View'}</span>
-                    </button>
-                  ) : payment.Status === "Approved" ? (
-                    <>
-                      <input
-                        type="file"
-                        id={`receipt-upload-${payment.id}`}
-                        className="hidden"
-                        accept="image/*,.pdf"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            handleUploadReceipt(payment, file, false);
-                          }
-                        }}
-                      />
-                      <button
-                        onClick={() => document.getElementById(`receipt-upload-${payment.id}`)?.click()}
-                        className="inline-flex items-center px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 hover:text-purple-800 rounded-lg border border-purple-200 hover:border-purple-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
-                        <span>Upload</span>
-                      </button>
-                    </>
-                  ) : (
-                    <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-slate-400 bg-slate-50 border border-slate-200">No receipt</span>
-                  )}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-center">
-                  {payment.ar_receipt_path ? (
-                    <button
-                      onClick={() => handleViewReceipt(payment, true)}
-                      disabled={isLoadingReceipt}
-                      className={`inline-flex items-center px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md ${
-                        isLoadingReceipt ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                    >
-                      {isLoadingReceipt ? (
-                        <svg className="animate-spin h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      )}
-                      <span>{isLoadingReceipt ? 'Loading...' : 'View AR'}</span>
-                    </button>
-                  ) : payment.Status === "Approved" ? (
-                    <>
-                      <input
-                        type="file"
-                        id={`ar-receipt-upload-${payment.id}`}
-                        className="hidden"
-                        accept="image/*,.pdf"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            handleUploadReceipt(payment, file, true);
-                          }
-                        }}
-                      />
-                      <button
-                        onClick={() => document.getElementById(`ar-receipt-upload-${payment.id}`)?.click()}
-                        className="inline-flex items-center px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
-                        <span>Upload AR</span>
-                      </button>
-                    </>
-                  ) : (
-                    <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-slate-400 bg-slate-50 border border-slate-200">No AR receipt</span>
-                  )}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-center">
-                  <div className="flex justify-center items-center space-x-2">
-                    {payment.Status === "Pending" && (
-                      <>
-                        <button
-                          onClick={() => {
-                            setEditingPayment(payment);
-                            setIsEditModalOpen(true);
-                          }}
-                          className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                          <span>Edit</span>
-                        </button>
-                        <button
-                          onClick={() => handleConfirmPayment(payment)}
-                          className="inline-flex items-center px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span>Confirm</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                          }}
-                          className="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                          <span>Reject</span>
-                        </button>
-                      </>
-                    )}
-                    <button
-                      onClick={() => {
-                        setDeletingPayment(payment);
-                        setIsDeleteModalOpen(true);
-                      }}
-                      className="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                      <span>Delete</span>
-                    </button>
+                </div>
+              ) : filteredPayments.length > 0 ? (
+                <div className="overflow-y-auto h-full">
+                <div className="max-h-[80vh] flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
+                  {/* Horizontal Scroll Wrapper */}
+                  <div className="overflow-x-auto">
+                    <table className="min-w-[1500px] table-auto">
+                      <thead className="sticky top-0 z-10 bg-white">
+                        <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Payment Date</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Payment For The Month Of</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Due Date</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Name</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Reference Number</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Project</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Block & Lot</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Amount</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Penalty Amount</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">VAT</th>
+                          <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Client Receipt</th>
+                          <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">AR Receipt</th>
+                          <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Action</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {filteredPayments.map((payment, index) => (
+                          <tr key={index} className="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0">
+                            <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
+                              {new Date(payment["Date of Payment"]).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                              {payment["Month of Payment"] ? new Date(payment["Month of Payment"]).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                              {payment["Due Date"] || 'N/A'}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-slate-800">
+                              {payment.Name}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
+                              {payment["Reference Number"] || 'N/A'}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                              {payment.Project}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                              {payment["Block & Lot"]}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-slate-800">
+                              <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-50 to-green-100 text-green-700 border border-green-200/60 shadow-sm">
+                                ₱{payment["Payment Amount"].toLocaleString()}
+                              </div>
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                              {payment["Penalty Amount"] ? (
+                                <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60 shadow-sm">
+                                  ₱{payment["Penalty Amount"].toLocaleString()}
+                                </div>
+                              ) : (
+                                <span className="text-slate-400">N/A</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                              {payment.Vat || 'N/A'}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-center">
+                              {payment.receipt_path ? (
+                                <button
+                                  onClick={() => handleViewReceipt(payment)}
+                                  disabled={isLoadingReceipt}
+                                  className={`inline-flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md ${
+                                    isLoadingReceipt ? 'opacity-50 cursor-not-allowed' : ''
+                                  }`}
+                                >
+                                  {isLoadingReceipt ? (
+                                    <svg className="animate-spin h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                  ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                  )}
+                                  <span>{isLoadingReceipt ? 'Loading...' : 'View'}</span>
+                                </button>
+                              ) : payment.Status === "Approved" ? (
+                                <>
+                                  <input
+                                    type="file"
+                                    id={`receipt-upload-${payment.id}`}
+                                    className="hidden"
+                                    accept="image/*,.pdf"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        handleUploadReceipt(payment, file, false);
+                                      }
+                                    }}
+                                  />
+                                  <button
+                                    onClick={() => document.getElementById(`receipt-upload-${payment.id}`)?.click()}
+                                    className="inline-flex items-center px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 hover:text-purple-800 rounded-lg border border-purple-200 hover:border-purple-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                    <span>Upload</span>
+                                  </button>
+                                </>
+                              ) : (
+                                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-slate-400 bg-slate-50 border border-slate-200">No receipt</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-center">
+                              {payment.ar_receipt_path ? (
+                                <button
+                                  onClick={() => handleViewReceipt(payment, true)}
+                                  disabled={isLoadingReceipt}
+                                  className={`inline-flex items-center px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md ${
+                                    isLoadingReceipt ? 'opacity-50 cursor-not-allowed' : ''
+                                  }`}
+                                >
+                                  {isLoadingReceipt ? (
+                                    <svg className="animate-spin h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                  ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                  )}
+                                  <span>{isLoadingReceipt ? 'Loading...' : 'View AR'}</span>
+                                </button>
+                              ) : payment.Status === "Approved" ? (
+                                <>
+                                  <input
+                                    type="file"
+                                    id={`ar-receipt-upload-${payment.id}`}
+                                    className="hidden"
+                                    accept="image/*,.pdf"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        handleUploadReceipt(payment, file, true);
+                                      }
+                                    }}
+                                  />
+                                  <button
+                                    onClick={() => document.getElementById(`ar-receipt-upload-${payment.id}`)?.click()}
+                                    className="inline-flex items-center px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                    <span>Upload AR</span>
+                                  </button>
+                                </>
+                              ) : (
+                                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-slate-400 bg-slate-50 border border-slate-200">No AR receipt</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-center">
+                              <div className="flex justify-center items-center space-x-2">
+                                {payment.Status === "Pending" && (
+                                  <>
+                                    <button
+                                      onClick={() => {
+                                        setEditingPayment(payment);
+                                        setIsEditModalOpen(true);
+                                      }}
+                                      className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                      </svg>
+                                      <span>Edit</span>
+                                    </button>
+                                    <button
+                                      onClick={() => handleConfirmPayment(payment)}
+                                      className="inline-flex items-center px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      <span>Confirm</span>
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                      }}
+                                      className="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                      </svg>
+                                      <span>Reject</span>
+                                    </button>
+                                  </>
+                                )}
+                                <button
+                                  onClick={() => {
+                                    setDeletingPayment(payment);
+                                    setIsDeleteModalOpen(true);
+                                  }}
+                                  className="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                  <span>Delete</span>
+                                </button>
+                              </div>
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm
+                                ${payment.Status === "Approved" ? "bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60" : 
+                                  payment.Status === "Rejected" ? "bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60" : 
+                                  "bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 border border-amber-200/60"}`}>
+                                {payment.Status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap">
-                  <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm
-                    ${payment.Status === "Approved" ? "bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60" : 
-                      payment.Status === "Rejected" ? "bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60" : 
-                      "bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 border border-amber-200/60"}`}>
-                    {payment.Status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  ) : (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mb-6">
-        <svg className="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-        </svg>
-      </div>
-      <h3 className="text-xl font-semibold text-slate-800 mb-3">No payments found</h3>
-      <p className="text-slate-500 max-w-md leading-relaxed">
-        There are no payment records to display at the moment. Check back later or adjust your filters.
-      </p>
-    </div>
-  )}
-</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mb-6">
+                    <svg className="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">No payments found</h3>
+                  <p className="text-slate-500 max-w-md leading-relaxed">
+                    There are no payment records to display at the moment. Check back later or adjust your filters.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1794,8 +1968,6 @@ const PaymentPage: React.FC = () => {
           isLoading={isLoadingReceipt}
           payment={viewingPayment}
         />
-
-
 
         {/* Upload Payment Modal */}
         <UploadPaymentModal

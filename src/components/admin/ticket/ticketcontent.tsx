@@ -250,101 +250,101 @@ function TicketPage() {
                 </div>
               </div>
             ) : (
-<div className="overflow-hidden bg-white rounded-xl shadow-sm border border-slate-200/60">
-  <table className="min-w-full">
-    <thead className="sticky top-0 z-10">
-      <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-        <th scope="col" className="py-4 pl-6 pr-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-          Ticket ID
-        </th>
-        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-          Client Name
-        </th>
-        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-          Subject
-        </th>
-        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-          Status
-        </th>
-        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-          Priority
-        </th>
-        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-          Assigned To
-        </th>
-        <th scope="col" className="relative py-4 pl-3 pr-6 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide">
-          Actions
-        </th>
-      </tr>
-    </thead>
-    <tbody className="divide-y divide-slate-100">
-      {filteredTickets.map((ticket) => (
-        <tr 
-          key={ticket.id} 
-          className="group hover:bg-slate-50/80 cursor-pointer transition-all duration-200 border-b border-slate-50 last:border-b-0"
-          onClick={() => openTicketModal(ticket)}
-        >
-          <td className="whitespace-nowrap py-5 pl-6 pr-3 text-sm font-bold text-slate-900">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow-sm"></div>
-              <span>#{ticket.id}</span>
-            </div>
-          </td>
-          <td className="whitespace-nowrap px-6 py-5 text-sm font-semibold text-slate-800">
-            {ticket.Name}
-          </td>
-          <td className="px-6 py-5 text-sm text-slate-600 max-w-xs">
-            <div className="truncate" title={ticket.Subject}>
-              {ticket.Subject}
-            </div>
-          </td>
-          <td className="whitespace-nowrap px-6 py-5 text-sm">
-            <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r shadow-sm ${
-              ticket.Status === 'Resolved' ? 'from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60' :
-              ticket.Status === 'In Progress' || ticket.Status === 'in_progress' ? 'from-amber-50 to-amber-100 text-amber-700 border border-amber-200/60' :
-              'from-blue-50 to-blue-100 text-blue-700 border border-blue-200/60'
-            }`}>
-              {ticket.Status.replace('_', ' ').toUpperCase()}
-            </div>
-          </td>
-          <td className="whitespace-nowrap px-6 py-5 text-sm">
-            <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-purple-50 to-purple-100 text-purple-700 border border-purple-200/60 shadow-sm">
-              {ticket.Priority.toUpperCase()}
-            </div>
-          </td>
-          <td className="whitespace-nowrap px-6 py-5 text-sm text-slate-700">
-            {ticket.Assigned || (
-              <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-slate-400 bg-slate-50 border border-slate-200 italic">
-                Unassigned
-              </span>
-            )}
-          </td>
-          <td className="relative whitespace-nowrap py-5 pl-3 pr-6 text-center">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                openTicketModal(ticket);
-              }}
-              className="inline-flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md group-hover:shadow-md"
-            >
-              <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              View
-              <span className="sr-only">, ticket #{ticket.id}</span>
-            </button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-            )}
+          <div className="overflow-hidden bg-white rounded-xl shadow-sm border border-slate-200/60">
+            <table className="min-w-full">
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                  <th scope="col" className="py-4 pl-6 pr-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                    Ticket ID
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                    Client Name
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                    Subject
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                    Status
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                    Priority
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                    Assigned To
+                  </th>
+                  <th scope="col" className="relative py-4 pl-3 pr-6 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredTickets.map((ticket) => (
+                  <tr 
+                    key={ticket.id} 
+                    className="group hover:bg-slate-50/80 cursor-pointer transition-all duration-200 border-b border-slate-50 last:border-b-0"
+                    onClick={() => openTicketModal(ticket)}
+                  >
+                    <td className="whitespace-nowrap py-5 pl-6 pr-3 text-sm font-bold text-slate-900">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow-sm"></div>
+                        <span>#{ticket.id}</span>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-5 text-sm font-semibold text-slate-800">
+                      {ticket.Name}
+                    </td>
+                    <td className="px-6 py-5 text-sm text-slate-600 max-w-xs">
+                      <div className="truncate" title={ticket.Subject}>
+                        {ticket.Subject}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-5 text-sm">
+                      <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r shadow-sm ${
+                        ticket.Status === 'Resolved' ? 'from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60' :
+                        ticket.Status === 'In Progress' || ticket.Status === 'in_progress' ? 'from-amber-50 to-amber-100 text-amber-700 border border-amber-200/60' :
+                        'from-blue-50 to-blue-100 text-blue-700 border border-blue-200/60'
+                      }`}>
+                        {ticket.Status.replace('_', ' ').toUpperCase()}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-5 text-sm">
+                      <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-purple-50 to-purple-100 text-purple-700 border border-purple-200/60 shadow-sm">
+                        {ticket.Priority.toUpperCase()}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-5 text-sm text-slate-700">
+                      {ticket.Assigned || (
+                        <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-slate-400 bg-slate-50 border border-slate-200 italic">
+                          Unassigned
+                        </span>
+                      )}
+                    </td>
+                    <td className="relative whitespace-nowrap py-5 pl-3 pr-6 text-center">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openTicketModal(ticket);
+                        }}
+                        className="inline-flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md group-hover:shadow-md"
+                      >
+                        <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        View
+                        <span className="sr-only">, ticket #{ticket.id}</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+                      )}
+                    </div>
 
-        </div>
-      </div>
+                  </div>
+                </div>
 
       {/* Ticket Detail Modal */}
       {selectedTicket && (

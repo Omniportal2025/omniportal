@@ -275,9 +275,9 @@ const DocumentsContent: React.FC = () => {
   return (
     <div className="p-0">
       {/* Single Unified Card */}
-      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden h-[calc(100vh-4rem)]">
+      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden" style={{ height: 'calc(100vh - 4rem)' }}>
         {/* Hero Header Section */}
-        <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 relative overflow-hidden flex-shrink-0">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full transform translate-x-16 -translate-y-16"></div>
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full transform -translate-x-12 translate-y-12"></div>
@@ -377,177 +377,182 @@ const DocumentsContent: React.FC = () => {
           </div>
         </div>
 
-        {/* Content Section */}
-        <div className="flex-1 flex flex-col">
-          {/* Table Section */}
-          <div className="flex-1 flex flex-col" style={{ height: 'calc(100vh - 12rem)' }}>
-            {/* Table Container */}
-            <div className="flex-1 overflow-auto">
-              <table className="w-full divide-y divide-slate-200">
-                <thead className="sticky top-0 bg-gradient-to-r from-slate-700 to-slate-800 z-10">
-                    <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                        Address
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                        TIN ID
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                        Email
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                        Contact No
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                        Marital Status
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                        Uploaded
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                        Documents
-                      </th>
-                      <th scope="col" className="relative px-6 py-3">
-                        <span className="sr-only">Actions</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-slate-200">
-                    {loading ? (
-                      <tr>
-                        <td colSpan={9} className="px-6 py-12 text-center">
-                          <div className="flex flex-col items-center justify-center">
-                            <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-2" />
-                            <p className="text-slate-600">Loading documents...</p>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : error ? (
-                      <tr>
-                        <td colSpan={9} className="px-6 py-12 text-center">
-                          <div className="text-red-600">{error}</div>
-                        </td>
-                      </tr>
-                    ) : filteredDocuments.length > 0 ? (
-                      filteredDocuments.map((doc) => (
-                        <tr key={doc.id} className="hover:bg-slate-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-slate-900">{doc.Name || 'N/A'}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-slate-600">{doc.Address || 'N/A'}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-slate-600">{doc['TIN ID'] || 'N/A'}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-blue-600">{doc.Email || 'N/A'}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-slate-600">{doc['Contact No'] || 'N/A'}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2 py-1 text-xs rounded-full ${
-                              doc['Marital Status'] === 'Married' 
-                                ? 'bg-green-100 text-green-800' 
-                                : doc['Marital Status'] === 'Single'
-                                ? 'bg-blue-100 text-blue-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}>
-                              {doc['Marital Status'] || 'N/A'}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-slate-500">{formatDate(doc.created_at || '')}</div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="space-y-2">
-                              {doc['Document URLs'] && doc['Document URLs'].length > 0 ? (
-                                doc['Document URLs'].map((docUrl, index) => {
-                                  const downloadKey = `${doc.id}-${index}`;
-                                  const isDownloading = downloadingItems.has(downloadKey);
-                                  
-                                  return (
-                                    <div key={index} className="flex items-center gap-2">
-                                      <button
-                                        onClick={() => handleDownloadDocument(docUrl, doc.Name, doc.id, index)}
-                                        disabled={isDownloading}
-                                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 rounded-sm hover:bg-blue-100 hover:border-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                      >
-                                        {isDownloading ? (
-                                          <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
-                                        ) : (
-                                          <Download className="w-3 h-3 mr-1.5" />
-                                        )}
-                                        {isDownloading ? 'Downloading...' : `PDF ${index + 1}`}
-                                      </button>
-                                      <button
-                                        onClick={() => handleRemoveDocument(doc.id, index)}
-                                        className="text-red-500 hover:text-red-700 p-1"
-                                        title="Remove document"
-                                      >
-                                        <X className="w-3 h-3" />
-                                      </button>
-                                    </div>
-                                  );
-                                })
-                              ) : (
-                                <span className="inline-flex items-center px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-500 border border-gray-200 rounded-sm">
-                                  No documents
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <input
-                              type="file"
-                              ref={(el) => (fileInputRefs.current[doc.id] = el)}
-                              onChange={(e) => handleFileChange(e, doc.id)}
-                              accept=".pdf"
-                              className="hidden"
-                            />
-                            <button 
-                              onClick={() => handleUploadClick(doc.id)}
-                              disabled={uploadingDocId === doc.id}
-                              className="inline-flex items-center text-blue-600 hover:text-blue-900 disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="Upload new document"
-                            >
-                              {uploadingDocId === doc.id ? (
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                              ) : (
-                                <Plus className="h-5 w-5" />
-                              )}
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={9} className="px-6 py-12 text-center">
-                          <div className="flex flex-col items-center justify-center">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full mb-4">
-                              <File className="h-8 w-8 text-blue-600" />
-                            </div>
-                            <h3 className="text-lg font-medium text-slate-900 mb-1">No documents found</h3>
-                            <p className="text-slate-500 max-w-md">
-                              {searchQuery
-                                ? 'No documents match your search criteria.'
-                                : 'No documents available. Get started by adding a new document.'}
-                            </p>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+        {/* Content Section - The scrollable table area */}
+        <div className="flex-1 min-h-0 overflow-auto">
+          <table className="w-full">
+            <thead className="sticky top-0 z-10 bg-gradient-to-r from-slate-50 to-slate-100">
+              <tr className="border-b border-slate-200">
+                <th scope="col" className="py-4 pl-6 pr-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                  Name
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                  Address
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                  TIN ID
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                  Email
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                  Contact No
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                  Marital Status
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                  Uploaded
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                  Documents
+                </th>
+                <th scope="col" className="relative py-4 pl-3 pr-6 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white">
+              {loading ? (
+                <tr>
+                  <td colSpan={9} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center justify-center">
+                      <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-2" />
+                      <p className="text-slate-600">Loading documents...</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan={9} className="px-6 py-12 text-center">
+                    <div className="text-red-600">{error}</div>
+                  </td>
+                </tr>
+              ) : filteredDocuments.length > 0 ? (
+                filteredDocuments.map((doc) => (
+                  <tr 
+                    key={doc.id} 
+                    className="group hover:bg-slate-50/80 cursor-pointer transition-all duration-200 border-b border-slate-50 last:border-b-0"
+                  >
+                    <td className="whitespace-nowrap py-5 pl-6 pr-3 text-sm font-bold text-slate-900">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow-sm"></div>
+                        <span>{doc.Name || 'N/A'}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 text-sm text-slate-700 max-w-xs">
+                      <div className="truncate" title={doc.Address}>
+                        {doc.Address || 'N/A'}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-5 text-sm font-semibold text-slate-800">
+                      {doc['TIN ID'] || 'N/A'}
+                    </td>
+                    <td className="px-6 py-5 text-sm">
+                      <div className="text-blue-600 hover:text-blue-800 transition-colors">
+                        {doc.Email || 'N/A'}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-5 text-sm text-slate-700">
+                      {doc['Contact No'] || 'N/A'}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-5 text-sm">
+                      <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r shadow-sm ${
+                        doc['Marital Status'] === 'Married' 
+                          ? 'from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60' 
+                          : doc['Marital Status'] === 'Single'
+                          ? 'from-blue-50 to-blue-100 text-blue-700 border border-blue-200/60'
+                          : 'from-slate-50 to-slate-100 text-slate-600 border border-slate-200/60'
+                      }`}>
+                        {doc['Marital Status'] || 'N/A'}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-5 text-sm text-slate-500">
+                      {formatDate(doc.created_at || '')}
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="space-y-2">
+                        {doc['Document URLs'] && doc['Document URLs'].length > 0 ? (
+                          doc['Document URLs'].map((docUrl, index) => {
+                            const downloadKey = `${doc.id}-${index}`;
+                            const isDownloading = downloadingItems.has(downloadKey);
+                            
+                            return (
+                              <div key={index} className="flex items-center gap-2">
+                                <button
+                                  onClick={() => handleDownloadDocument(docUrl, doc.Name, doc.id, index)}
+                                  disabled={isDownloading}
+                                  className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {isDownloading ? (
+                                    <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
+                                  ) : (
+                                    <Download className="w-3 h-3 mr-1.5" />
+                                  )}
+                                  {isDownloading ? 'Downloading...' : `PDF ${index + 1}`}
+                                </button>
+                                <button
+                                  onClick={() => handleRemoveDocument(doc.id, index)}
+                                  className="inline-flex items-center justify-center w-7 h-7 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                  title="Remove document"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-slate-400 bg-slate-50 border border-slate-200 italic">
+                            No documents
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="relative whitespace-nowrap py-5 pl-3 pr-6 text-center">
+                      <input
+                        type="file"
+                        ref={(el) => (fileInputRefs.current[doc.id] = el)}
+                        onChange={(e) => handleFileChange(e, doc.id)}
+                        accept=".pdf"
+                        className="hidden"
+                      />
+                      <button 
+                        onClick={() => handleUploadClick(doc.id)}
+                        disabled={uploadingDocId === doc.id}
+                        className="inline-flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed group-hover:shadow-md"
+                        title="Upload new document"
+                      >
+                        {uploadingDocId === doc.id ? (
+                          <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                        ) : (
+                          <Plus className="h-4 w-4 mr-1.5" />
+                        )}
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={9} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full mb-4">
+                        <File className="h-8 w-8 text-blue-600" />
+                      </div>
+                      <h3 className="text-lg font-medium text-slate-900 mb-1">No documents found</h3>
+                      <p className="text-slate-500 max-w-md">
+                        {searchQuery
+                          ? 'No documents match your search criteria.'
+                          : 'No documents available. Get started by adding a new document.'}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
+    </div>
   );
 };
 
