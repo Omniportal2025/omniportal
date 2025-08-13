@@ -1327,7 +1327,7 @@ const PaymentPage: React.FC = () => {
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(500); // Show 50 records per page
+  const [pageSize] = useState(50); // Show 50 records per page
   
   const projects = [
     'all',
@@ -1423,41 +1423,73 @@ const PaymentPage: React.FC = () => {
 
   useEffect(() => {
     fetchAllPayments();
-  }, [currentPage]); // Refetch when page changes
+  }, [currentPage, searchTerm, selectedProject, selectedStatus, showNoARReceiptsOnly]); // Refetch when any filter changes
 
-  // Reset to first page when filters change
+  // Reset to first page when filters change (except currentPage)
   useEffect(() => {
-    setCurrentPage(1);
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    }
   }, [searchTerm, selectedProject, selectedStatus, showNoARReceiptsOnly]);
 
-  const filteredPayments = useMemo(() => {
-    return payments.filter(payment => {
-      const matchesSearch = payment.Name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesProject = selectedProject === 'all' || payment.Project === selectedProject;
-      const matchesStatus = selectedStatus === 'all' || payment.Status === selectedStatus;
-      const matchesNoAR = !showNoARReceiptsOnly || !payment.ar_receipt_path;
-      return matchesSearch && matchesProject && matchesStatus && matchesNoAR;
-    });
-  }, [payments, searchTerm, selectedProject, selectedStatus, showNoARReceiptsOnly]);
+  const filteredPayments = payments; // No need for client-side filtering anymore
 
   const fetchAllPayments = async () => {
     setIsLoadingPayments(true);
     try {
-      // First, get the total count
-      const { count, error: countError } = await supabase
-        .from('Payment')
-        .select('*', { count: 'exact', head: true });
+      // Build query with filters
+      let query = supabase.from('Payment').select('*', { count: 'exact' });
+      
+      // Apply search filter if exists
+      if (searchTerm.trim()) {
+        query = query.ilike('Name', `%${searchTerm}%`);
+      }
+      
+      // Apply project filter
+      if (selectedProject !== 'all') {
+        query = query.eq('Project', selectedProject);
+      }
+      
+      // Apply status filter
+      if (selectedStatus !== 'all') {
+        query = query.eq('Status', selectedStatus);
+      }
+      
+      // Apply AR receipt filter
+      if (showNoARReceiptsOnly) {
+        query = query.is('ar_receipt_path', null);
+      }
 
+      // Get total count with filters
+      const { count, error: countError } = await query;
       if (countError) throw countError;
       setTotalPaymentCount(count ?? 0);
+
+      // Reset query for actual data fetch
+      query = supabase.from('Payment').select('*');
+      
+      // Apply same filters for data
+      if (searchTerm.trim()) {
+        query = query.ilike('Name', `%${searchTerm}%`);
+      }
+      
+      if (selectedProject !== 'all') {
+        query = query.eq('Project', selectedProject);
+      }
+      
+      if (selectedStatus !== 'all') {
+        query = query.eq('Status', selectedStatus);
+      }
+      
+      if (showNoARReceiptsOnly) {
+        query = query.is('ar_receipt_path', null);
+      }
 
       // Calculate offset for pagination
       const offset = (currentPage - 1) * pageSize;
 
-      // Fetch paginated records
-      const { data, error } = await supabase
-        .from('Payment')
-        .select('*')
+      // Fetch paginated filtered records
+      const { data, error } = await query
         .order('created_at', { ascending: false })
         .range(offset, offset + pageSize - 1);
 
@@ -1563,7 +1595,7 @@ const PaymentPage: React.FC = () => {
                         </div>
                         <div>
                           <span className="font-bold text-xl text-white">{filteredPayments.length}</span>
-                          <span className="ml-2 text-slate-300 text-sm">Showing</span>
+                          <span className="ml-2 text-slate-300 text-sm">Current Page</span>
                         </div>
                       </div>
                     </div>
@@ -1700,7 +1732,7 @@ const PaymentPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Table Section - No scrolling */}
+            {/* Table Section */}
             <div className="flex-1 overflow-hidden">
               {isLoadingPayments ? (
                 <div className="flex justify-center py-12">
@@ -1710,11 +1742,11 @@ const PaymentPage: React.FC = () => {
                   </div>
                 </div>
               ) : filteredPayments.length > 0 ? (
-                <div className="overflow-y-auto h-full">
-                <div className="max-h-[80vh] flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
-                  {/* Horizontal Scroll Wrapper */}
-                  <div className="overflow-x-auto">
-                    <table className="min-w-[1500px] table-auto">
+                <div className="h-full flex flex-col">
+                  {/* Table Container with sticky horizontal scroll */}
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="overflow-x-auto sticky bottom-0">
+                      <table className="min-w-[1500px] table-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
                       <thead className="sticky top-0 z-10 bg-white">
                         <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
                           <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Payment Date</th>
@@ -1936,8 +1968,8 @@ const PaymentPage: React.FC = () => {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
-                  </div>
+                      </table>
+                    </div>
                   </div>
                 </div>
               ) : (
