@@ -1327,7 +1327,7 @@ const PaymentPage: React.FC = () => {
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(50); // Show 50 records per page
+  const [pageSize] = useState(1000); // Show 50 records per page
   
   const projects = [
     'all',

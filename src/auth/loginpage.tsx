@@ -354,7 +354,7 @@ const LoginPage: React.FC = () => {
             </p>
           </form>
           <div className="absolute bottom-4 right-8 text-gray-300">
-            © 2025 ELEVATE HR
+            © 2025 OMNIPORTAL
           </div>
         </div>
       </div>

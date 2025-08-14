@@ -1,11 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { TrendingUp, Target, Award, LogOut } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { TrendingUp, Target, Award, LogOut, Plus, DollarSign, Users, Building2, Upload, ChevronDown } from 'lucide-react';
+import { supabase} from '../../supabase/supabaseClient'; 
+import toast from 'react-hot-toast';
 
-const AgentDashboard: React.FC = () => {
-  const totalSales = 4500000;
+const AgentDashboard = () => {
+  const [totalSales, setTotalSales] = useState(4500000);
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [animatedSales, setAnimatedSales] = useState(0);
+  const [showAddSaleModal, setShowAddSaleModal] = useState(false);
+  const [buyerName, setBuyerName] = useState('');
+  const [sellerName, setSellerName] = useState('');
+  const [projectName, setProjectName] = useState('');
+  const [projectType, setProjectType] = useState('');
+  const [unitDetails, setUnitDetails] = useState('');
+  const [projectDeveloper, setProjectDeveloper] = useState('');
+  const [reservationDate, setReservationDate] = useState('');
+  const [tcp, setTcp] = useState('');
+  const [reservationReceipt, setReservationReceipt] = useState<File | null>(null);
+  const [additionalReceipt, setAdditionalReceipt] = useState<File | null>(null);
 
   const salesTiers = [
     { threshold: 0, allowance: 0, label: 'No Allowance' },
@@ -47,28 +59,150 @@ const AgentDashboard: React.FC = () => {
   const progress = calculateProgress();
   const remainingToNextTier = nextTier ? nextTier.threshold - totalSales : 0;
 
+  const resetForm = () => {
+    setBuyerName('');
+    setSellerName('');
+    setProjectName('');
+    setProjectType('');
+    setUnitDetails('');
+    setProjectDeveloper('');
+    setReservationDate('');
+    setTcp('');
+    setReservationReceipt(null);
+    setAdditionalReceipt(null);
+  };
+
+  const handleAddSale = async () => {
+    const amount = parseFloat(tcp);
+    
+    // Validate required fields
+    if (!amount || amount <= 0 || !buyerName || !sellerName || !projectName || !projectType || !unitDetails || !projectDeveloper || !reservationDate) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+  
+    // Create loading toast once
+    const loadingToastId = toast.loading('Uploading sale information...');
+  
+    try {
+      let reservationURL = null;
+      let receiptURL = null;
+  
+      // 1. Upload reservation receipt to ReservationReceipt bucket
+      if (reservationReceipt) {
+        const fileExt = reservationReceipt.name.split('.').pop() || '';
+        const timestamp = new Date().getTime();
+        const fileName = `${sellerName.trim()}_reservation_${timestamp}.${fileExt}`;
+        const filePath = `${projectName}/${sellerName.trim()}/${fileName}`;
+  
+        const { error: uploadError, data } = await supabase.storage
+          .from('ReservationReceipt')
+          .upload(filePath, reservationReceipt, { upsert: true });
+  
+        if (uploadError) {
+          console.error('Reservation receipt upload error:', uploadError);
+          throw new Error(`Failed to upload reservation receipt: ${uploadError.message}`);
+        }
+  
+        if (!data?.path) {
+          throw new Error('No file path returned from reservation receipt upload');
+        }
+  
+        reservationURL = data.path;
+      }
+  
+      // 2. Upload additional receipt to SalesReceipt bucket
+      if (additionalReceipt) {
+        const fileExt = additionalReceipt.name.split('.').pop() || '';
+        const timestamp = new Date().getTime();
+        const fileName = `${sellerName.trim()}_sales_${timestamp}.${fileExt}`; 
+        const filePath = `${projectName}/${sellerName.trim()}/${fileName}`;
+  
+        const { error: uploadError, data } = await supabase.storage
+          .from('SalesReceipt')
+          .upload(filePath, additionalReceipt, { upsert: true });
+  
+        if (uploadError) {
+          console.error('Sales receipt upload error:', uploadError);
+          throw new Error(`Failed to upload sales receipt: ${uploadError.message}`);
+        }
+  
+        if (!data?.path) {
+          throw new Error('No file path returned from sales receipt upload');
+        }
+  
+        receiptURL = data.path;
+      }
+  
+      // Update the existing toast
+      toast.success('Files uploaded! Saving sale details...', { id: loadingToastId });
+      
+      // Create a new loading toast for the database operation
+      const dbLoadingToastId = toast.loading('Saving sale details...');
+  
+      // 3. Save to Sales table
+      const saleData = {
+        sellersname: sellerName,
+        buyersname: buyerName,
+        projecttype: projectType,
+        phaseblocklotunit: unitDetails,
+        projectdeveloper: projectDeveloper,
+        reservationdate: new Date(reservationDate).toISOString().split('T')[0], // Convert to YYYY-MM-DD format for Date type
+        TCP: tcp,
+        reservationURL: reservationURL,
+        receiptURL: receiptURL,
+        Status: 'pending',
+        created_at: new Date().toISOString()
+      };
+  
+      const { error: dbError } = await supabase
+        .from('Sales')
+        .insert(saleData);
+  
+      if (dbError) {
+        // Dismiss the database loading toast before showing error
+        toast.dismiss(dbLoadingToastId);
+        throw new Error(`Error saving sale information: ${dbError.message}`);
+      }
+  
+      // Success - dismiss loading toast and show success
+      toast.dismiss(dbLoadingToastId);
+      toast.success('Sale added successfully!');
+      
+      setTotalSales(prev => prev + amount);
+      resetForm();
+      setShowAddSaleModal(false);
+  
+    } catch (err: any) {
+      console.error('Error adding sale:', err);
+      toast.error(err.message, { id: loadingToastId });
+    }
+  };
+
+  const handleLogout = () => {
+    window.location.href = '/login';
+  };
+
   useEffect(() => {
     setTimeout(() => setAnimatedProgress(progress), 300);
     setTimeout(() => {
       const increment = totalSales / 50;
-      let current = 0;
-      const interval = setInterval(() => {
-        current += increment;
-        if (current >= totalSales) {
-          setAnimatedSales(totalSales);
-          clearInterval(interval);
-        } else {
-          setAnimatedSales(Math.floor(current));
-        }
-      }, 20);
+      let current = animatedSales;
+      const targetSales = totalSales;
+      
+      if (current < targetSales) {
+        const interval = setInterval(() => {
+          current += increment;
+          if (current >= targetSales) {
+            setAnimatedSales(targetSales);
+            clearInterval(interval);
+          } else {
+            setAnimatedSales(Math.floor(current));
+          }
+        }, 20);
+      }
     }, 100);
   }, [totalSales, progress]);
-
-  const handleLogout = () => {
-    localStorage.clear();
-    sessionStorage.clear();
-    window.location.href = '/login';
-  };
 
   return (
     <div className="bg-gradient-to-br from-white via-blue-50 to-sky-100 min-h-screen text-gray-800 font-sans px-6 py-8">
@@ -77,33 +211,36 @@ const AgentDashboard: React.FC = () => {
           <h1 className="text-3xl font-bold tracking-wide text-sky-800">Agent Dashboard</h1>
           <p className="text-sm text-sky-600">Track your sales and progress</p>
         </div>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition"
-        >
-          <LogOut className="h-4 w-4" />
-          <span className="text-sm font-medium">Logout</span>
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowAddSaleModal(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-medium shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline text-sm tracking-wide">Add Sale</span>
+          </button>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white font-medium shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline text-sm tracking-wide">Logout</span>
+          </button>
+        </div>
       </div>
 
+      {/* Progress Card */}
       {nextTier && (
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/30 p-6 shadow-xl"
-        >
+        <div className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/30 p-6 shadow-xl mb-8">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-sky-800">Progress to Next Tier</h2>
             <span className="text-sm text-sky-600">{animatedProgress.toFixed(1)}% complete</span>
           </div>
           <div className="w-full h-4 bg-sky-100 rounded-full overflow-hidden mb-4">
-            <motion.div
-              className="h-full bg-gradient-to-r from-sky-400 to-blue-600 shadow-lg rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${animatedProgress}%` }}
-              transition={{ duration: 1, ease: 'easeInOut' }}
-            ></motion.div>
+            <div
+              className="h-full bg-gradient-to-r from-sky-400 to-blue-600 shadow-lg rounded-full transition-all duration-1000 ease-out"
+              style={{ width: `${animatedProgress}%` }}
+            ></div>
           </div>
           <div className="flex justify-between text-sm text-sky-700">
             <span>₱{totalSales.toLocaleString()}</span>
@@ -112,43 +249,29 @@ const AgentDashboard: React.FC = () => {
           <p className="text-sm text-sky-600 mt-2">
             ₱{remainingToNextTier.toLocaleString()} remaining to reach <span className="font-semibold">{nextTier.label}</span>
           </p>
-        </motion.div>
+        </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white/60 backdrop-blur-md p-6 rounded-2xl border border-white/30 shadow-md"
-        >
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white/60 backdrop-blur-md p-6 rounded-2xl border border-white/30 shadow-md">
           <div className="flex items-center justify-between mb-2">
             <TrendingUp className="text-blue-600" />
           </div>
           <p className="text-sm text-sky-600">Total Sales</p>
           <p className="text-2xl font-bold text-sky-900">₱{animatedSales.toLocaleString()}</p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white/60 backdrop-blur-md p-6 rounded-2xl border border-white/30 shadow-md"
-        >
+        <div className="bg-white/60 backdrop-blur-md p-6 rounded-2xl border border-white/30 shadow-md">
           <div className="flex items-center justify-between mb-2">
             <Award className="text-green-600" />
           </div>
           <p className="text-sm text-sky-600">Current Allowance</p>
           <p className="text-2xl font-bold text-green-700">₱{currentTier.allowance.toLocaleString()}</p>
           <p className="text-xs text-green-500">{currentTier.label}</p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white/60 backdrop-blur-md p-6 rounded-2xl border border-white/30 shadow-md"
-        >
+        <div className="bg-white/60 backdrop-blur-md p-6 rounded-2xl border border-white/30 shadow-md">
           <div className="flex items-center justify-between mb-2">
             <Target className="text-orange-500" />
           </div>
@@ -164,8 +287,275 @@ const AgentDashboard: React.FC = () => {
               <p className="text-xs text-sky-500">Gold Achieved</p>
             </>
           )}
-        </motion.div>
+        </div>
       </div>
+
+      {/* Enhanced Add Sale Modal - Mobile Responsive with Required Field Indicators */}
+      {showAddSaleModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-4xl h-full sm:h-auto sm:max-h-[90vh] overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-sky-50 to-blue-50 px-4 sm:px-8 py-4 sm:py-6 border-b border-sky-100/50 flex-shrink-0">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg sm:text-2xl font-bold text-gray-900">Add New Sale</h3>
+                    <p className="text-xs sm:text-sm text-gray-500">Fill in the details below</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowAddSaleModal(false);
+                    resetForm();
+                  }}
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                >
+                  <span className="text-gray-400 text-lg sm:text-xl">×</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="px-4 sm:px-8 py-4 sm:py-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
+                  {/* Left Column - Basic Info */}
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-emerald-100">
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+                        <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
+                        Financial Details
+                      </h4>
+                      
+                      {/* TCP */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Total Contract Price (₱) <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          value={tcp}
+                          onChange={(e) => setTcp(e.target.value)}
+                          placeholder="0.00"
+                          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-transparent outline-none transition-all text-base sm:text-lg font-semibold"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Client Information */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-blue-100">
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+                        <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                        Client Information
+                      </h4>
+
+                      <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Seller's Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={sellerName}
+                            onChange={(e) => setSellerName(e.target.value)}
+                            placeholder="Enter seller's full name"
+                            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all"
+                          />
+                      </div>
+                      
+                      <div className="space-y-3 sm:space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Buyer's Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={buyerName}
+                            onChange={(e) => setBuyerName(e.target.value)}
+                            placeholder="Enter buyer's full name"
+                            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column - Property Info */}
+                  <div className="space-y-4 sm:space-y-6">
+                    {/* Property Details */}
+                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-purple-100">
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+                        <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+                        Property Details
+                      </h4>
+                      
+                      <div className="space-y-3 sm:space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Project Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={projectName}
+                            onChange={(e) => setProjectName(e.target.value)}
+                            placeholder="Enter project name"
+                            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent outline-none transition-all"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Project Type <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                              <select
+                                value={projectType}
+                                onChange={(e) => setProjectType(e.target.value)}
+                                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent outline-none transition-all appearance-none"
+                              >
+                                <option value="">Select type</option>
+                                <option value="house-and-lot">House & Lot</option>
+                                <option value="condo">Condominium</option>
+                                <option value="lot-only">Lot Only</option>
+                                <option value="parking-lot">Parking Lot</option>
+                              </select>
+                              <ChevronDown className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-5 sm:w-5 pointer-events-none" />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Reservation Date <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="date"
+                              value={reservationDate}
+                              onChange={(e) => setReservationDate(e.target.value)}
+                              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent outline-none transition-all"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Unit Details <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={unitDetails}
+                            onChange={(e) => setUnitDetails(e.target.value)}
+                            placeholder="Phase 1, Block 2, Lot 15 or Unit 204"
+                            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent outline-none transition-all"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Project Developer <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={projectDeveloper}
+                            onChange={(e) => setProjectDeveloper(e.target.value)}
+                            placeholder="Enter developer name"
+                            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent outline-none transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Documents */}
+                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-amber-100">
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+                        <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
+                        Documents
+                      </h4>
+                      
+                      <div className="space-y-3 sm:space-y-4">
+                        {/* Reservation Receipt */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Reservation Receipt</label>
+                          <div className="relative border-2 border-dashed border-amber-200 rounded-lg sm:rounded-xl p-4 sm:p-6 hover:border-amber-300 transition-colors bg-white/50">
+                            <input
+                              type="file"
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              onChange={(e) => setReservationReceipt(e.target.files && e.target.files[0] ? e.target.files[0] : null)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                            <div className="text-center">
+                              <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-amber-400 mx-auto mb-2" />
+                              <p className="text-xs sm:text-sm text-gray-600">
+                                {reservationReceipt ? (
+                                  <span className="text-amber-600 font-medium break-all">{reservationReceipt.name}</span>
+                                ) : (
+                                  'Click to upload receipt'
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Additional Receipt */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Additional Receipt</label>
+                          <div className="relative border-2 border-dashed border-amber-200 rounded-lg sm:rounded-xl p-4 sm:p-6 hover:border-amber-300 transition-colors bg-white/50">
+                            <input
+                              type="file"
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              onChange={(e) => setAdditionalReceipt(e.target.files && e.target.files[0] ? e.target.files[0] : null)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                            <div className="text-center">
+                              <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-amber-400 mx-auto mb-2" />
+                              <p className="text-xs sm:text-sm text-gray-600">
+                                {additionalReceipt ? (
+                                  <span className="text-amber-600 font-medium break-all">{additionalReceipt.name}</span>
+                                ) : (
+                                  'Click to upload receipt'
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer - Fixed at bottom */}
+            <div className="bg-gray-50/50 px-4 sm:px-8 py-4 sm:py-6 border-t border-gray-100 flex-shrink-0">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                <div className="text-xs sm:text-sm text-gray-500">
+                  All fields marked with <span className="text-red-500">*</span> are required
+                </div>
+                <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
+                  <button
+                    onClick={() => {
+                      setShowAddSaleModal(false);
+                      resetForm();
+                    }}
+                    className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 rounded-lg sm:rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-colors text-sm sm:text-base"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleAddSale}
+                    disabled={!tcp || parseFloat(tcp) <= 0 || !buyerName || !sellerName || !projectName || !projectType || !unitDetails || !projectDeveloper || !reservationDate}
+                    className="flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-lg sm:rounded-xl font-medium hover:shadow-lg hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 text-sm sm:text-base"
+                  >
+                    Create Sale
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
