@@ -1733,7 +1733,7 @@ const PaymentPage: React.FC = () => {
             </div>
 
             {/* Table Section */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-x-auto">
               {isLoadingPayments ? (
                 <div className="flex justify-center py-12">
                   <div className="flex flex-col items-center space-y-3">
@@ -1742,12 +1742,12 @@ const PaymentPage: React.FC = () => {
                   </div>
                 </div>
               ) : filteredPayments.length > 0 ? (
-                <div className="h-full flex flex-col">
+                <div className="flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
                   {/* Table Container with sticky horizontal scroll */}
-                  <div className="flex-1 overflow-y-auto">
-                    <div className="overflow-x-auto sticky bottom-0">
-                      <table className="min-w-[1500px] table-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
-                      <thead className="sticky top-0 z-10 bg-white">
+                  <div className="flex-1 overflow-x-auto">
+                  <div className="flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60 max-h-[1400px]">
+                        <table className="min-w-[1500px] table-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
+                          <thead className="sticky top-0 z-10 bg-white">
                         <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
                           <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Payment Date</th>
                           <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Payment For The Month Of</th>
