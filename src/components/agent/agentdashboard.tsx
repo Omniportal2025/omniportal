@@ -4,10 +4,12 @@ import { supabase} from '../../supabase/supabaseClient';
 import toast from 'react-hot-toast';
 
 const AgentDashboard = () => {
-  const [totalSales, setTotalSales] = useState(4500000);
+  const [totalSales, setTotalSales] = useState(0); // Changed from 4500000 to 0
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [animatedSales, setAnimatedSales] = useState(0);
   const [showAddSaleModal, setShowAddSaleModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [userFullName, setUserFullName] = useState<string>('');
   const [buyerName, setBuyerName] = useState('');
   const [sellerName, setSellerName] = useState('');
   const [projectName, setProjectName] = useState('');
@@ -25,6 +27,131 @@ const AgentDashboard = () => {
     { threshold: 6000000, allowance: 10000, label: 'Silver Tier' },
     { threshold: 10000000, allowance: 20000, label: 'Gold Tier' },
   ];
+
+  // Add function to get current user and verify against Agents table
+  const getCurrentUser = async () => {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (error) {
+        console.error('Error getting user:', error);
+        toast.error('Error getting user information');
+        return null;
+      }
+
+      if (user) {
+        console.log('Current user from auth:', user);
+        
+        // Check if user exists in Agents table
+        const { data: agentData, error: agentError } = await supabase
+          .from('Agents')
+          .select('fullname, email, status')
+          .eq('email', user.email)
+          .single();
+
+        if (agentError) {
+          console.error('Error fetching agent data:', agentError);
+          toast.error('Agent not found in system. Please contact administrator.');
+          return null;
+        }
+
+        if (!agentData) {
+          toast.error('Agent not found in system. Please contact administrator.');
+          return null;
+        }
+
+        // Check if agent is active
+        if (agentData.status !== 'active') {
+          toast.error('Your agent account is not active. Please contact administrator.');
+          return null;
+        }
+
+        console.log('Agent data found:', agentData);
+        
+        setUserFullName(agentData.fullname);
+        
+        return agentData.fullname; // Return the fullname from Agents table
+      }
+      
+      return null;
+    } catch (err) {
+      console.error('Error fetching user:', err);
+      toast.error('Failed to get user information');
+      return null;
+    }
+  };
+
+  // Add function to fetch sales data from database
+  const fetchSalesData = async (agentFullName?: string) => {
+    try {
+      setIsLoading(true);
+      
+      if (!agentFullName) {
+        console.log('No agent full name provided');
+        setTotalSales(0);
+        return;
+      }
+
+      console.log('Fetching sales for agent:', agentFullName);
+
+      // Query Sales table using exact match with the fullname from Agents table
+      const { data, error } = await supabase
+        .from('Sales')
+        .select('TCP, sellersname, Status, created_at')
+        .eq('Status', 'approved') // Only count approved sales
+        .eq('sellersname', agentFullName); // Exact match with agent's fullname
+
+      if (error) {
+        console.error('Error fetching sales data:', error);
+        toast.error('Error loading sales data');
+        return;
+      }
+
+      console.log('Sales data fetched:', data);
+      console.log('Number of approved sales found:', data?.length || 0);
+
+      // Calculate total sales from database for this specific agent
+      const total = data?.reduce((sum, sale) => {
+        const tcp = parseFloat(sale.TCP || 0);
+        console.log(`Adding TCP: ₱${tcp.toLocaleString()} from sale on ${sale.created_at}`);
+        return sum + tcp;
+      }, 0) || 0;
+      
+      console.log('Total sales calculated:', `₱${total.toLocaleString()}`);
+      setTotalSales(total);
+      
+      // Show summary
+      if (data && data.length > 0) {
+        toast.success(`Found ${data.length} approved sale${data.length > 1 ? 's' : ''} totaling ₱${total.toLocaleString()}`);
+      } else {
+        console.log('No approved sales found for agent:', agentFullName);
+      }
+      
+    } catch (err) {
+      console.error('Error fetching sales:', err);
+      toast.error('Failed to load sales data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch sales data on component mount
+  useEffect(() => {
+    const initializeDashboard = async () => {
+      const agentFullName = await getCurrentUser();
+      if (agentFullName) {
+        await fetchSalesData(agentFullName);
+      } else {
+        // If no valid agent found, redirect to login
+        toast.error('Please log in with a valid agent account');
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      }
+    };
+
+    initializeDashboard();
+  }, []);
 
   const calculateAllowance = (sales: number) => {
     let currentTier = salesTiers[0];
@@ -169,7 +296,8 @@ const AgentDashboard = () => {
       toast.dismiss(dbLoadingToastId);
       toast.success('Sale added successfully!');
       
-      setTotalSales(prev => prev + amount);
+      // Refresh sales data from database instead of just adding to state
+      await fetchSalesData(userFullName);
       resetForm();
       setShowAddSaleModal(false);
   
@@ -179,8 +307,22 @@ const AgentDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    window.location.href = '/login';
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error signing out:', error);
+        toast.error('Error signing out');
+      } else {
+        toast.success('Logged out successfully');
+        window.location.href = '/login';
+      }
+    } catch (err) {
+      console.error('Error during logout:', err);
+      toast.error('Error during logout');
+      // Still redirect even if there's an error
+      window.location.href = '/login';
+    }
   };
 
   useEffect(() => {
@@ -204,12 +346,27 @@ const AgentDashboard = () => {
     }, 100);
   }, [totalSales, progress]);
 
+    // Show loading state while fetching data
+    if (isLoading) {
+      return (
+        <div className="bg-gradient-to-br from-white via-blue-50 to-sky-100 min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
+            <p className="text-sky-600">Verifying agent account...</p>
+            <p className="text-sm text-sky-500 mt-2">Checking Agents table and loading sales data...</p>
+          </div>
+        </div>
+      );
+    }
+
   return (
     <div className="bg-gradient-to-br from-white via-blue-50 to-sky-100 min-h-screen text-gray-800 font-sans px-6 py-8">
       <div className="flex justify-between items-center mb-10">
         <div>
           <h1 className="text-3xl font-bold tracking-wide text-sky-800">Agent Dashboard</h1>
-          <p className="text-sm text-sky-600">Track your sales and progress</p>
+          <p className="text-sm text-sky-600">
+            Welcome back, {userFullName || 'Agent'}! Track your sales and progress
+          </p>
         </div>
         <div className="flex gap-3">
           <button
@@ -360,9 +517,17 @@ const AgentDashboard = () => {
                             type="text"
                             value={sellerName}
                             onChange={(e) => setSellerName(e.target.value)}
-                            placeholder="Enter seller's full name"
+                            placeholder={userFullName || "Enter seller's full name"}
                             className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all"
                           />
+                          <p className="text-xs text-gray-500 mt-1">
+                            Logged in as: <span className="font-semibold text-blue-600">{userFullName}</span> - Sales must match this name exactly to appear in your dashboard
+                          </p>
+                          {userFullName && sellerName !== userFullName && sellerName && (
+                            <p className="text-xs text-amber-600 mt-1">
+                              ⚠️ Warning: This sale will not appear in your dashboard since the seller name doesn't match your account
+                            </p>
+                          )}
                       </div>
                       
                       <div className="space-y-3 sm:space-y-4">

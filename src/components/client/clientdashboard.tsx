@@ -527,7 +527,8 @@ const PaymentReceiptModal: React.FC<PaymentReceiptModalProps> = ({
 
       if (!amount || parseFloat(amount) <= 0) {
         toast.error('Please enter a valid payment amount');
-        setDetailedError('Payment amount is required and must be greater than zero.', 'validation');
+        setDetailedError('Payment amount is required and must be greater than zero. If there is an amount already, check if there is a comma in the amount.',
+    'validation');
         setLoading(false);
         return;
       }
@@ -553,7 +554,6 @@ const PaymentReceiptModal: React.FC<PaymentReceiptModalProps> = ({
         return;
       }
 
-      // Penalty is optional, no validation needed
 
       // Check network connectivity
       if (!navigator.onLine) {
