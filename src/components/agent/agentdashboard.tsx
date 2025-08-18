@@ -98,7 +98,7 @@ const AgentDashboard = () => {
       const { data, error } = await supabase
         .from('Sales')
         .select('TCP, sellersname, Status, created_at')
-        .eq('Status', 'approved') // Only count approved sales
+        .eq('Status', 'confirmed') // Only count approved sales
         .eq('sellersname', agentFullName); // Exact match with agent's fullname
 
       if (error) {
@@ -325,39 +325,45 @@ const AgentDashboard = () => {
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => setAnimatedProgress(progress), 300);
-    setTimeout(() => {
-      const increment = totalSales / 50;
-      let current = animatedSales;
-      const targetSales = totalSales;
-      
-      if (current < targetSales) {
-        const interval = setInterval(() => {
-          current += increment;
-          if (current >= targetSales) {
-            setAnimatedSales(targetSales);
-            clearInterval(interval);
-          } else {
-            setAnimatedSales(Math.floor(current));
-          }
-        }, 20);
-      }
-    }, 100);
-  }, [totalSales, progress]);
+  
+useEffect(() => {
+  // Initialize seller name with user's full name if not already set
+  if (userFullName && !sellerName) {
+    setSellerName(userFullName);
+  }
+
+  setTimeout(() => setAnimatedProgress(progress), 300);
+  setTimeout(() => {
+    const increment = totalSales / 50;
+    let current = animatedSales;
+    const targetSales = totalSales;
+    
+    if (current < targetSales) {
+      const interval = setInterval(() => {
+        current += increment;
+        if (current >= targetSales) {
+          setAnimatedSales(targetSales);
+          clearInterval(interval);
+        } else {
+          setAnimatedSales(Math.floor(current));
+        }
+      }, 20);
+    }
+  }, 100);
+}, [totalSales, progress, userFullName, sellerName]);
 
     // Show loading state while fetching data
-    if (isLoading) {
-      return (
-        <div className="bg-gradient-to-br from-white via-blue-50 to-sky-100 min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
-            <p className="text-sky-600">Verifying agent account...</p>
-            <p className="text-sm text-sky-500 mt-2">Checking Agents table and loading sales data...</p>
-          </div>
+  if (isLoading) {
+    return (
+      <div className="bg-gradient-to-br from-white via-blue-50 to-sky-100 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
+          <p className="text-sky-600">Verifying agent account...</p>
+          <p className="text-sm text-sky-500 mt-2">Checking Agents table and loading sales data...</p>
         </div>
-      );
-    }
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gradient-to-br from-white via-blue-50 to-sky-100 min-h-screen text-gray-800 font-sans px-6 py-8">
@@ -510,24 +516,21 @@ const AgentDashboard = () => {
                       </h4>
 
                       <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Seller's Name <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            value={sellerName}
-                            onChange={(e) => setSellerName(e.target.value)}
-                            placeholder={userFullName || "Enter seller's full name"}
-                            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all"
-                          />
-                          <p className="text-xs text-gray-500 mt-1">
-                            Logged in as: <span className="font-semibold text-blue-600">{userFullName}</span> - Sales must match this name exactly to appear in your dashboard
-                          </p>
-                          {userFullName && sellerName !== userFullName && sellerName && (
-                            <p className="text-xs text-amber-600 mt-1">
-                              ⚠️ Warning: This sale will not appear in your dashboard since the seller name doesn't match your account
-                            </p>
-                          )}
+                      <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-2">
+                        <span>
+                          Seller's Name <span className="text-red-500">*</span>
+                        </span>
+                        <p className="text-xs text-gray-500">
+                          Logged in as: <span className="font-semibold text-blue-600">{userFullName}</span>
+                        </p>
+                      </label>
+                        <input
+                          type="text"
+                          value={sellerName || userFullName || ""}
+                          onChange={(e) => setSellerName(e.target.value)}
+                          placeholder="Enter seller's full name"
+                          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition-all"
+                        />
                       </div>
                       
                       <div className="space-y-3 sm:space-y-4">
@@ -721,6 +724,11 @@ const AgentDashboard = () => {
           </div>
         </div>
       )}
+      
+      {/* Footer */}
+      <footer className="mt-12 text-center text-sm text-gray-500 pb-6">
+        © {new Date().getFullYear()} OMNIPORTAL. All rights reserved.
+      </footer>
     </div>
   );
 };

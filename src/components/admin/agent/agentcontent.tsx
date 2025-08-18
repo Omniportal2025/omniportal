@@ -3,6 +3,19 @@ import { useState, useEffect, useRef } from 'react';
 import PageTransition from '../../../components/PageTransition';
 import { supabase, supabaseAdmin } from '../../../supabase/supabaseClient';
 
+interface SalesData {
+  sellersname: string;
+  buyersname: string;
+  projecttype: string;
+  phaseblocklotunit: string;
+  projectdeveloper: string;
+  reservationdate: string;
+  TCP : number;
+  reservationURL: string | null;
+  receiptURL: string | null;
+  Status: 'pending' | 'confirmed' | 'rejected';
+}
+
 interface AgentData {
   id: number;
   fullname: string;
@@ -10,10 +23,7 @@ interface AgentData {
   phone: string;
   dpurl: string | null;
   status: 'active' | 'inactive';
-  commission_rate?: number;
-  total_sales?: number;
   created_at: string;
-  assigned_projects?: string[];
 }
 
 interface FormData {
@@ -23,11 +33,19 @@ interface FormData {
   tempPassword: string;
 }
 
+interface ImageModalData {
+  url: string;
+  title: string;
+  type: 'reservation' | 'receipt';
+}
+
 const AgentContent: FC = () => {
   const [agents, setAgents] = useState<AgentData[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [sales, setSales] = useState<SalesData[]>([]);
+  const [imageModal, setImageModal] = useState<ImageModalData | null>(null);
   
   // Form state
   const [formData, setFormData] = useState<FormData>({
@@ -46,8 +64,50 @@ const AgentContent: FC = () => {
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  const openImageModal = (url: string | null, type: 'reservation' | 'receipt', buyerName: string) => {
+    if (!url) return;
+    
+    const fullUrl = type === 'reservation' ? getReservationUrl(url) : getReceiptUrl(url);
+    if (!fullUrl) return;
+    
+    setImageModal({
+      url: fullUrl,
+      title: `${buyerName} - ${type === 'reservation' ? 'Reservation Document' : 'Receipt Document'}`,
+      type: type
+    });
+  };
+
+  // Add these functions inside your AgentContent component, before the openImageModal function
+
+const getReservationUrl = (reservationUrl: string | null): string | undefined => {
+  if (!reservationUrl) return undefined;
+  
+  // If it's already a complete URL, return as is (for backward compatibility)
+  if (reservationUrl.includes('http')) {
+    return reservationUrl;
+  }
+  
+  // Construct the full URL from filename for ReservationReceipt bucket
+  const supabaseUrl = 'https://krrumlttvcgcnislqoxc.supabase.co';
+  return `${supabaseUrl}/storage/v1/object/public/ReservationReceipt/${reservationUrl}`;
+};
+
+const getReceiptUrl = (receiptUrl: string | null): string | undefined => {
+  if (!receiptUrl) return undefined;
+  
+  // If it's already a complete URL, return as is (for backward compatibility)
+  if (receiptUrl.includes('http')) {
+    return receiptUrl;
+  }
+  
+  // Construct the full URL from filename for SalesReceipt bucket
+  const supabaseUrl = 'https://krrumlttvcgcnislqoxc.supabase.co';
+  return `${supabaseUrl}/storage/v1/object/public/SalesReceipt/${receiptUrl}`;
+};
+
   useEffect(() => {
     fetchAgents();
+    fetchSales(); // Add this line
   }, []);
 
   // Helper function to construct full URL from filename (like documents)
@@ -327,6 +387,56 @@ const AgentContent: FC = () => {
     removeImage();
   };
 
+  const fetchSales = async () => {
+    try {
+      console.log('Fetching sales...');
+      const { data, error } = await supabase
+        .from('Sales')
+        .select('sellersname, buyersname, projecttype, phaseblocklotunit, projectdeveloper, reservationdate, TCP, reservationURL, receiptURL, Status')
+        .order('reservationdate', { ascending: false });
+      
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Sales fetched successfully:', data);
+      setSales(data || []);
+    } catch (error) {
+      console.error('Error fetching sales:', error);
+      setSales([]);
+    }
+  };
+
+  const updateSalesStatus = async (sellersname: string, buyersname: string, reservationdate: string, newStatus: 'confirmed' | 'rejected') => {
+    try {
+      const { error } = await supabase
+        .from('Sales')
+        .update({ Status: newStatus })
+        .eq('sellersname', sellersname)
+        .eq('buyersname', buyersname)
+        .eq('reservationdate', reservationdate);
+  
+      if (error) throw error;
+  
+      // Update local state
+      setSales(prevSales => 
+        prevSales.map(sale => 
+          (sale.sellersname === sellersname && 
+           sale.buyersname === buyersname && 
+           sale.reservationdate === reservationdate) 
+            ? { ...sale, Status: newStatus } 
+            : sale
+        )
+      );
+      
+      console.log(`Sale for ${buyersname} status updated to ${newStatus}`);
+    } catch (error) {
+      console.error('Error updating sale status:', error);
+      alert('Failed to update status. Please try again.');
+    }
+  };
+
   if (loading) {
     return (
       <PageTransition>
@@ -374,15 +484,16 @@ const AgentContent: FC = () => {
             
             {/* Create Agent Button */}
             <div className="flex items-center">
-              <button 
-                onClick={handleCreateAgent}
-                className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </button>
-            </div>
+            <button 
+              onClick={handleCreateAgent}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Create Account</span>
+            </button>
+          </div>
           </div>
         </div>
 
@@ -513,114 +624,164 @@ const AgentContent: FC = () => {
 
               {/* Agents Table */}
               <div>
-                <h2 className="text-xl font-semibold text-slate-800 mb-4">Agent Details Table</h2>
-                <div className="flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
+                <h2 className="text-xl font-semibold text-slate-800 mb-4">Sales Details Table</h2>
+                <div className="flex-1 overflow-auto bg-white border-slate-200/60">
                   <table className="w-full">
                     <thead className="sticky top-0 z-10">
                       <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-                          Agent
+                        <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                          Seller's Name
                         </th>
-                        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-                          Email
+                        <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[120px]">
+                          Buyer's Name
                         </th>
-                        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                        <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[100px]">
+                          Project Type
+                        </th>
+                        <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[130px]">
+                          Phase/Block & Lot/Unit
+                        </th>
+                        <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[130px]">
+                          Project Developer
+                        </th>
+                        <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[100px]">
+                          Reservation Date
+                        </th>
+                        <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[100px]">
+                          TCP
+                        </th>
+                        <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[100px]">
+                          Documents
+                        </th>
+                        <th scope="col" className="px-4 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50 min-w-[80px]">
                           Status
                         </th>
-                        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-                          Join Date
-                        </th>
-                        <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                        <th scope="col" className="px-4 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide min-w-[150px]">
                           Actions
                         </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {agents.map((agent) => (
-                        <tr key={agent.id} className="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0">
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            <div className="flex items-center space-x-3">
-                              <div className="relative flex-shrink-0 h-10 w-10">
-                                {(() => {
-                                  const imageUrl = getImageUrl(agent.dpurl);
-                                  return imageUrl ? (
-                                    <img 
-                                      src={imageUrl}
-                                      alt={`${agent.fullname}'s profile`}
-                                      className="h-10 w-10 rounded-full object-cover shadow-sm"
-                                      crossOrigin="anonymous"
-                                      loading="lazy"
-                                      onError={(e) => {
-                                        const target = e.target as HTMLImageElement;
-                                        target.style.display = 'none';
-                                        const parent = target.parentElement;
-                                        if (parent) {
-                                          const fallback = parent.querySelector('.table-fallback-avatar') as HTMLElement;
-                                          if (fallback) {
-                                            fallback.style.display = 'flex';
-                                            fallback.classList.remove('hidden');
-                                          }
-                                        }
-                                      }}
-                                    />
-                                  ) : null;
-                                })()}
-                                <div className={`table-fallback-avatar absolute inset-0 h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-sm ${agent.dpurl ? 'hidden' : 'flex'}`}>
-                                  <span className="text-white font-medium text-sm">
-                                    {agent.fullname.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                                  </span>
-                                </div>
-                              </div>
-                              <div>
-                                <div className="text-sm font-semibold text-slate-800">
-                                  {agent.fullname}
-                                </div>
-                                <div className="text-xs text-slate-500">
-                                  ID: {agent.id}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                            {agent.email}
-                          </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border shadow-sm ${
-                              agent.status === 'active'
-                                ? 'bg-gradient-to-r from-green-50 to-green-100 text-green-700 border-green-200/60'
-                                : 'bg-gradient-to-r from-slate-50 to-slate-100 text-slate-600 border-slate-200/60'
-                            }`}>
-                              <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                                agent.status === 'active' ? 'bg-green-400' : 'bg-slate-400'
-                              }`}></div>
-                              {agent.status === 'active' ? 'Active' : 'Inactive'}
-                            </div>
-                          </td>
-                          <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
-                            {new Date(agent.created_at).toLocaleDateString('en-PH', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            })}
-                          </td>
-                          <td className="px-6 py-5 whitespace-nowrap text-center">
-                            <div className="flex justify-center items-center space-x-2">
-                              <button className="inline-flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md">
-                                <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      {sales.length === 0 ? (
+                        <tr>
+                          <td colSpan={10} className="px-6 py-12 text-center">
+                            <div className="flex flex-col items-center">
+                              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <span>Edit</span>
-                              </button>
-                              <button className="inline-flex items-center px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md">
-                                <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                                <span>Delete</span>
-                              </button>
+                              </div>
+                              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Sales Found</h3>
+                              <p className="text-gray-500">Sales data will appear here when available.</p>
                             </div>
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        sales.map((sale, index) => (
+                          <tr key={`${sale.sellersname}-${sale.buyersname}-${sale.reservationdate}-${index}`} className="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0">
+                            <td className="px-4 py-5 whitespace-nowrap text-sm font-medium text-slate-800">
+                              {sale.sellersname}
+                            </td>
+                            <td className="px-4 py-5 whitespace-nowrap text-sm text-slate-600">
+                              {sale.buyersname}
+                            </td>
+                            <td className="px-4 py-5 whitespace-nowrap text-sm text-slate-600">
+                              {sale.projecttype}
+                            </td>
+                            <td className="px-4 py-5 whitespace-nowrap text-sm text-slate-600">
+                              {sale.phaseblocklotunit}
+                            </td>
+                            <td className="px-4 py-5 whitespace-nowrap text-sm text-slate-600">
+                              {sale.projectdeveloper}
+                            </td>
+                            <td className="px-4 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
+                              {new Date(sale.reservationdate).toLocaleDateString('en-PH', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </td>
+                            <td className="px-4 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
+                              ₱{sale.TCP?.toLocaleString('en-PH') || '0'}
+                            </td>
+                            <td className="px-4 py-5 whitespace-nowrap">
+  <div className="flex flex-col space-y-1">
+    {sale.reservationURL && (
+      <button
+        onClick={() => openImageModal(sale.reservationURL, 'reservation', sale.buyersname)}
+        className="inline-flex items-center px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded text-xs font-medium border border-blue-200 hover:border-blue-300 transition-all duration-200"
+      >
+        <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Reservation
+      </button>
+    )}
+    {sale.receiptURL && (
+      <button
+        onClick={() => openImageModal(sale.receiptURL, 'receipt', sale.buyersname)}
+        className="inline-flex items-center px-2 py-1 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-800 rounded text-xs font-medium border border-green-200 hover:border-green-300 transition-all duration-200"
+      >
+        <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Receipt
+      </button>
+    )}
+    {!sale.reservationURL && !sale.receiptURL && (
+      <span className="text-xs text-gray-400">No documents</span>
+    )}
+  </div>
+</td>
+                            <td className="px-4 py-5 whitespace-nowrap">
+                              <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border shadow-sm ${
+                                sale.Status === 'confirmed'
+                                  ? 'bg-gradient-to-r from-green-50 to-green-100 text-green-700 border-green-200/60'
+                                  : sale.Status === 'rejected'
+                                  ? 'bg-gradient-to-r from-red-50 to-red-100 text-red-700 border-red-200/60'
+                                  : 'bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-700 border-yellow-200/60'
+                              }`}>
+                                <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                                  sale.Status === 'confirmed' ? 'bg-green-400' : 
+                                  sale.Status === 'rejected' ? 'bg-red-400' : 'bg-yellow-400'
+                                }`}></div>
+                                {sale.Status.charAt(0).toUpperCase() + sale.Status.slice(1)}
+                              </div>
+                            </td>
+                            <td className="px-4 py-5 whitespace-nowrap text-center">
+                              <div className="flex justify-center items-center space-x-2">
+                                {sale.Status === 'pending' && (
+                                  <>
+                                    <button
+                                      onClick={() => updateSalesStatus(sale.sellersname, sale.buyersname, sale.reservationdate, 'confirmed')}
+                                      className="inline-flex items-center px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-800 rounded-lg border border-green-200 hover:border-green-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                    >
+                                      <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                      </svg>
+                                      <span>Confirm</span>
+                                    </button>
+                                    <button
+                                      onClick={() => updateSalesStatus(sale.sellersname, sale.buyersname, sale.reservationdate, 'rejected')}
+                                      className="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                    >
+                                      <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                      </svg>
+                                      <span>Reject</span>
+                                    </button>
+                                  </>
+                                )}
+                                {sale.Status !== 'pending' && (
+                                  <span className="text-xs text-gray-400 italic">
+                                    {sale.Status === 'confirmed' ? 'Confirmed' : 'Rejected'}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -629,6 +790,62 @@ const AgentContent: FC = () => {
           )}
         </div>
       </div>
+
+      {/* Image Modal */}
+{imageModal && (
+  <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] overflow-hidden">
+      {/* Modal Header */}
+      <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-900">{imageModal.title}</h3>
+        <button
+          onClick={() => setImageModal(null)}
+          className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Modal Content */}
+      <div className="p-6">
+        <div className="flex justify-center">
+          <img
+            src={imageModal.url}
+            alt={imageModal.title}
+            className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-lg"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIxIDNWMjFIMTlWNS44Mkw5LjE4IDE2SDIxVjE4SDNWM0g1VjE0LjE4TDE0LjgyIDRIMTNWMkgyMVYzWiIgZmlsbD0iI0Q0RDRENSIvPgo8L3N2Zz4K';
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Modal Footer */}
+      <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+        <a
+          href={imageModal.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          Open in New Tab
+        </a>
+        <button
+          onClick={() => setImageModal(null)}
+          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* Create Agent Modal */}
       {isModalOpen && (
