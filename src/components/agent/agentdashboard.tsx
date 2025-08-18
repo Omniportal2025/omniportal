@@ -1,7 +1,14 @@
 import { useState, useEffect } from 'react';
-import { TrendingUp, Target, Award, LogOut, Plus, DollarSign, Users, Building2, Upload, ChevronDown } from 'lucide-react';
+import { TrendingUp, Target, Award, LogOut, Plus, DollarSign, Users, Building2, Upload, ChevronDown, Trophy, Crown, Medal} from 'lucide-react';
 import { supabase} from '../../supabase/supabaseClient'; 
 import toast from 'react-hot-toast';
+
+interface LeaderboardAgent {
+  fullname: string;
+  totalSales: number;
+  salesCount: number;
+  rank: number;
+}
 
 const AgentDashboard = () => {
   const [totalSales, setTotalSales] = useState(0); // Changed from 4500000 to 0
@@ -20,6 +27,7 @@ const AgentDashboard = () => {
   const [tcp, setTcp] = useState('');
   const [reservationReceipt, setReservationReceipt] = useState<File | null>(null);
   const [additionalReceipt, setAdditionalReceipt] = useState<File | null>(null);
+  const [leaderboardAgents, setLeaderboardAgents] = useState<LeaderboardAgent[]>([]);
 
   const salesTiers = [
     { threshold: 0, allowance: 0, label: 'No Allowance' },
@@ -135,12 +143,85 @@ const AgentDashboard = () => {
     }
   };
 
+  const fetchLeaderboardData = async () => {
+    try {
+      // Get all agents first
+      const { data: agents, error: agentsError } = await supabase
+        .from('Agents')
+        .select('fullname, email, status')
+        .eq('status', 'active');
+  
+      if (agentsError) {
+        console.error('Error fetching agents:', agentsError);
+        return;
+      }
+  
+      if (!agents || agents.length === 0) {
+        console.log('No active agents found');
+        return;
+      }
+  
+      // Get sales data for all agents
+      const { data: salesData, error: salesError } = await supabase
+        .from('Sales')
+        .select('sellersname, TCP')
+        .eq('Status', 'confirmed');
+  
+      if (salesError) {
+        console.error('Error fetching sales data for leaderboard:', salesError);
+        return;
+      }
+  
+      // Calculate totals for each agent
+      const agentSales: { [key: string]: { total: number; count: number } } = {};
+  
+      // Initialize all active agents with 0 sales
+      agents.forEach(agent => {
+        agentSales[agent.fullname] = { total: 0, count: 0 };
+      });
+  
+      // Calculate actual sales
+      if (salesData && salesData.length > 0) {
+        salesData.forEach(sale => {
+          if (agentSales[sale.sellersname]) {
+            const tcp = parseFloat(sale.TCP || 0);
+            agentSales[sale.sellersname].total += tcp;
+            agentSales[sale.sellersname].count += 1;
+          }
+        });
+      }
+  
+      // Convert to leaderboard format and sort
+      const leaderboardData: LeaderboardAgent[] = Object.entries(agentSales)
+        .map(([fullname, data]) => ({
+          fullname,
+          totalSales: data.total,
+          salesCount: data.count,
+          rank: 0
+        }))
+        .sort((a, b) => b.totalSales - a.totalSales)
+        .map((agent, index) => ({
+          ...agent,
+          rank: index + 1
+        }));
+  
+      console.log('Leaderboard data:', leaderboardData);
+      setLeaderboardAgents(leaderboardData);
+  
+    } catch (err) {
+      console.error('Error fetching leaderboard:', err);
+    }
+  };
+
   // Fetch sales data on component mount
   useEffect(() => {
     const initializeDashboard = async () => {
       const agentFullName = await getCurrentUser();
       if (agentFullName) {
-        await fetchSalesData(agentFullName);
+        await Promise.all([
+          fetchSalesData(agentFullName),
+          fetchLeaderboardData() // ADD THIS LINE
+        ]);
       } else {
         // If no valid agent found, redirect to login
         toast.error('Please log in with a valid agent account');
@@ -149,7 +230,7 @@ const AgentDashboard = () => {
         }, 2000);
       }
     };
-
+  
     initializeDashboard();
   }, []);
 
@@ -298,6 +379,7 @@ const AgentDashboard = () => {
       
       // Refresh sales data from database instead of just adding to state
       await fetchSalesData(userFullName);
+      await fetchLeaderboardData();
       resetForm();
       setShowAddSaleModal(false);
   
@@ -324,6 +406,8 @@ const AgentDashboard = () => {
       window.location.href = '/login';
     }
   };
+
+  
 
   
 useEffect(() => {
@@ -414,6 +498,131 @@ useEffect(() => {
           </p>
         </div>
       )}
+
+      {/* Leaderboard Card */}
+      <div className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/30 p-6 shadow-xl mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-sky-800 flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-yellow-500" />
+            Top Performers
+          </h2>
+          <span className="text-sm text-sky-600">Based on confirmed sales</span>
+        </div>
+
+        {leaderboardAgents.length > 0 ? (
+          <div className="space-y-4">
+            {/* Top 3 with special styling */}
+            {leaderboardAgents.slice(0, 3).map((agent, index) => {
+              const isCurrentUser = agent.fullname === userFullName;
+              const icons = [
+                <Crown className="h-6 w-6 text-yellow-500" key="crown" />,
+                <Medal className="h-6 w-6 text-gray-400" key="silver" />,
+                <Medal className="h-6 w-6 text-amber-600" key="bronze" />
+              ];
+              const bgColors = [
+                'bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-200',
+                'bg-gradient-to-r from-gray-50 to-slate-50 border-gray-200',
+                'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'
+              ];
+              
+              return (
+                <div
+                  key={agent.fullname}
+                  className={`p-4 rounded-xl border-2 transition-all ${bgColors[index]} ${
+                    isCurrentUser ? 'ring-2 ring-sky-400 ring-offset-2' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm">
+                        {icons[index]}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className={`font-bold text-lg ${isCurrentUser ? 'text-sky-800' : 'text-gray-800'}`}>
+                            {isCurrentUser ? 'You' : agent.fullname}
+                          </span>
+                          {isCurrentUser && (
+                            <span className="px-2 py-1 bg-sky-100 text-sky-700 rounded-full text-xs font-medium">
+                              You
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          {agent.salesCount} sale{agent.salesCount !== 1 ? 's' : ''}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-xl text-gray-900">
+                        ₱{agent.totalSales.toLocaleString()}
+                      </p>
+                      <p className="text-sm text-gray-500">#{agent.rank}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Rest of the agents (if user is not in top 3) */}
+            {leaderboardAgents.length > 3 && (
+              <div className="pt-4 border-t border-sky-100">
+                {leaderboardAgents.slice(3).map((agent) => {
+                  const isCurrentUser = agent.fullname === userFullName;
+                  if (!isCurrentUser) return null; // Only show current user if they're not in top 3
+                  
+                  return (
+                    <div
+                      key={agent.fullname}
+                      className="p-3 rounded-lg bg-sky-50 border border-sky-200 ring-2 ring-sky-400 ring-offset-1"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-sky-200 flex items-center justify-center">
+                            <span className="font-bold text-sky-700">#{agent.rank}</span>
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-sky-800">You</span>
+                              <span className="px-2 py-1 bg-sky-100 text-sky-700 rounded-full text-xs font-medium">
+                                You
+                              </span>
+                            </div>
+                            <p className="text-sm text-sky-600">
+                              {agent.salesCount} sale{agent.salesCount !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-lg text-sky-900">
+                            ₱{agent.totalSales.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Show message if no sales yet */}
+            {leaderboardAgents.every(agent => agent.totalSales === 0) && (
+              <div className="text-center py-8 text-gray-500">
+                <Trophy className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <p>No confirmed sales yet. Be the first to make a sale!</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <div className="animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+            </div>
+            <p className="mt-3">Loading leaderboard...</p>
+          </div>
+        )}
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -636,7 +845,7 @@ useEffect(() => {
                     </div>
 
                     {/* Documents */}
-                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-amber-100">
+                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-amber-100 w-full max-w-2xl mx-auto">
                       <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
                         <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
                         Documents

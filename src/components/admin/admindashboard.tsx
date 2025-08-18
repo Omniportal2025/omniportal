@@ -214,11 +214,18 @@ const AdminDashboard: React.FC = () => {
   ];
 
   const getFilteredNavItems = (items: { name: string; icon: any }[]) => {
-    if (userEmail === 'hdc.ellainegarcia@gmail.com') {
-      const allowedItems = ['Ticket', 'Clients', 'Documents'];
+    const emailPermissions: { [key: string]: string[] } = {
+      'hdc.ellainegarcia@gmail.com': ['Ticket', 'Clients', 'Documents'],
+      'hiede.tumampil11@gmail.com': ['Agent']
+    };
+    
+    const allowedItems = emailPermissions[userEmail];
+    
+    if (allowedItems) {
       return items.filter(item => allowedItems.includes(item.name));
     }
-    return items;
+    
+    return items; // Show all items if email not in the permissions map
   };
 
   const mainNavItems = getFilteredNavItems(allMainNavItems);

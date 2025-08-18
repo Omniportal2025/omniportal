@@ -117,12 +117,14 @@ const LoginPage: React.FC = () => {
             'angelap.hdc@gmail.com',
             'rowelhal.hdc@gmail.com',
             'hdc.ellainegarcia@gmail.com',
+            'hiede.tumampil11@gmail.com'
           ];
           const adminNames: { [email: string]: string } = {
             'rowelhal.hdc@gmail.com': 'Rowelha',
             'angelap.hdc@gmail.com': 'Angela',
             'guest@gmail.com': 'John Doe',
             'hdc.ellainegarcia@gmail.com': 'Ellaine',
+            'hiede.tumampil11@gmail.com': 'Hiede'
           };
           if (
             (adminData.Access === true || adminData.Access === 'True' || adminData.Access === 'true') &&

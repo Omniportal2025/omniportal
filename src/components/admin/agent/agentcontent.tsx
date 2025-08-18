@@ -705,34 +705,34 @@ const getReceiptUrl = (receiptUrl: string | null): string | undefined => {
                               ₱{sale.TCP?.toLocaleString('en-PH') || '0'}
                             </td>
                             <td className="px-4 py-5 whitespace-nowrap">
-  <div className="flex flex-col space-y-1">
-    {sale.reservationURL && (
-      <button
-        onClick={() => openImageModal(sale.reservationURL, 'reservation', sale.buyersname)}
-        className="inline-flex items-center px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded text-xs font-medium border border-blue-200 hover:border-blue-300 transition-all duration-200"
-      >
-        <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        Reservation
-      </button>
-    )}
-    {sale.receiptURL && (
-      <button
-        onClick={() => openImageModal(sale.receiptURL, 'receipt', sale.buyersname)}
-        className="inline-flex items-center px-2 py-1 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-800 rounded text-xs font-medium border border-green-200 hover:border-green-300 transition-all duration-200"
-      >
-        <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        Receipt
-      </button>
-    )}
-    {!sale.reservationURL && !sale.receiptURL && (
-      <span className="text-xs text-gray-400">No documents</span>
-    )}
-  </div>
-</td>
+                              <div className="flex flex-col space-y-1">
+                                {sale.reservationURL && (
+                                  <button
+                                    onClick={() => openImageModal(sale.reservationURL, 'reservation', sale.buyersname)}
+                                    className="inline-flex items-center px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded text-xs font-medium border border-blue-200 hover:border-blue-300 transition-all duration-200"
+                                  >
+                                    <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Reservation
+                                  </button>
+                                )}
+                                {sale.receiptURL && (
+                                  <button
+                                    onClick={() => openImageModal(sale.receiptURL, 'receipt', sale.buyersname)}
+                                    className="inline-flex items-center px-2 py-1 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-800 rounded text-xs font-medium border border-green-200 hover:border-green-300 transition-all duration-200"
+                                  >
+                                    <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Receipt
+                                  </button>
+                                )}
+                                {!sale.reservationURL && !sale.receiptURL && (
+                                  <span className="text-xs text-gray-400">No documents</span>
+                                )}
+                              </div>
+                            </td>
                             <td className="px-4 py-5 whitespace-nowrap">
                               <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border shadow-sm ${
                                 sale.Status === 'confirmed'
