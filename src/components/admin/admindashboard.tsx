@@ -216,7 +216,7 @@ const AdminDashboard: React.FC = () => {
   const getFilteredNavItems = (items: { name: string; icon: any }[]) => {
     const emailPermissions: { [key: string]: string[] } = {
       'hdc.ellainegarcia@gmail.com': ['Ticket', 'Clients', 'Documents'],
-      'hiede.tumampil11@gmail.com': ['Agent']
+      'rtdesignbuilders@gmail.com': ['Agent']
     };
     
     const allowedItems = emailPermissions[userEmail];
