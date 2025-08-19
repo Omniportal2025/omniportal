@@ -342,7 +342,7 @@ const BalancePage: FC = () => {
     <PageTransition>
       {/* Single Unified Card */}
       <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden h-[calc(100vh-4rem)] ">
-        {/* Hero Header Section */}
+
         <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 relative overflow-hidden">
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full transform translate-x-16 -translate-y-16"></div>
@@ -461,163 +461,163 @@ const BalancePage: FC = () => {
           </div>
   
           {/* Table Section */}
-<div className="flex-1 flex flex-col" style={{ height: 'calc(100vh - 12rem)' }}>
-  {/* Table Container */}
-  <div className="flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
-    <table className="w-full">
-      <thead className="sticky top-0 z-10">
-        <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Project
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Block
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Lot
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Name
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Remaining Balance
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Amount
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            TCP
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Months Paid
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Months Paid
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Terms
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Due Date
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Monthly Amortization
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            SQM
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Price Per SQM
-          </th>
-          <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
-            Penalty
-          </th>
-          <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide">
-            Actions
-          </th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-slate-100">
-        {sortedBalances.length === 0 ? (
-          <tr>
-            <td colSpan={16} className="px-6 py-20">
-              <div className="flex flex-col items-center justify-center text-center">
-                <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mb-6">
-                  <svg className="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-3">No balance records found</h3>
-                <p className="text-slate-500 max-w-md leading-relaxed">
-                  {searchTerm ? 'Try adjusting your search or filter criteria to find the records you\'re looking for.' : 'No records are available at the moment. Check back later or contact support if this seems incorrect.'}
-                </p>
-              </div>
-            </td>
-          </tr>
-        ) : (
-          sortedBalances.map((balance) => (
-            <tr 
-              key={balance.id} 
-              className="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0"
-            >
-              <td className="px-6 py-5 whitespace-nowrap">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2.5 h-2.5 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow-sm"></div>
-                  <span className="text-sm font-medium text-slate-800">{balance.Project}</span>
-                </div>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <span className="text-sm text-slate-600 font-medium">{balance.Block}</span>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <span className="text-sm text-slate-600 font-medium">{balance.Lot}</span>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <span className="text-sm font-semibold text-slate-800">{balance.Name}</span>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-orange-50 to-orange-100 text-orange-700 border border-orange-200/60 shadow-sm">
-                  {formatCurrency(balance["Remaining Balance"])}
-                </div>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <span className="text-sm font-medium text-slate-700">{formatCurrency(balance["Amount"])}</span>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <span className="text-sm font-medium text-slate-700">{formatCurrency(balance["TCP"])}</span>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60 shadow-sm">
-                  {balance["Months Paid"]}
-                </div>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60 shadow-sm">
-                  {balance["MONTHS PAID"]}
-                </div>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <span className="text-sm font-medium text-slate-700">{balance["Terms"]}</span>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <span className="text-sm text-slate-600">{balance["Due Date"] || 'N/A'}</span>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <span className="text-sm font-medium text-slate-700">{formatCurrency(balance["Monthly Amortization"])}</span>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <span className="text-sm font-medium text-slate-700">{balance["sqm"]?.toLocaleString() || '0'}</span>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <span className="text-sm font-medium text-slate-700">{balance["pricepersqm"]?.toLocaleString() || '0'}</span>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60 shadow-sm">
-                  {balance.penalty ? formatCurrency(balance.penalty) : formatCurrency(0)}
-                </div>
-              </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <div className="flex items-center justify-center space-x-2">
-                  <button
-                    onClick={() => handleView(balance)}
-                    className="inline-flex items-center px-4 py-2 bg-white hover:bg-blue-50 text-blue-600 hover:text-blue-700 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md group-hover:shadow-md"
-                  >
-                    <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    View
-                  </button>
-                  {renderActionButtons(balance)}
-                </div>
-              </td>
-            </tr>
-          ))
-        )}
-      </tbody>
-    </table>
-  </div>
-</div>
+          <div className="flex-1 flex flex-col" style={{ height: 'calc(100vh - 12rem)' }}>
+            {/* Table Container */}
+            <div className="flex-1 overflow-x-auto bg-white round-xl shadow-sm border border-slate-200/60">
+              <table className="w-full">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Project
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Block
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Lot
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Name
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Remaining Balance
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Amount Paid
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      TCP
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Months Paid
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Months Paid
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Terms
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Due Date
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Monthly Amortization
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      SQM
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Price Per SQM
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">
+                      Penalty
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {sortedBalances.length === 0 ? (
+                    <tr>
+                      <td colSpan={16} className="px-6 py-20">
+                        <div className="flex flex-col items-center justify-center text-center">
+                          <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mb-6">
+                            <svg className="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <h3 className="text-xl font-semibold text-slate-800 mb-3">No balance records found</h3>
+                          <p className="text-slate-500 max-w-md leading-relaxed">
+                            {searchTerm ? 'Try adjusting your search or filter criteria to find the records you\'re looking for.' : 'No records are available at the moment. Check back later or contact support if this seems incorrect.'}
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    sortedBalances.map((balance) => (
+                      <tr 
+                        key={balance.id} 
+                        className="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0"
+                      >
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-2.5 h-2.5 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow-sm"></div>
+                            <span className="text-sm font-medium text-slate-800">{balance.Project}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span className="text-sm text-slate-600 font-medium">{balance.Block}</span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span className="text-sm text-slate-600 font-medium">{balance.Lot}</span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span className="text-sm font-semibold text-slate-800">{balance.Name}</span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-orange-50 to-orange-100 text-orange-700 border border-orange-200/60 shadow-sm">
+                            {formatCurrency(balance["Remaining Balance"])}
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span className="text-sm font-medium text-slate-700">{formatCurrency(balance["Amount"])}</span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span className="text-sm font-medium text-slate-700">{formatCurrency(balance["TCP"])}</span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60 shadow-sm">
+                            {balance["Months Paid"]}
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60 shadow-sm">
+                            {balance["MONTHS PAID"]}
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span className="text-sm font-medium text-slate-700">{balance["Terms"]}</span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span className="text-sm text-slate-600">{balance["Due Date"] || 'N/A'}</span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span className="text-sm font-medium text-slate-700">{formatCurrency(balance["Monthly Amortization"])}</span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span className="text-sm font-medium text-slate-700">{balance["sqm"]?.toLocaleString() || '0'}</span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span className="text-sm font-medium text-slate-700">{balance["pricepersqm"]?.toLocaleString() || '0'}</span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60 shadow-sm">
+                            {balance.penalty ? formatCurrency(balance.penalty) : formatCurrency(0)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <div className="flex items-center justify-center space-x-2">
+                            <button
+                              onClick={() => handleView(balance)}
+                              className="inline-flex items-center px-4 py-2 bg-white hover:bg-blue-50 text-blue-600 hover:text-blue-700 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md group-hover:shadow-md"
+                            >
+                              <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              View
+                            </button>
+                            {renderActionButtons(balance)}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
         {isEditModalOpen && selectedBalance && (

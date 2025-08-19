@@ -10,7 +10,8 @@ import {
   FileText,
   Ticket,
   Menu,
-  X
+  X,
+  Monitor,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabase/supabaseClient';
@@ -33,6 +34,7 @@ const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [activeItem, setActiveItem] = useState<string>('Dashboard');
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   
   // Notification states
   const [notifications, setNotifications] = useState<{[key: string]: number}>({
@@ -40,6 +42,50 @@ const AdminDashboard: React.FC = () => {
     Payment: 0,
     // Add more notification counters as needed
   });
+
+  // Check if screen is mobile size
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // Check on initial load
+    checkScreenSize();
+
+    // Add event listener for resize
+    window.addEventListener('resize', checkScreenSize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  // Mobile Warning Component
+  const MobileWarning = () => (
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-70 z-50 flex items-center justify-center p-4">
+  <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 text-center">
+    <div className="flex justify-center mb-4">
+      <Monitor className="h-10 w-10 text-blue-600" />
+    </div>
+    <h1 className="text-xl font-semibold text-gray-900 mb-2">
+      Desktop Required
+    </h1>
+    <p className="text-sm text-gray-600 mb-4">
+      This system is not optimized for handheld devices.  
+      Please use a desktop or laptop for the best experience.
+    </p>
+    <p className="text-xs text-gray-500 mb-6">
+      Minimum resolution: 1024×768
+    </p>
+    <button
+      onClick={() => window.location.reload()}
+      className="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 transition"
+    >
+      Refresh Page
+    </button>
+  </div>
+</div>
+
+  );
 
   const handleLogout = () => {
     // Clear custom user data
@@ -216,15 +262,17 @@ const AdminDashboard: React.FC = () => {
   const getFilteredNavItems = (items: { name: string; icon: any }[]) => {
     const emailPermissions: { [key: string]: string[] } = {
       'hdc.ellainegarcia@gmail.com': ['Ticket', 'Clients', 'Documents'],
-      'rtdesignbuilders@gmail.com': ['Agent']
+      'rtdesignbuilders@gmail.com': ['Agent'],
+      'angelap.hdc@gmail.com': ['Inventory', 'Payment', 'Balance', 'Report'],
+      'rowelhal.hdc@gmail.com': ['Inventory', 'Payment', 'Balance', 'Report'],
     };
-    
+  
     const allowedItems = emailPermissions[userEmail];
-    
+  
     if (allowedItems) {
       return items.filter(item => allowedItems.includes(item.name));
     }
-    
+  
     return items;
   };
   
@@ -232,18 +280,21 @@ const AdminDashboard: React.FC = () => {
   const getDefaultRoute = (userEmail: string) => {
     const emailPermissions: { [key: string]: string[] } = {
       'hdc.ellainegarcia@gmail.com': ['Ticket', 'Clients', 'Documents'],
-      'rtdesignbuilders@gmail.com': ['Agent']
+      'rtdesignbuilders@gmail.com': ['Agent'],
+      'angelap.hdc@gmail.com': ['Inventory', 'Payment', 'Balance', 'Report'],
+      'rowelhal.hdc@gmail.com': ['Inventory', 'Payment', 'Balance', 'Report'],
     };
-    
+  
     const allowedItems = emailPermissions[userEmail];
-    
+  
     if (allowedItems && allowedItems.length > 0) {
-      // Return the first allowed item as the default route
-      return allowedItems[0]; // Return the actual item name
+      // The first item in the list will be the default route
+      return allowedItems[0];
     }
-    
+  
     return 'Dashboard'; // Default fallback
   };
+  
 
   const mainNavItems = getFilteredNavItems(allMainNavItems);
 
@@ -285,6 +336,11 @@ const AdminDashboard: React.FC = () => {
       }
     }
   }, [userEmail]);
+
+  // Show mobile warning if screen is too small
+  if (isMobile) {
+    return <MobileWarning />;
+  }
 
   return (
     <div className="flex max-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">

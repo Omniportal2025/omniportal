@@ -8,7 +8,7 @@ import {
     TrendingUp,
     Sparkles,
     DollarSign,
-    Trophy,
+    Trophy, 
     Crown,
     Medal,
     Calendar,
@@ -220,7 +220,7 @@ const DashboardContent: React.FC = () => {
         .from('Payment')
         .select('Name, Project, "Payment Amount", "Month of Payment", Status, created_at')
         .order('created_at', { ascending: false })
-        .limit(10);
+        .limit(15); // Increased limit for more data
 
       if (error) {
         console.error('Error fetching payment data:', error);
@@ -304,7 +304,7 @@ const DashboardContent: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl min-h-[95vh] flex flex-col overflow-hidden">
+    <div className="bg-white rounded-2xl h-[94vh] flex flex-col overflow-hidden">
       {/* Hero Header */}
       <div className="flex-shrink-0 px-8 py-6 bg-white/80 backdrop-blur-sm rounded-2xl border-b border-gray-100">
         <div className="flex justify-between items-center">
@@ -317,7 +317,7 @@ const DashboardContent: React.FC = () => {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
                   Property Dashboard
                 </h1>
-                <p className="text-gray-500">Welcome back, {localStorage.getItem('adminName') || 'Admin'}! Here's your property overview.</p>
+                <p className="text-gray-500">Welcome back, Admin! Here's your property overview.</p>
               </div>
             </div>
           </div>
@@ -325,7 +325,7 @@ const DashboardContent: React.FC = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 px-8 py-6 space-y-8 min-h-0">
+      <div className="flex-1 px-8 py-6 space-y-6 min-h-0 overflow-y-auto">
         {/* Top Section: Stats Grid + Leaderboard */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Side: Stats Grid (2x2) */}
@@ -421,69 +421,89 @@ const DashboardContent: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Section: Payment Table */}
-        <div className="bg-white backdrop-blur-sm rounded-2xl border border-gray-100 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
-                <DollarSign className="h-5 w-5 text-white" />
+        {/* Bottom Section: Enhanced Payment Table */}
+        <div className="flex-1 bg-white backdrop-blur-sm rounded-2xl border border-gray-100 flex flex-col min-h-0">
+          {/* Table Header */}
+          <div className="flex-shrink-0 px-6 py-5 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
+                  <DollarSign className="h-5 w-5 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">PAYMENT TABLE</h2>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">PAYMENT TABLE</h2>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <Calendar className="h-4 w-4" />
-              <span>Recent Transactions</span>
+              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                <Calendar className="h-4 w-4" />
+                <span>Recent Transactions</span>
+              </div>
             </div>
           </div>
           
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-4 px-4 font-semibold text-gray-900">Client</th>
-                  <th className="text-left py-4 px-4 font-semibold text-gray-900">Project</th>
-                  <th className="text-left py-4 px-4 font-semibold text-gray-900">Amount</th>
-                  <th className="text-left py-4 px-4 font-semibold text-gray-900">Month</th>
-                  <th className="text-left py-4 px-4 font-semibold text-gray-900">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentPayments.length > 0 ? (
-                  recentPayments.map((payment, index) => (
-                    <tr key={index} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-4">
-                        <div className="font-medium text-gray-900">{payment.Name || 'N/A'}</div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="text-gray-700 font-mono text-sm">{payment.Project || 'N/A'}</div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="font-semibold text-gray-900">
-                          ₱{payment['Payment Amount'] ? parseFloat(payment['Payment Amount']).toLocaleString() : '0'}
+          {/* Table Content */}
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <div className="h-full overflow-y-auto">
+              <table className="w-full">
+                <thead className="sticky top-0 bg-white z-10">
+                  <tr className="border-b border-gray-100">
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 bg-gray-50/50">Client</th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 bg-gray-50/50">Project</th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 bg-gray-50/50">Amount</th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 bg-gray-50/50">Month</th>
+                    <th className="text-left py-4 px-6 font-semibold text-gray-900 bg-gray-50/50">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentPayments.length > 0 ? (
+                    recentPayments.slice(0, 4).map((payment, index) => (
+                      <tr key={index} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors duration-200">
+                        <td className="py-5 px-6">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                              {(payment.Name || 'N').charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-900">{payment.Name || 'N/A'}</div>
+                              <div className="text-xs text-gray-500">Client</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-5 px-6">
+                          <div className="text-gray-700 font-medium">{payment.Project || 'N/A'}</div>
+                          <div className="text-xs text-gray-500 mt-1">Property Project</div>
+                        </td>
+                        <td className="py-5 px-6">
+                          <div className="font-bold text-gray-900 text-lg">
+                            ₱{payment['Payment Amount'] ? parseFloat(payment['Payment Amount']).toLocaleString() : '0'}
+                          </div>
+                          <div className="text-xs text-gray-500">Payment</div>
+                        </td>
+                        <td className="py-5 px-6">
+                          <div className="text-gray-700 font-medium">{payment['Month of Payment'] || 'N/A'}</div>
+                          <div className="text-xs text-gray-500">Period</div>
+                        </td>
+                        <td className="py-5 px-6">
+                          <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${getStatusColor(payment.Status || 'unknown')}`}>
+                            {payment.Status || 'Unknown'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="py-12 text-center">
+                        <div className="flex flex-col items-center space-y-3">
+                          <div className="text-gray-400">
+                            <DollarSign className="h-12 w-12 mx-auto opacity-50" />
+                          </div>
+                          <p className="text-gray-500 text-sm">No payment data available</p>
+                          <p className="text-gray-400 text-xs">Payment records will appear here once available</p>
                         </div>
                       </td>
-                      <td className="py-4 px-4">
-                        <div className="text-gray-600">{payment['Month of Payment'] || 'N/A'}</div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(payment.Status || 'unknown')}`}>
-                          {payment.Status || 'Unknown'}
-                        </span>
-                      </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center">
-                      <div className="text-gray-400 mb-2">
-                        <DollarSign className="h-12 w-12 mx-auto opacity-50" />
-                      </div>
-                      <p className="text-gray-500 text-sm">No payment data available</p>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
