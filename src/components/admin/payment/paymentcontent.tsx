@@ -1327,7 +1327,7 @@ const PaymentPage: React.FC = () => {
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(1000); // Show 50 records per page
+  const [pageSize] = useState(300); // Show 50 records per page
   
   const projects = [
     'all',
@@ -1733,7 +1733,8 @@ const PaymentPage: React.FC = () => {
             </div>
 
             {/* Table Section */}
-            <div className="flex-1 overflow-x-auto">
+            {/* Table Section - REPLACE THIS ENTIRE SECTION */}
+            <div style={{ height: 'calc(100vh - 250px)' }} className="overflow-auto bg-white border border-slate-200 rounded-lg">
               {isLoadingPayments ? (
                 <div className="flex justify-center py-12">
                   <div className="flex flex-col items-center space-y-3">
@@ -1742,235 +1743,230 @@ const PaymentPage: React.FC = () => {
                   </div>
                 </div>
               ) : filteredPayments.length > 0 ? (
-                <div className="flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
-                  {/* Table Container with sticky horizontal scroll */}
-                  <div className="flex-1 overflow-x-auto">
-                  <div className="flex-1 overflow-auto bg-white rounded-xl shadow-sm border border-slate-200/60 max-h-[1400px]">
-                        <table className="min-w-[1500px] table-auto bg-white rounded-xl shadow-sm border border-slate-200/60">
-                          <thead className="sticky top-0 z-10 bg-white">
-                        <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Payment Date</th>
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Payment For The Month Of</th>
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Due Date</th>
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Name</th>
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Reference Number</th>
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Project</th>
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Block & Lot</th>
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Amount</th>
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Penalty Amount</th>
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">VAT</th>
-                          <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Client Receipt</th>
-                          <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">AR Receipt</th>
-                          <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Action</th>
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {filteredPayments.map((payment, index) => (
-                          <tr key={index} className="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0">
-                            <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
-                              {new Date(payment["Date of Payment"]).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                              {payment["Month of Payment"] ? new Date(payment["Month of Payment"]).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                              {payment["Due Date"] || 'N/A'}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-slate-800">
-                              {payment.Name}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
-                              {payment["Reference Number"] || 'N/A'}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                              {payment.Project}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                              {payment["Block & Lot"]}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-slate-800">
-                              <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-50 to-green-100 text-green-700 border border-green-200/60 shadow-sm">
-                                ₱{payment["Payment Amount"].toLocaleString()}
+                <div className="h-full overflow-auto bg-white border border-slate-200 rounded-lg">
+                  <table className="w-full min-w-[1500px]">
+                    <thead className="sticky top-0 z-10 bg-white">
+                      <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Payment Date</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Payment For The Month Of</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Due Date</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Name</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Reference Number</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Project</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Block & Lot</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Amount</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Penalty Amount</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">VAT</th>
+                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Client Receipt</th>
+                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">AR Receipt</th>
+                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-600 uppercase tracking-wide border-r border-slate-200/50">Action</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredPayments.map((payment, index) => (
+                        <tr key={index} className="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-b-0">
+                          <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
+                            {new Date(payment["Date of Payment"]).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                            {payment["Month of Payment"] ? new Date(payment["Month of Payment"]).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                            {payment["Due Date"] || 'N/A'}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-slate-800">
+                            {payment.Name}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-slate-700">
+                            {payment["Reference Number"] || 'N/A'}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                            {payment.Project}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                            {payment["Block & Lot"]}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-slate-800">
+                            <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-50 to-green-100 text-green-700 border border-green-200/60 shadow-sm">
+                              ₱{payment["Payment Amount"].toLocaleString()}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                            {payment["Penalty Amount"] ? (
+                              <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60 shadow-sm">
+                                ₱{payment["Penalty Amount"].toLocaleString()}
                               </div>
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                              {payment["Penalty Amount"] ? (
-                                <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60 shadow-sm">
-                                  ₱{payment["Penalty Amount"].toLocaleString()}
-                                </div>
-                              ) : (
-                                <span className="text-slate-400">N/A</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
-                              {payment.Vat || 'N/A'}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-center">
-                              {payment.receipt_path ? (
-                                <button
-                                  onClick={() => handleViewReceipt(payment)}
-                                  disabled={isLoadingReceipt}
-                                  className={`inline-flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md ${
-                                    isLoadingReceipt ? 'opacity-50 cursor-not-allowed' : ''
-                                  }`}
-                                >
-                                  {isLoadingReceipt ? (
-                                    <svg className="animate-spin h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                  ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                  )}
-                                  <span>{isLoadingReceipt ? 'Loading...' : 'View'}</span>
-                                </button>
-                              ) : payment.Status === "Approved" ? (
-                                <>
-                                  <input
-                                    type="file"
-                                    id={`receipt-upload-${payment.id}`}
-                                    className="hidden"
-                                    accept="image/*,.pdf"
-                                    onChange={(e) => {
-                                      const file = e.target.files?.[0];
-                                      if (file) {
-                                        handleUploadReceipt(payment, file, false);
-                                      }
-                                    }}
-                                  />
-                                  <button
-                                    onClick={() => document.getElementById(`receipt-upload-${payment.id}`)?.click()}
-                                    className="inline-flex items-center px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 hover:text-purple-800 rounded-lg border border-purple-200 hover:border-purple-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                                  >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                    </svg>
-                                    <span>Upload</span>
-                                  </button>
-                                </>
-                              ) : (
-                                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-slate-400 bg-slate-50 border border-slate-200">No receipt</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-center">
-                              {payment.ar_receipt_path ? (
-                                <button
-                                  onClick={() => handleViewReceipt(payment, true)}
-                                  disabled={isLoadingReceipt}
-                                  className={`inline-flex items-center px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md ${
-                                    isLoadingReceipt ? 'opacity-50 cursor-not-allowed' : ''
-                                  }`}
-                                >
-                                  {isLoadingReceipt ? (
-                                    <svg className="animate-spin h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                  ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                  )}
-                                  <span>{isLoadingReceipt ? 'Loading...' : 'View AR'}</span>
-                                </button>
-                              ) : payment.Status === "Approved" ? (
-                                <>
-                                  <input
-                                    type="file"
-                                    id={`ar-receipt-upload-${payment.id}`}
-                                    className="hidden"
-                                    accept="image/*,.pdf"
-                                    onChange={(e) => {
-                                      const file = e.target.files?.[0];
-                                      if (file) {
-                                        handleUploadReceipt(payment, file, true);
-                                      }
-                                    }}
-                                  />
-                                  <button
-                                    onClick={() => document.getElementById(`ar-receipt-upload-${payment.id}`)?.click()}
-                                    className="inline-flex items-center px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                                  >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                    </svg>
-                                    <span>Upload AR</span>
-                                  </button>
-                                </>
-                              ) : (
-                                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-slate-400 bg-slate-50 border border-slate-200">No AR receipt</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-center">
-                              <div className="flex justify-center items-center space-x-2">
-                                {payment.Status === "Pending" && (
-                                  <>
-                                    <button
-                                      onClick={() => {
-                                        setEditingPayment(payment);
-                                        setIsEditModalOpen(true);
-                                      }}
-                                      className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                                    >
-                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                      </svg>
-                                      <span>Edit</span>
-                                    </button>
-                                    <button
-                                      onClick={() => handleConfirmPayment(payment)}
-                                      className="inline-flex items-center px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                                    >
-                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                      </svg>
-                                      <span>Confirm</span>
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                      }}
-                                      className="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                                    >
-                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                      </svg>
-                                      <span>Reject</span>
-                                    </button>
-                                  </>
-                                )}
-                                <button
-                                  onClick={() => {
-                                    setDeletingPayment(payment);
-                                    setIsDeleteModalOpen(true);
-                                  }}
-                                  className="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            ) : (
+                              <span className="text-slate-400">N/A</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-600">
+                            {payment.Vat || 'N/A'}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-center">
+                            {payment.receipt_path ? (
+                              <button
+                                onClick={() => handleViewReceipt(payment)}
+                                disabled={isLoadingReceipt}
+                                className={`inline-flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md ${
+                                  isLoadingReceipt ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                              >
+                                {isLoadingReceipt ? (
+                                  <svg className="animate-spin h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                   </svg>
-                                  <span>Delete</span>
+                                ) : (
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                  </svg>
+                                )}
+                                <span>{isLoadingReceipt ? 'Loading...' : 'View'}</span>
+                              </button>
+                            ) : payment.Status === "Approved" ? (
+                              <>
+                                <input
+                                  type="file"
+                                  id={`receipt-upload-${payment.id}`}
+                                  className="hidden"
+                                  accept="image/*,.pdf"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      handleUploadReceipt(payment, file, false);
+                                    }
+                                  }}
+                                />
+                                <button
+                                  onClick={() => document.getElementById(`receipt-upload-${payment.id}`)?.click()}
+                                  className="inline-flex items-center px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 hover:text-purple-800 rounded-lg border border-purple-200 hover:border-purple-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                  </svg>
+                                  <span>Upload</span>
                                 </button>
-                              </div>
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap">
-                              <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm
-                                ${payment.Status === "Approved" ? "bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60" : 
-                                  payment.Status === "Rejected" ? "bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60" : 
-                                  "bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 border border-amber-200/60"}`}>
-                                {payment.Status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                      </table>
-                    </div>
-                  </div>
+                              </>
+                            ) : (
+                              <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-slate-400 bg-slate-50 border border-slate-200">No receipt</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-center">
+                            {payment.ar_receipt_path ? (
+                              <button
+                                onClick={() => handleViewReceipt(payment, true)}
+                                disabled={isLoadingReceipt}
+                                className={`inline-flex items-center px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md ${
+                                  isLoadingReceipt ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                              >
+                                {isLoadingReceipt ? (
+                                  <svg className="animate-spin h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                  </svg>
+                                ) : (
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                  </svg>
+                                )}
+                                <span>{isLoadingReceipt ? 'Loading...' : 'View AR'}</span>
+                              </button>
+                            ) : payment.Status === "Approved" ? (
+                              <>
+                                <input
+                                  type="file"
+                                  id={`ar-receipt-upload-${payment.id}`}
+                                  className="hidden"
+                                  accept="image/*,.pdf"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      handleUploadReceipt(payment, file, true);
+                                    }
+                                  }}
+                                />
+                                <button
+                                  onClick={() => document.getElementById(`ar-receipt-upload-${payment.id}`)?.click()}
+                                  className="inline-flex items-center px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                  </svg>
+                                  <span>Upload AR</span>
+                                </button>
+                              </>
+                            ) : (
+                              <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs text-slate-400 bg-slate-50 border border-slate-200">No AR receipt</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-center">
+                            <div className="flex justify-center items-center space-x-2">
+                              {payment.Status === "Pending" && (
+                                <>
+                                  <button
+                                    onClick={() => {
+                                      setEditingPayment(payment);
+                                      setIsEditModalOpen(true);
+                                    }}
+                                    className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    <span>Edit</span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleConfirmPayment(payment)}
+                                    className="inline-flex items-center px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-lg border border-emerald-200 hover:border-emerald-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Confirm</span>
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                    }}
+                                    className="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    <span>Reject</span>
+                                  </button>
+                                </>
+                              )}
+                              <button
+                                onClick={() => {
+                                  setDeletingPayment(payment);
+                                  setIsDeleteModalOpen(true);
+                                }}
+                                className="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200 text-xs font-semibold shadow-sm hover:shadow-md"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                <span>Delete</span>
+                              </button>
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap">
+                            <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm
+                              ${payment.Status === "Approved" ? "bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200/60" : 
+                                payment.Status === "Rejected" ? "bg-gradient-to-r from-red-50 to-red-100 text-red-700 border border-red-200/60" : 
+                                "bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 border border-amber-200/60"}`}>
+                              {payment.Status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
