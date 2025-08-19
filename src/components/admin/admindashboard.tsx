@@ -225,7 +225,24 @@ const AdminDashboard: React.FC = () => {
       return items.filter(item => allowedItems.includes(item.name));
     }
     
-    return items; // Show all items if email not in the permissions map
+    return items;
+  };
+  
+  // Add this function to get the default route
+  const getDefaultRoute = (userEmail: string) => {
+    const emailPermissions: { [key: string]: string[] } = {
+      'hdc.ellainegarcia@gmail.com': ['Ticket', 'Clients', 'Documents'],
+      'rtdesignbuilders@gmail.com': ['Agent']
+    };
+    
+    const allowedItems = emailPermissions[userEmail];
+    
+    if (allowedItems && allowedItems.length > 0) {
+      // Return the first allowed item as the default route
+      return allowedItems[0]; // Return the actual item name
+    }
+    
+    return 'Dashboard'; // Default fallback
   };
 
   const mainNavItems = getFilteredNavItems(allMainNavItems);
@@ -258,6 +275,16 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     fetchUserData();
   }, []);
+
+  // Add this new useEffect to handle redirection after userEmail is set
+  useEffect(() => {
+    if (userEmail) {
+      const defaultRoute = getDefaultRoute(userEmail);
+      if (defaultRoute !== 'Dashboard') {
+        setActiveItem(defaultRoute);
+      }
+    }
+  }, [userEmail]);
 
   return (
     <div className="flex max-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
