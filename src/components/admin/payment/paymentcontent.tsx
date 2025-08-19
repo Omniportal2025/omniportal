@@ -1733,7 +1733,6 @@ const PaymentPage: React.FC = () => {
             </div>
 
             {/* Table Section */}
-            {/* Table Section - REPLACE THIS ENTIRE SECTION */}
             <div style={{ height: 'calc(100vh - 250px)' }} className="overflow-auto bg-white border border-slate-200 rounded-lg">
               {isLoadingPayments ? (
                 <div className="flex justify-center py-12">
